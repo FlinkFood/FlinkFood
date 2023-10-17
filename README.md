@@ -27,12 +27,33 @@ TBD
 
 Contributions to FlinkFood are welcome! Follow these steps to contribute:
 
-1. Create a new branch for your feature from the develop branch (`git checkout -b feature/new-feature`)
-2. Make changes and commit (`git commit -m 'Add new-feature'`)
-3. Push to the branch (`git push origin feature/new-feature`)
+1. Create a new branch for your feature from the develop branch (`git checkout -b JRA-123-<branch-name>`)
+2. Make changes and commit (`git commit -m 'JRA-123 <commit message>'`)
+3. Push to the branch (`git push origin JRA-123-<branch-name>`)
 4. Create a pull request into the develop branch
 
 Please follow the [Git flow workflow](https://www.gitkraken.com/learn/git/git-flow) and adhere to the established code style.
+
+
+To make sure that the issues, commits and PRs are linked to the Jira issues. Make sure to follow these rules:
+
+### Branch naming
+`git checkout -b JRA-123-<branch-name>`
+
+### Commit naming
+`git commit -m "JRA-123 <commit message>"`
+
+### Pull requests
+Do at least one of the following:
+- Include a commit in the pull request that has the issue key in the commit message. Note, the commit cannot be a merge commit.
+- Include the issue key in the pull request title.
+- Ensure that the source branch name also includes the issue key in the branch name.
+
+### Reviews
+Include the issue key at the beginning of the review title when you create the review to link the review to your Jira issue.
+
+For example, name your review "JRA-123 <review summary>" and start the review.
+
 
 ## Credits
 
