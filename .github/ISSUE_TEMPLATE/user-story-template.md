@@ -1,7 +1,7 @@
 ---
 name: User story template
 about: A template for user stories
-title: "[STORY]"
+title: '[FLIN-XX] Name of issue'
 labels: story
 assignees: ''
 
