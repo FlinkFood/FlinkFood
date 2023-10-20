@@ -1,7 +1,15 @@
-## Describe your changes
+## Pull request title
+Delete this section after naming your pull request.
 
-## Issue ticket number and link
+**Suggested name:** `[FLIN-XX] Name of pull request`
+
+
+## Describe your changes
+[Provide a description of your changes]
+
+## Github issue this pull requests addresses
+Closes issue # 
 
 ## Checklist before requesting a review
 - [ ] I have performed a self-review of my code
-- [ ] If it is a core feature, I have added thorough tests.
+- [ ] I have updated/created the corresponding documentation
