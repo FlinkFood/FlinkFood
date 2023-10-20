@@ -37,17 +37,26 @@ Please follow the [Git flow workflow](https://www.gitkraken.com/learn/git/git-fl
 
 To make sure that the issues, commits and PRs are linked to the Jira issues. Make sure to follow these rules:
 
+### Issue naming
+Please be sure to name your issue (if the ID of the Jira task is FLIN-123):
+`[FLIN-123] Name of issue`
+This will automatically link the issue with your issue on Jira
+
+
 ### Branch naming
-`git checkout -b JRA-123-<branch-name>`
+`git checkout -b FLIN-123-<branch-name>`
 
 ### Commit naming
-`git commit -m "JRA-123 <commit message>"`
+`git commit -m "FLIN-123 <commit message>"`
 
-### Pull requests
+### Pull requests (PRs)
 Do at least one of the following:
 - Include a commit in the pull request that has the issue key in the commit message. Note, the commit cannot be a merge commit.
 - Include the issue key in the pull request title.
 - Ensure that the source branch name also includes the issue key in the branch name.
+
+Please name your PR in the following format:
+`[FLIN-123] Name of pull request`
 
 ### Reviews
 Include the issue key at the beginning of the review title when you create the review to link the review to your Jira issue.
