@@ -1,8 +1,10 @@
-## Pull request title
-Delete this section after naming your pull request.
-
-**Suggested name:** `[FLIN-XX] Name of pull request`
-
+---
+name: Pull Request
+about: Create a pull request to contribute to the project
+title: '[FLIN-XX] Name of pull request'
+labels: ''
+assignees: ''
+---
 
 ## Describe your changes
 [Provide a description of your changes]
