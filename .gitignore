@@ -28,7 +28,6 @@ bin/
 
 # Ignore Docker-related files
 .docker/
-docker-compose.yml
 
 # Ignore Apache Flink files
 .flink/
