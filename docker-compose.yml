@@ -62,6 +62,13 @@ services:
     depends_on: [kafka]
     ports:
       - 8083:8083
+  schema-registry:
+    image: confluentinc/cp-schema-registry:5.5.3
+    environment:
+     - SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL=zookeeper:2181
+     - SCHEMA_REGISTRY_HOST_NAME=schema-registry
+     - SCHEMA_REGISTRY_LISTENERS=http://schema-registry:8081,http://localhost:8081
+    depends_on: [zookeeper, kafka]
 
   # Source: https://nightlies.apache.org/flink/flink-docs-master/docs/deployment/resource-providers/standalone/docker/#session-mode-1
   jobmanager:
