@@ -4,8 +4,8 @@ services:
   # Source: https://medium.com/event-driven-utopia/configuring-debezium-to-capture-postgresql-changes-with-docker-compose-224742ca5372
   # Source: https://github.com/debezium/container-images/tree/main/postgres/13
   # Observation: the usage of this image of postgres is for testing purposes
-  # TODO: need to updated to connect to the image regarding FLINKFOOD
-  postgres:
+ 
+  postgres: #We are using this standardized postgres image. No need to reinvent the wheel
     image: debezium/postgres:13
     ports:
       - 5432:5432
