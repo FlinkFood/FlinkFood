@@ -43,6 +43,24 @@ docker-compose up
 docker-compose down
 ```
 
+### Interacting with the different containers
+
+#### PostgreSQL container
+
+Run the following command to enter the PostgreSQL container:
+
+```sh
+docker exec -it flinkfood-postgres-1 sh
+```
+
+To enter the postgreSQL database by running this command:
+
+```sh
+psql -U postgresuser -d shipment_db
+```
+
+Now you can run SQL commands :)
+
 ### Optional configuration
 
 - Scale the cluster up or down to N TaskManagers
