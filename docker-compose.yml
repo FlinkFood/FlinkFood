@@ -6,7 +6,7 @@ services:
   # Observation: the usage of this image of postgres is for testing purposes
  
   postgres: #We are using this standardized postgres image. No need to reinvent the wheel
-    image: debezium/postgres:13
+    image: debezium/postgres:16-alpine
     ports:
       - 5432:5432
     healthcheck:
@@ -20,7 +20,7 @@ services:
       - POSTGRES_DB=flink-food
       - PGPASSWORD=postgrespw
     volumes:
-      - ./scripts:/docker-entrypoint-initdb.d
+      - ./db_entries:/docker-entrypoint-initdb.d
        
   # Source: https://www.baeldung.com/ops/kafka-docker-setup
   zookeeper:
