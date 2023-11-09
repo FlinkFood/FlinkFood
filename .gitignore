@@ -1,0 +1,46 @@
+# Ignore compiled bytecode, logs, and build output
+*.class
+*.jar
+*.war
+*.ear
+target/
+build/
+logs/
+*.log
+*.log.*
+*.logs/
+
+# Ignore IDE files
+.idea/
+.vscode/
+
+# Ignore node modules for React
+node_modules/
+
+# Ignore build artifacts for React
+build/
+dist/
+
+# Ignore generated files for Spring Boot
+target/
+bin/
+*.iml
+
+# Ignore Docker-related files
+.docker/
+
+# Ignore Apache Flink files
+.flink/
+
+# Ignore Kafka logs
+logs/
+
+# Ignore Docker Compose override file
+docker-compose.override.yml
+
+# Ignore Docker image files
+*.tar
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
