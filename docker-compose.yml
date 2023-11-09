@@ -5,6 +5,7 @@ services:
   # Source: https://github.com/debezium/container-images/tree/main/postgres/13
   # Observation: the usage of this image of postgres is for testing purposes
  
+  # to test run: docker exec -it flinkfood-postgres-1 psql -U postgresuser -d flink-food -c "SELECT * FROM CLIENT"
   postgres: #We are using this standardized postgres image. No need to reinvent the wheel
     image: debezium/postgres:16-alpine
     ports:
@@ -20,9 +21,10 @@ services:
       - POSTGRES_DB=flink-food
       - PGPASSWORD=postgrespw
     volumes:
-      - ./db_entries:/docker-entrypoint-initdb.d
        
   # Source: https://www.baeldung.com/ops/kafka-docker-setup
+      - ./db_entries/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db-data/:/var/lib/postgresql/data/
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     environment:
