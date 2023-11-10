@@ -21,10 +21,10 @@ services:
       - POSTGRES_DB=flink-food
       - PGPASSWORD=postgrespw
     volumes:
-       
-  # Source: https://www.baeldung.com/ops/kafka-docker-setup
+      # Source: https://www.baeldung.com/ops/kafka-docker-setup
       - ./db_entries/init.sql:/docker-entrypoint-initdb.d/init.sql
       #- ./db-data/:/var/lib/postgresql/data/
+      
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     environment:
@@ -64,6 +64,7 @@ services:
     depends_on: [kafka]
     ports:
       - 8083:8083
+      
   schema-registry:
     image: confluentinc/cp-schema-registry:5.5.3
     environment:
