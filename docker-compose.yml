@@ -24,7 +24,7 @@ services:
        
   # Source: https://www.baeldung.com/ops/kafka-docker-setup
       - ./db_entries/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./db-data/:/var/lib/postgresql/data/
+      #- ./db-data/:/var/lib/postgresql/data/
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     environment:
