@@ -4,22 +4,32 @@ import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.JsonNode;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.flink.connector.mongodb.sink.MongoSink;
 import org.apache.flink.connector.base.DeliveryGuarantee;
 import org.apache.flink.connector.kafka.source.KafkaSource;
+import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import com.mongodb.client.model.InsertOneModel;
 import org.bson.BsonDocument;
 
 public class DataStreamJob {
         private static final String MONGODB_URI = System.getenv("MONGODB_URI");
+        private static final String KAFKA_URI = System.getenv("KAFKA_URI");
         private static final String DB_NAME = "flinkfood";
 
         public static void main(String[] args) throws Exception {
-                KafkaSource<String> source = null;
+
+                KafkaSource<String> source = KafkaSource.<String>builder()
+                                .setBootstrapServers(KAFKA_URI)
+                                .setTopics("dbserver1.inventory.customers")
+                                .setGroupId("my-group")
+                                .setStartingOffsets(OffsetsInitializer.earliest())
+                                .setValueOnlyDeserializer(new SimpleStringSchema())
+                                .build();
 
                 MongoSink<String> sink = MongoSink.<String>builder()
                                 .setUri(MONGODB_URI)
