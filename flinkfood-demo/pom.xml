@@ -171,7 +171,7 @@
                         </filters>
                         <transformers>
                             <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                <mainClass>org.flinkfood.flinkjobs.DataStreamJob</mainClass>
+                                <mainClass>org.flinkfood.flinkjobs.FirstLetterUppercase</mainClass>
                             </transformer>
                             <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                         </transformers>

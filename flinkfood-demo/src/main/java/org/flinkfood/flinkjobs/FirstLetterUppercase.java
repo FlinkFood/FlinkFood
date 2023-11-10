@@ -16,7 +16,7 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import com.mongodb.client.model.InsertOneModel;
 import org.bson.BsonDocument;
 
-public class DataStreamJob {
+public class FirstLetterUppercase {
         private static final String MONGODB_URI = System.getenv("MONGODB_URI");
         private static final String KAFKA_URI = System.getenv("KAFKA_URI");
         private static final String DB_NAME = "flinkfood";
@@ -70,6 +70,6 @@ public class DataStreamJob {
                                 .setParallelism(1)
                                 .sinkTo(sink);
 
-                env.execute("MongoDB to MongoBD table transfer");
+                env.execute("FirstLetterUppercase");
         }
 }
