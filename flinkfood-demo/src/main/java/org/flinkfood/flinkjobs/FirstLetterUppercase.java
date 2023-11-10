@@ -1,6 +1,5 @@
 package org.flinkfood.flinkjobs;
 
-import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.functions.MapFunction;
@@ -17,15 +16,16 @@ import com.mongodb.client.model.InsertOneModel;
 import org.bson.BsonDocument;
 
 public class FirstLetterUppercase {
-        private static final String MONGODB_URI = System.getenv("MONGODB_URI");
         private static final String KAFKA_URI = System.getenv("KAFKA_URI");
-        private static final String DB_NAME = "flinkfood";
+        private static final String SOURCE_DB_TABLE = "dbserver1.inventory.customers";
+        private static final String MONGODB_URI = System.getenv("MONGODB_URI");
+        private static final String SINK_DB = "flinkfood";
+        private static final String SINK_DB_TABLE = "users_sink";
 
         public static void main(String[] args) throws Exception {
-
                 KafkaSource<String> source = KafkaSource.<String>builder()
                                 .setBootstrapServers(KAFKA_URI)
-                                .setTopics("dbserver1.inventory.customers")
+                                .setTopics(SOURCE_DB_TABLE)
                                 .setGroupId("my-group")
                                 .setStartingOffsets(OffsetsInitializer.earliest())
                                 .setValueOnlyDeserializer(new SimpleStringSchema())
@@ -33,8 +33,8 @@ public class FirstLetterUppercase {
 
                 MongoSink<String> sink = MongoSink.<String>builder()
                                 .setUri(MONGODB_URI)
-                                .setDatabase(DB_NAME)
-                                .setCollection("users_sink")
+                                .setDatabase(SINK_DB)
+                                .setCollection(SINK_DB_TABLE)
                                 .setBatchSize(1000)
                                 .setBatchIntervalMs(1000)
                                 .setMaxRetries(3)
@@ -43,8 +43,7 @@ public class FirstLetterUppercase {
                                                 (input, context) -> new InsertOneModel<>(BsonDocument.parse(input)))
                                 .build();
 
-                Configuration conf = new Configuration();
-                StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(conf);
+                StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
                 DataStream<String> stream = env
                                 .fromSource(source, WatermarkStrategy.noWatermarks(), "Kafka Source")
