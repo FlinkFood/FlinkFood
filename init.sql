@@ -7,6 +7,6 @@ CREATE TABLE IF NOT EXISTS users (
 
 ALTER TABLE public.users REPLICA IDENTITY FULL;
 
-INSERT INTO users (id,name,last_name,emaiL) VALUES(0,'Mario', 'Rossi', 'mario.rossi@gmail.com');
-INSERT INTO users (id,name,last_name,emaiL) VALUES(1,'Luigi', 'Bianchi', 'luigi.bianchi@gmail.com');
-INSERT INTO users (id,name,last_name,emaiL) VALUES(3,'Maurizio', 'Mauri', 'maurizio.mauri@gmail.com');
+INSERT INTO users (id,name,last_name,emaiL) VALUES(0,'mario', 'rossi', 'mario.rossi@gmail.com');
+INSERT INTO users (id,name,last_name,emaiL) VALUES(1,'luigi', 'bianchi', 'luigi.bianchi@gmail.com');
+INSERT INTO users (id,name,last_name,emaiL) VALUES(3,'maurizio', 'mauri', 'maurizio.mauri@gmail.com');
