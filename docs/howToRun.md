@@ -7,7 +7,7 @@ The next few steps explain how to run the Job that makes the first letter of a u
 Run the following command to start all the containers:
 
 ```bash
-docker-compose up
+docker-compose up -d
 ```
 
 ### 2. Execute the Startup Script
