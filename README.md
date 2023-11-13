@@ -24,6 +24,10 @@ Comprehensive tests are yet to be defined for the project. Test examples and gui
 
 To use FlinkFood, follow these steps:
 
+### How to run
+
+See the [documentation for how to run FlinkFood](docs/howToRun.md) for more details on these steps.
+
 ### Basic docker commands
 
 Using the following commands will start docker containers for Kafka and Apache Flink. Flink is running in session mode. This means that we have a long-running Flink Cluster which we can submit jobs to. This is preferably done in the web UI (see below). For more information on this configuration of Apache Flink, see: [Apache Flink Documentation](https://nightlies.apache.org/flink/flink-docs-master/docs/deployment/resource-providers/standalone/docker/#session-mode-1)
