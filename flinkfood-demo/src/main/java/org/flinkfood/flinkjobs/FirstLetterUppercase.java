@@ -24,7 +24,7 @@ public class FirstLetterUppercase {
     private static final String KAFKA_URI = System.getenv("KAFKA_URI");
     private static final String SOURCE_DB_TABLE = "postgres.public.users";
     private static final String MONGODB_URI = System.getenv("MONGODB_URI");
-    private static final String SINK_DB = "flinkfood";
+    private static final String SINK_DB = "flink-food";
     private static final String SINK_DB_TABLE = "users_sink";
 
     // Main method where the Flink job is defined

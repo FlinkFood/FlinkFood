@@ -44,3 +44,6 @@ docker-compose.override.yml
 # Ignore OS-specific files
 .DS_Store
 Thumbs.db
+
+# Postgres DB files
+/db-data
