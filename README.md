@@ -79,10 +79,11 @@ docker exec -it $(docker ps --filter name=jobmanager --format={{.ID}}) /bin/sh
 
 Contributions to FlinkFood are welcome! Follow these steps to contribute:
 
-1. Create a new branch for your feature from the develop branch (`git checkout -b JRA-123-<branch-name>`)
-2. Make changes and commit (`git commit -m 'JRA-123 <commit message>'`)
-3. Push to the branch (`git push origin JRA-123-<branch-name>`)
-4. Create a pull request into the develop branch
+1. Create a new branch for your feature from the develop branch (`git checkout -b "(feature | hotfix | release | docs) / #of_task - really_brief_description"`) no spaces.
+2. Make changes, re-run the docker containers to test and commit (`git commit -m 'name_of_created_branch'`). In case you have done the work along-side someone (Parallel computing), you can commit with them as co-authors (how to do it: [here](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/creating-a-commit-with-multiple-authors))
+3. Push to the branch (`git push origin 'name_of_created_branch'`)
+4. Create an issue on the GitHub page, following the pre defined template, make sure to add the reviewers of the work as the co-collaborators assigned on the Jira board 
+5. Create a pull request into the develop branch (details below)
 
 Please follow the [Git flow workflow](https://www.gitkraken.com/learn/git/git-flow) and adhere to the established code style.
 
@@ -94,24 +95,16 @@ Please be sure to name your issue (if the ID of the Jira task is FLIN-123):
 `[FLIN-123] Name of issue`
 This will automatically link the issue with your issue on Jira
 
-### Branch naming
-
-`git checkout -b FLIN-123-<branch-name>`
-
-### Commit naming
-
-`git commit -m "FLIN-123 <commit message>"`
-
 ### Pull requests (PRs)
 
 Do at least one of the following:
 
 - Include a commit in the pull request that has the issue key in the commit message. Note, the commit cannot be a merge commit.
-- Include the issue key in the pull request title.
+- Include the issue key in the pull request title. You can do ir by just adding a "#" and the number of the issue. 
 - Ensure that the source branch name also includes the issue key in the branch name.
 
 Please name your PR in the following format:
-`[FLIN-123] Name of pull request`
+`[FLIN-123] Description of FLIN-123 as presented on Jira`
 
 ### Reviews
 
