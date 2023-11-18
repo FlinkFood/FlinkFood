@@ -57,3 +57,18 @@ CREATE TABLE IF NOT EXISTS ingredients (
 
 COPY restaurants (name, address, phone, email, cuisine, price_range, rating, take_away, delivery, dine_in, parking_lots)
     FROM '/docker-entrypoint-initdb.d/csv/restaurants.csv' DELIMITER ',' CSV HEADER;
+
+copy dishes (name, price, description, rating)
+    from '/docker-entrypoint-initdb.d/csv/dishes.csv' delimiter ',' csv header;
+
+copy served_dishes (restaurant_id, dish_id)
+    from '/docker-entrypoint-initdb.d/csv/served_dishes.csv' delimiter ',' csv header;
+
+copy reviews_restaurant (restaurant_id, rating, comment)
+    from '/docker-entrypoint-initdb.d/csv/reviews_restaurant.csv' delimiter ',' csv header;
+
+copy reviews_dish (dish_id, rating, comment)
+    from '/docker-entrypoint-initdb.d/csv/reviews_dish.csv' delimiter ',' csv header;
+
+copy ingredients (name, description)
+    from '/docker-entrypoint-initdb.d/csv/ingredients.csv' delimiter ',' csv header;
