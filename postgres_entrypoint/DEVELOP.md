@@ -9,6 +9,11 @@ to show the updated tables in the flinkfoodBD run:
 docker exec postgres psql -U postgres -d flinkfood -c "\dt"
 ```
 
+It's possible to see also the new data inserted in the tables with:
+```bash
+docker exec postgres psql -U postgres -d flinkfood -c "SELECT * FROM restaurants"
+```
+
 note: executing the following command:
 ```bash
  docker exec postgres psql -U postgres -c "\l"

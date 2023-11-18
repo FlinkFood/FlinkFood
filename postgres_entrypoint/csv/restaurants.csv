@@ -1,0 +1,2 @@
+name,address,phone,email,cuisine,price_range,rating,take_away,delivery,dine_in,parking_lots
+test2,test,test,test,test,test,10,TRUE,TRUE,TRUE,10
