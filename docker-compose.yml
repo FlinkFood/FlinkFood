@@ -79,7 +79,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=flinkfood
     volumes:
-      - ./db_entries/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./postgres_entrypoint/:/docker-entrypoint-initdb.d/
 
 # debezium connector
   kconnect:
