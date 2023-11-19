@@ -9,6 +9,15 @@ CREATE TABLE IF NOT EXISTS CLIENT
     check(GENDER in ('M', 'F'))
 );
 
+--REGULAR CLIENTS
+CREATE TABLE IF NOT EXISTS RESTURANTS
+(
+    ID serial PRIMARY KEY,
+    NAME VARCHAR(40) NOT NULL,
+    CITY VARCHAR(45) NOT NULL,
+    STATE VARCHAR(45) NOT NULL,
+);
+
 --REGULAR FOOD ALLERGY
 CREATE TABLE IF NOT EXISTS FOOD_ALLERGY
 (
@@ -29,6 +38,15 @@ CREATE TABLE IF NOT EXISTS CLIENT_ALLERGY
 
 INSERT INTO CLIENT (GENDER, NAME, AGE, FAVORITE_FOOD) VALUES('M', 'MARCOS PETRUCCI', 23, 'PASTA AL POMODORO');
 INSERT INTO CLIENT (GENDER, NAME, AGE, FAVORITE_FOOD) VALUES('M', 'GIOVANNI A', 23, 'PIZZA');
+
+INSERT INTO RESTURANT (NAME, CITY, STATE) VALUES('Golden Kebab', 'Trondheim', 'Trøndelag');
+INSERT INTO RESTURANT (NAME, CITY, STATE) VALUES('Pizza Labia', 'Milano', 'Milano');
+INSERT INTO RESTAURANT (NAME, CITY, STATE) VALUES
+    ('pasta Palace', 'Rome', 'Lazio'),
+    ('sushi Haven', 'Tokyo', 'Tokyo'),
+    ('burger Bistro', 'New York', 'New York'),
+    ('taco Town', 'Los Angeles', 'California'),
+    ('curry Corner', 'Mumbai', 'Maharashtra');
 
 
 -- temporary table to choose random names to put on the table
