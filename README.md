@@ -24,6 +24,10 @@ Comprehensive tests are yet to be defined for the project. Test examples and gui
 
 To use FlinkFood, follow these steps:
 
+### How to run
+
+See the [documentation for how to run FlinkFood](docs/howToRun.md) for more details on these steps.
+
 ### Basic docker commands
 
 Using the following commands will start docker containers for Kafka and Apache Flink. Flink is running in session mode. This means that we have a long-running Flink Cluster which we can submit jobs to. This is preferably done in the web UI (see below). For more information on this configuration of Apache Flink, see: [Apache Flink Documentation](https://nightlies.apache.org/flink/flink-docs-master/docs/deployment/resource-providers/standalone/docker/#session-mode-1)
@@ -34,8 +38,8 @@ Using the following commands will start docker containers for Kafka and Apache F
 docker-compose up
 ```
 
-2. Access Web UI
-   When the cluster is running, you can visit the web UI at http://localhost:8081.
+2. Apache Flink Web Dashboard
+   When the cluster is running, you can visit the [Apache Flink Web Dashboard](http://localhost:8081) for manual management.
 
 3. Kill the cluster
 
@@ -50,13 +54,13 @@ docker-compose down
 Run the following command to enter the PostgreSQL container:
 
 ```sh
-docker exec -it flinkfood-postgres-1 sh
+docker exec -it flinkfood-postgres-1 bash
 ```
 
 To enter the postgreSQL database by running this command:
 
 ```sh
-psql -U postgresuser -d shipment_db
+psql -U postgres -d flinkfood
 ```
 
 Now you can run SQL commands :)
