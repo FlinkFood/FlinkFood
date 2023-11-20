@@ -80,20 +80,13 @@ docker exec -it $(docker ps --filter name=jobmanager --format={{.ID}}) /bin/sh
 Contributions to FlinkFood are welcome! Follow these steps to contribute:
 
 1. Create a new branch for your feature from the develop branch (`git checkout -b "(feature | hotfix | release | docs) / #of_task - really_brief_description"`) no spaces.
-2. Make changes, re-run the docker containers to test and commit (`git commit -m 'name_of_created_branch'`). In case you have done the work along-side someone (Parallel computing), you can commit with them as co-authors (how to do it: [here](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/creating-a-commit-with-multiple-authors))
+2. Make changes, re-run the docker containers to test and commit (`git commit -m 'number_of_task/simple_commit_message'`, eg: `git commit -m '91/update_README.md'`). In case you have done the work along-side someone (Parallel computing), you can commit with them as co-authors (how to do it: [here](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/creating-a-commit-with-multiple-authors))
 3. Push to the branch (`git push origin 'name_of_created_branch'`)
-4. Create an issue on the GitHub page, following the pre defined template, make sure to add the reviewers of the work as the co-collaborators assigned on the Jira board 
-5. Create a pull request into the develop branch (details below)
+4. Create a pull request into the develop branch (details below). Make sure to add the reviewers of the work as the co-collaborators assigned on the Jira board.
 
 Please follow the [Git flow workflow](https://www.gitkraken.com/learn/git/git-flow) and adhere to the established code style.
 
-To make sure that the issues, commits and PRs are linked to the Jira issues. Make sure to follow these rules:
-
-### Issue naming
-
-Please be sure to name your issue (if the ID of the Jira task is FLIN-123):
-`[FLIN-123] Name of issue`
-This will automatically link the issue with your issue on Jira
+To make sure that the commits and PRs are linked to the Jira issues. Make sure to follow these rules:
 
 ### Pull requests (PRs)
 
@@ -108,9 +101,7 @@ Please name your PR in the following format:
 
 ### Reviews
 
-Include the issue key at the beginning of the review title when you create the review to link the review to your Jira issue.
-
-For example, name your review "JRA-123 <review summary>" and start the review.
+Name your review "JRA-123 <review summary>" and start the review. Follow the Git Hub steps to do it. Communicate thought the GitHub interface commenting, approving or requesting changes.
 
 ## Credits
 
