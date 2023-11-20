@@ -55,6 +55,7 @@ CREATE TABLE IF NOT EXISTS ingredients (
     description VARCHAR(255)
     );
 
+-- id is not included such that is automatically generated 
 COPY restaurants (name, address, phone, email, cuisine, price_range, rating, take_away, delivery, dine_in, parking_lots)
     FROM '/docker-entrypoint-initdb.d/csv/restaurants.csv' DELIMITER ',' CSV HEADER;
 
