@@ -79,14 +79,13 @@ docker exec -it $(docker ps --filter name=jobmanager --format={{.ID}}) /bin/sh
 
 Contributions to FlinkFood are welcome! Follow these steps to contribute:
 
-1. Create a new branch for your feature from the develop branch (`git checkout -b "(feature | hotfix | release | docs) / #of_task - really_brief_description"`) no spaces.
-2. Make changes, re-run the docker containers to test and commit (`git commit -m 'number_of_task/simple_commit_message'`, eg: `git commit -m '91/update_README.md'`). In case you have done the work along-side someone (Parallel computing), you can commit with them as co-authors (how to do it: [here](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/creating-a-commit-with-multiple-authors))
+1. Create a new branch for your feature from the develop branch (`git checkout -b "(feature | hotfix | release | docs) - FLIN - #of_task - really_brief_description"`) no spaces.
+2. Make changes, re-run the docker containers to test and commit (`git commit -m 'simple_commit_message'`, eg: `git commit -m 'update_README.md'`). In case you have done the work along-side someone (Parallel computing), you can commit with them as co-authors (how to do it: [here](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/creating-a-commit-with-multiple-authors))
 3. Push to the branch (`git push origin 'name_of_created_branch'`)
 4. Create a pull request into the develop branch (details below). Make sure to add the reviewers of the work as the co-collaborators assigned on the Jira board.
+5. Then the pull request should be squashed merged to include all the commits in the merge commit.
 
 Please follow the [Git flow workflow](https://www.gitkraken.com/learn/git/git-flow) and adhere to the established code style.
-
-To make sure that the commits and PRs are linked to the Jira issues. Make sure to follow these rules:
 
 ### Pull requests (PRs)
 
@@ -97,7 +96,7 @@ Do at least one of the following:
 - Ensure that the source branch name also includes the issue key in the branch name.
 
 Please name your PR in the following format:
-`[FLIN-123] Description of FLIN-123 as presented on Jira`
+`[FLIN-#of_task] Description of FLIN-#of_task as presented on Jira`
 
 ### Reviews
 
