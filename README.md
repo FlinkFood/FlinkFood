@@ -38,8 +38,8 @@ Using the following commands will start docker containers for Kafka and Apache F
 docker-compose up
 ```
 
-2. Access Web UI
-   When the cluster is running, you can visit the web UI at http://localhost:8081.
+2. Apache Flink Web Dashboard
+   When the cluster is running, you can visit the [Apache Flink Web Dashboard](http://localhost:8081) for manual management.
 
 3. Kill the cluster
 
@@ -54,13 +54,13 @@ docker-compose down
 Run the following command to enter the PostgreSQL container:
 
 ```sh
-docker exec -it flinkfood-postgres-1 sh
+docker exec -it flinkfood-postgres-1 bash
 ```
 
 To enter the postgreSQL database by running this command:
 
 ```sh
-psql -U postgresuser -d shipment_db
+psql -U postgres -d flinkfood
 ```
 
 Now you can run SQL commands :)
