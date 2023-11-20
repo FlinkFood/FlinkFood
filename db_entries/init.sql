@@ -18,6 +18,17 @@ CREATE TABLE IF NOT EXISTS RESTAURANT
     STATE VARCHAR(45) NOT NULL
 );
 
+--DISHES
+CREATE TABLE IF NOT EXISTS DISH
+(
+    ID serial PRIMARY KEY,
+    NAME VARCHAR(40) NOT NULL,
+    PRICE DECIMAL(5,2) NOT NULL,
+    RATING DECIMAL(2,1) NOT NULL,
+    RESTAURANT_ID INTEGER NOT NULL,
+    CONSTRAINT FK_DISH_REST FOREIGN KEY(RESTAURANT_ID) REFERENCES RESTAURANT(ID) ON DELETE CASCADE
+);
+
 --REGULAR FOOD ALLERGY
 CREATE TABLE IF NOT EXISTS FOOD_ALLERGY
 (
@@ -45,6 +56,31 @@ INSERT INTO RESTAURANT (NAME, CITY, STATE) VALUES
     ('burger Bistro', 'New York', 'New York'),
     ('taco Town', 'Los Angeles', 'California'),
     ('curry Corner', 'Mumbai', 'Maharashtra');
+
+-- Dishes for 'Pasta Palace' in Rome, Lazio
+INSERT INTO DISH (NAME, PRICE, RATING, RESTAURANT_ID) VALUES
+    ('Spaghetti Bolognese', 12.99, 4.5, 1),
+    ('Carbonara', 10.99, 4.0, 1);
+
+-- Dishes for 'Sushi Haven' in Tokyo, Tokyo
+INSERT INTO DISH (NAME, PRICE, RATING, RESTAURANT_ID) VALUES
+    ('Sushi Platter', 22.99, 4.8, 2),
+    ('Sashimi Deluxe', 18.99, 4.5, 2);
+
+-- Dishes for 'Burger Bistro' in New York, New York
+INSERT INTO DISH (NAME, PRICE, RATING, RESTAURANT_ID) VALUES
+    ('Classic Cheeseburger', 14.99, 4.3, 3),
+    ('Veggie Burger', 12.99, 4.0, 3);
+
+-- Dishes for 'Taco Town' in Los Angeles, California
+INSERT INTO DISH (NAME, PRICE, RATING, RESTAURANT_ID) VALUES
+    ('Taco Trio', 9.99, 4.2, 4),
+    ('Quesadilla', 8.99, 4.1, 4);
+
+-- Dishes for 'Curry Corner' in Mumbai, Maharashtra
+INSERT INTO DISH (NAME, PRICE, RATING, RESTAURANT_ID) VALUES
+    ('Chicken Tikka Masala', 15.99, 4.6, 5),
+    ('Vegetable Curry', 12.99, 4.4, 5);
 
 
 -- temporary table to choose random names to put on the table
