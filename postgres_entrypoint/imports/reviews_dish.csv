@@ -1,0 +1,6 @@
+id,dish_id,customer_id,rating,comment
+1,1,1,4.5,Good one for sure
+2,1,2,4.0,My name is Optimus Prime
+3,2,3,5.0,NOICE!
+4,2,4,4.5,"Good stuff, almost ate it all"
+5,3,5,4.0,"Good, but not the best"

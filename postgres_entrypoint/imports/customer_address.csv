@@ -1,0 +1,6 @@
+id,customer_id,street,address_number,zip_code,city,province,country
+1,1,Via Roma,1,12345,Roma,RM,Italy
+2,2,Main Street,123,56789,New York,NY,USA
+3,3,Baker Street,221B,56789,London,,UK
+4,4,Champs-Élysées,75,75008,Paris,,France
+5,5,Ginza,4215,1040061,Tokyo,,Japan
