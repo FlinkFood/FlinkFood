@@ -1,0 +1,5 @@
+﻿"businessName","servedDishes__name","servedDishes__price","servedDishes__rating","branches__name","branches__address__street","branches__address__number","branches__address__zipCode","branches__address__city","branches__address__province","branches__address__country","branches__vatCode","branches__email","branches__status__takeAway","branches__status__delivery","branches__status__dineIn","branches__services__parkingLots","branches__services__accessibleEntrance","branches__services__childrenArea","branches__services__childrenFood","branches__reviews__user","branches__reviews__rating","branches__reviews__comment"
+"Raggù s.r.l","La Bolognese","10","7.2","Raggù Acero","Viale Acero","1","20158","Milano","Milano","Italy","34566564","acero@raggu.com","True","False","True","10","True","True","False","its@me","3.5","The place was cozy and the staff was very kind to me"
+"","Tortellini","10","7.2""","","","","","","","","","","","","","","","","theWanderer","4.9","happy!"
+"","Tagliata di vitello","10","7.2","","","","","","","","","","","","","","","","","","",""
+"","Insalata di rucola e bresaola","10","7.2","","","","","","","","","","","","","","","","","","",""

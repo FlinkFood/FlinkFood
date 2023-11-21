@@ -1,0 +1,76 @@
+{
+  "username": "its@me",
+  "firstName": "Mario",
+  "lastName": "Rossi",
+  "birthDate": "2010-11-11",
+  "email": "mario@rossi.it",
+  "fiscalCode": "RSSMRA43S01F145K",
+  "fidelity": {
+    "cardNumber": "AB3456093",
+    "points": 125
+    // feel free to add more
+  },
+  "addresses": [
+    {
+      "street": "Via Carlo Imbonati",
+      "number": 18,
+      "zipCode": "20158",
+      "city": "Milano",
+      "province": "Milano",
+      "country": "Italy",
+      "isDelivery": true,
+      "isPayment": false
+    },
+    {
+      "street": "Via Carlo Farini",
+      "number": 1,
+      "zipCode": "20154",
+      "city": "Milano",
+      "province": "Milano",
+      "country": "Italy",
+      "isDelivery": false,
+      "isPayment": true
+    }
+  ],
+  "paymentMethods": [
+    {
+      "name": "paypal"
+      // feel free to add more
+    },
+    {
+      "name": "satispay"
+      // feel free to add more
+    },
+    {
+      "name": "credit-card"
+      // feel free to add more
+    }
+  ],
+  "orders": [
+    {
+      "number": "ord-324567879-RAAC",
+      "title": "A title",
+      "totalAmount": 12.50,
+      "restaurant": "Raggù Acero",
+      "paid": true
+      // feel free to add more
+    }
+  ],
+  "reviews": [
+    {
+      "type": "restaurant",
+      "restaurantName": "Da Cri",
+      "rating": 3.5,
+      "comment": "The place was cozy and the staff was very kind to me"
+      // feel free to expand
+    },
+    {
+      "type": "dish",
+      "dishName": "La Bolognese",
+      "rating": 8.1,
+      "comment": "Tasty, but there wasn't that much meat"
+      // feel free to expand
+    }
+    // feel free to expand
+  ]
+}

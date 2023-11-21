@@ -1,0 +1,117 @@
+{
+  "name": "La Bolognese",
+  "description": "La classica lasagna alla Bolognese, con gli ingredienti genuini e sani secondo la cucina tradizionale delle nonne Bolognesi",
+  "rating": 9.8,
+  "price": {
+    "value": 12.50,
+    "currency": "EUR"
+  },
+  "category": "primo",
+  "ingredients": [
+    {
+      "name": "pomodoro",
+      "description": "buono, sano e biologico",
+      "nutrients": {
+        "carbohydrates": {
+          "value": 3.9,
+          "unit": "grams"
+        },
+        "proteins": {
+          "value": 0.9,
+          "unit": "grams"
+        },
+        "fats": {
+          "value": 0.2,
+          "unit": "grams"
+        },
+        "fibers": {
+          "value": 1.2,
+          "unit": "grams"
+        },
+        "salt": {
+          "value": 20,
+          "unit": "grams"
+        }
+      },
+      "supplier": {
+        "businessName": "Alce Nero",
+        "vatCode": "343567890",
+        "country": "Italy"
+      },
+      "status": {
+        "inStock": true,
+        "quantity": {
+          "value": 30,
+          "unit": "kilos"
+        }
+      }
+    },
+    {
+      "name": "macinato di bovino",
+      "description": "standard",
+      "nutrients": {
+        "carbohydrates": {
+          "value": 5.1,
+          "unit": "grams"
+        },
+        "proteins": {
+          "value": 19.35,
+          "unit": "grams"
+        },
+        "fats": {
+          "value": 6.77,
+          "unit": "grams"
+        },
+        "fibers": {
+          "value": 1.2,
+          "unit": "grams"
+        },
+        "salt": {
+          "value": 0.2,
+          "unit": "grams"
+        }
+      },
+      "supplier": {
+        "businessName": "L'allevamento In Collina",
+        "vatCode": "987643566",
+        "country": "Italy"
+      },
+      "status": {
+        "inStock": true,
+        "quantity": {
+          "value": 12,
+          "unit": "kilos"
+        }
+      }
+    }
+  ],
+  "servedIn": [
+    {
+      "restaurant": "Da Cri",
+      "type": "special",
+      "since": "2020-03-18"
+    },
+    {
+      "restaurant": "La Cucina Calda",
+      "type": "menu",
+      "since": "2012-11-12"
+    },
+    {
+      "restaurant": "Raggù",
+      "type": "menu",
+      "since": "2023-03-05"
+    }
+    // feel free to expand
+  ],
+  "topComments": [
+    {
+      "customer": "theWanderer",
+      "comment": "I love it!"
+    },
+    {
+      "customer": "BilboBagging",
+      "comment": "My dwarves friends were satisfied! No need to bring them to my kitchen"
+    }
+  ]
+  // feel free to expand
+}
