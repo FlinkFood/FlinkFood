@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS restaurant_reviews (
 
 
 CREATE TABLE IF NOT EXISTS dishes (
-    id INT PRIMARY KEY,
+    id serial PRIMARY KEY,
     restaurant_id INT,
     name VARCHAR(255),
     price DECIMAL(5,2),
@@ -186,31 +186,31 @@ CREATE TABLE IF NOT EXISTS partnership (
 
 
 -- TABLE restaurant_info
-INSERT INTO restaurant_info (name, phone, email, cuisine_type, price_range, vat_code) VALUES('Ristorante da Mario', '1234567890', 'mario.gmail.com', 'italian', 'low', 2345678901);
+INSERT INTO restaurant_info (name, phone, email, cuisine_type, price_range, vat_code) VALUES('Ristorante da Mario', '1234567890', 'mario.gmail.com', 'italian', 'low', 2345678);
 INSERT INTO restaurant_info (name, phone, email, cuisine_type, price_range, vat_code) VALUES('Rambo Kebab', '+39 351 79525892', 'rambo.gmail.com', 'arabic', 'medium', 1234538547);
-INSERT INTO restaurant_info (name, phone, email, cuisine_type, price_range, vat_code) VALUES ('Pasta Paradise', '+39 366 98765432', 'pasta.paradise@gmail.com', 'italian', 'high', 9876123456);
-INSERT INTO restaurant_info (name, phone, email, cuisine_type, price_range, vat_code) VALUES ('Sushi Sensation', '+39 320 12345678', 'sushi.sensation@yahoo.com', 'japanese', 'expensive', 6543987654);
-INSERT INTO restaurant_info (name, phone, email, cuisine_type, price_range, vat_code) VALUES ('Mexican Fiesta', '+39 333 87654321', 'mexican.fiesta@hotmail.com', 'mexican', 'medium', 8765123453);
-INSERT INTO restaurant_info (name, phone, email, cuisine_type, price_range, vat_code) VALUES ('Burger Bonanza', '+39 347 54321678', 'burger.bonanza@gmail.com', 'american', 'affordable', 3456789012);
-INSERT INTO restaurant_info (name, phone, email, cuisine_type, price_range, vat_code) VALUES ('Thai Temptations', '+39 366 87654321', 'thai.temptations@yahoo.com', 'thai', 'moderate', 5678901234);
-INSERT INTO restaurant_info (name, phone, email, cuisine_type, price_range, vat_code) VALUES ('Mediterranean Delight', '+39 338 98765432', 'med.delight@hotmail.com', 'mediterranean', 'high', 7890123456);
-INSERT INTO restaurant_info (name, phone, email, cuisine_type, price_range, vat_code) VALUES ('Vegetarian Bliss', '+39 320 65432109', 'veg.bliss@gmail.com', 'vegetarian', 'moderate', 8901234567);
+INSERT INTO restaurant_info (name, phone, email, cuisine_type, price_range, vat_code) VALUES ('Pasta Paradise', '+39 366 98765432', 'pasta.paradise@gmail.com', 'italian', 'high', 98761234);
+INSERT INTO restaurant_info (name, phone, email, cuisine_type, price_range, vat_code) VALUES ('Sushi Sensation', '+39 320 12345678', 'sushi.sensation@yahoo.com', 'japanese', 'expensive', 65439876);
+INSERT INTO restaurant_info (name, phone, email, cuisine_type, price_range, vat_code) VALUES ('Mexican Fiesta', '+39 333 87654321', 'mexican.fiesta@hotmail.com', 'mexican', 'medium', 87651234);
+INSERT INTO restaurant_info (name, phone, email, cuisine_type, price_range, vat_code) VALUES ('Burger Bonanza', '+39 347 54321678', 'burger.bonanza@gmail.com', 'american', 'affordable', 34567890);
+INSERT INTO restaurant_info (name, phone, email, cuisine_type, price_range, vat_code) VALUES ('Thai Temptations', '+39 366 87654321', 'thai.temptations@yahoo.com', 'thai', 'moderate', 56789012);
+INSERT INTO restaurant_info (name, phone, email, cuisine_type, price_range, vat_code) VALUES ('Mediterranean Delight', '+39 338 98765432', 'med.delight@hotmail.com', 'mediterranean', 'high', 78901234);
+INSERT INTO restaurant_info (name, phone, email, cuisine_type, price_range, vat_code) VALUES ('Vegetarian Bliss', '+39 320 65432109', 'veg.bliss@gmail.com', 'vegetarian', 'moderate', 89012347);
  
 -- TABLE dishes
-INSERT INTO dishes (restaurant_id, name, price, currency, category, description) VALUES (1, 'Spaghetti alla carbonara', 10.00, 'EUR', 'first course', 'Spaghetti with eggs, guanciale and pecorino cheese');
-INSERT INTO dishes (restaurant_id, name, price, currency, category, description) VALUES (1, 'Saltimbocca alla romana', 15.00, 'EUR', 'second course', 'Veal with prosciutto and sage');
-INSERT INTO dishes (restaurant_id, name, price, currency, category, description) VALUES (1, 'Tiramisù', 5.00, 'EUR', 'dessert', 'Coffee-flavoured Italian dessert');
-INSERT INTO dishes (restaurant_id, name, price, currency, category, description) VALUES (2, 'Kebab', 5.00, 'EUR', 'main course', 'Kebab with meat, salad and sauce');
-INSERT INTO dishes (restaurant_id, name, price, currency, category, description) VALUES (2, 'Falafel', 5.00, 'EUR', 'main course', 'Falafel with salad and sauce');
-INSERT INTO dishes (restaurant_id, name, price, currency, category, description) VALUES (2, 'Baklava', 3.00, 'EUR', 'dessert', 'Sweet pastry with nuts and honey');
-INSERT INTO dishes (restaurant_id, name, price, currency, category, description) VALUES (3, 'Spaghetti alla carbonara', 10.00, 'EUR', 'primo', 'Spaghetti with eggs, guanciale and pecorino cheese');
-INSERT INTO dishes (restaurant_id, name, price, currency, category, description) VALUES (3, 'Saltimbocca alla romana', 15.00, 'EUR', 'secondo', 'Veal with prosciutto, but no sage');
+INSERT INTO dishes (id, restaurant_id, name, price, currency, category, description) VALUES (9, 1, 'Spaghetti alla carbonara', 10.00, 'EUR', 'first course', 'Spaghetti with eggs, guanciale and pecorino cheese');
+INSERT INTO dishes (id, restaurant_id, name, price, currency, category, description) VALUES (2, 1, 'Saltimbocca alla romana', 15.00, 'EUR', 'second course', 'Veal with prosciutto and sage');
+INSERT INTO dishes (id, restaurant_id, name, price, currency, category, description) VALUES (3, 1, 'Tiramisù', 5.00, 'EUR', 'dessert', 'Coffee-flavoured Italian dessert');
+INSERT INTO dishes (id, restaurant_id, name, price, currency, category, description) VALUES (4, 2, 'Kebab', 5.00, 'EUR', 'main course', 'Kebab with meat, salad and sauce');
+INSERT INTO dishes (id, restaurant_id, name, price, currency, category, description) VALUES (5, 2, 'Falafel', 5.00, 'EUR', 'main course', 'Falafel with salad and sauce');
+INSERT INTO dishes (id, restaurant_id, name, price, currency, category, description) VALUES (6, 2, 'Baklava', 3.00, 'EUR', 'dessert', 'Sweet pastry with nuts and honey');
+INSERT INTO dishes (id, restaurant_id, name, price, currency, category, description) VALUES (7, 3, 'Spaghetti alla carbonara', 10.00, 'EUR', 'primo', 'Spaghetti with eggs, guanciale and pecorino cheese');
+INSERT INTO dishes (id, restaurant_id, name, price, currency, category, description) VALUES (8, 3, 'Saltimbocca alla romana', 15.00, 'EUR', 'secondo', 'Veal with prosciutto, but no sage');
 
 -- TABLE supplier
-INSERT INTO supplier (name, vat_code, country, is_sustainable) VALUES ('Fior di latte', 1234567890, 'Italy', true);
-INSERT INTO supplier (name, vat_code, country, is_sustainable) VALUES ('Pasta di Gragnano', 2345678901, 'Italy', true);
-INSERT INTO supplier (name, vat_code, country, is_sustainable) VALUES ('Carni Saporite', 3456789012, 'Italy', false);
-INSERT INTO supplier (name, vat_code, country, is_sustainable) VALUES ('Pesce Fresco', 4567890123, 'Italy', true);
+INSERT INTO supplier (name, vat_code, country, is_sustainable) VALUES ('Fior di latte', 1234567, 'Italy', true);
+INSERT INTO supplier (name, vat_code, country, is_sustainable) VALUES ('Pasta di Gragnano', 2345678, 'Italy', true);
+INSERT INTO supplier (name, vat_code, country, is_sustainable) VALUES ('Carni Saporite', 3456789, 'Italy', false);
+INSERT INTO supplier (name, vat_code, country, is_sustainable) VALUES ('Pesce Fresco', 4567890, 'Italy', true);
 
 -- TABLE customer
 INSERT INTO customer (username, first_name, last_name, birthdate, email, fiscal_code) VALUES ('mariogamer', 'Mario', 'Rossi', '1990-01-01', 'mario@gmail.com', 'RSSMRA90A01H501A');
@@ -270,9 +270,9 @@ INSERT INTO reviews_dish (id, dish_id, customer_id, rating, comment) VALUES (5, 
 -- TABLE customer_address
 INSERT INTO customer_address (customer_id, street, address_number, zip_code, city, province, country) VALUES (1, 'Via Roma', '1', 12345, 'Roma', 'RM', 'Italy');
 INSERT INTO customer_address (customer_id, street, address_number, zip_code, city, province, country) VALUES (2, 'Main Street', '123', 56789, 'New York', 'NY', 'USA');
-INSERT INTO customer_address (customer_id, street, address_number, zip_code, city, province, country) VALUES (3, 'Baker Street', '221B', 'SW1A 1AA', 'London', NULL, 'UK');
-INSERT INTO customer_address (customer_id, street, address_number, zip_code, city, province, country) VALUES (4, 'Champs-Élysées', '75', '75008', 'Paris', NULL, 'France');
-INSERT INTO customer_address (customer_id, street, address_number, zip_code, city, province, country) VALUES (5, 'Ginza', '4-2-15', '104-0061', 'Tokyo', NULL, 'Japan');
+INSERT INTO customer_address (customer_id, street, address_number, zip_code, city, province, country) VALUES (3, 'Baker Street', '221B', 56789, 'London', NULL, 'UK');
+INSERT INTO customer_address (customer_id, street, address_number, zip_code, city, province, country) VALUES (4, 'Champs-Élysées', '75', 75008, 'Paris', NULL, 'France');
+INSERT INTO customer_address (customer_id, street, address_number, zip_code, city, province, country) VALUES (5, 'Ginza', '4215', 1040061, 'Tokyo', NULL, 'Japan');
 
 -- TABLE payment_methods
 INSERT INTO payment_methods (customer_id, name) VALUES (1, 'Credit Card');
