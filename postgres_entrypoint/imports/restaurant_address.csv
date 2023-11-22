@@ -1,0 +1,6 @@
+restaurant_id,street,address_number,zip_code,city,province,country
+1,Via Roma,1,12345,Roma,RM,Italy
+2,Via Milano,2,23456,Milano,MI,Italy
+3,Via Napoli,3,34567,Napoli,NA,Italy
+4,Via Firenze,4,45678,Firenze,FI,Italy
+5,Via Venezia,5,56789,Venezia,VE,Italy

@@ -1,0 +1,5 @@
+id,name,vat_code,country,is_sustainable
+1,Fior di latte,1234567,Italy,true
+2,Pasta di Gragnano,2345678,Italy,true
+3,Carni Saporite,3456789,Italy,false
+4,Pesce Fresco,4567890,Italy,true

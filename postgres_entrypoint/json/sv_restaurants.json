@@ -1,0 +1,76 @@
+{
+  "businessName": "Raggù s.r.l",
+  "servedDishes": [
+    {
+      "name": "La Bolognese",
+      "price": 10,
+      "rating": 7.2
+    },
+    {
+      "name": "Tortellini",
+      "price": 10,
+      "rating": 7.2
+    },
+    {
+      "name": "Tagliata di vitello",
+      "price": 10,
+      "rating": 7.2
+    },
+    {
+      "name": "Insalata di rucola e bresaola",
+      "price": 10,
+      "rating": 7.2
+    }
+  ],
+  "branches": [
+    {
+      "name": "Raggù Acero",
+      "address": {
+        "street": "Viale Acero",
+        "number": 1,
+        "zipCode": "20158",
+        "city": "Milano",
+        "province": "Milano",
+        "country": "Italy"
+      },
+      "vatCode": "34566564",
+      "email": "acero@raggu.com",
+      "openingHours": [
+        // feel free to expand
+      ],
+      "status": {
+        "takeAway": true,
+        "delivery": false,
+        "dineIn": true
+      },
+      "services": {
+        "parkingLots": 10,
+        "accessibleEntrance": true,
+        "childrenArea": true,
+        "childrenFood": false
+        // feel free to expand
+      },
+      "reviews": [
+        {
+          "user": "its@me",
+          "rating": 3.5,
+          "comment": "The place was cozy and the staff was very kind to me",
+          // feel free to expand
+        },
+        {
+          "user": "theWanderer",
+          "rating": 4.9,
+          "comment": "happy!",
+          "photos": [
+            // feel free to expand
+          ]
+          // feel free to expand
+        }
+      ]
+    }
+  ],
+  "promotions": [
+    // feel free to expand
+  ]
+  // feel free to expand
+}

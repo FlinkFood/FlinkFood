@@ -1,0 +1,54 @@
+{
+  "number": "ord-324567879-RAAC",
+  "title": "A title",
+  "orderDate": "2023-11-16T08:55:13.881Z",
+  "paymentDate": "2023-11-16T08:55:13.881Z",
+  "deliveryDate": "2023-11-16T08:55:13.881Z",
+  "description": "simple description",
+  "totalAmount": 12.50,
+  // this field should be set only in case paymentDate was set - it means
+  "selectedPaymentMethod": "credit-card",
+  "items": [
+    {
+      "name": "La Bolognese",
+      "quantity": 1,
+      "price": {
+        "value": 12.50,
+        "currency": "EUR"
+      },
+      "discount": false,
+      "promotions": [
+        // feel free to add more
+      ]
+    }
+    // feel free to add more
+  ],
+  // either customer or supplier can be specified - depending on who carried out the order
+  "customer": {
+    "firstName": "Mario",
+    "lastName": "Rossi",
+    "fiscalCode": "RSSMRA43S01F145K",
+    "username": "its@me",
+    "fidelityPoints": 123
+    // feel free to add more
+  },
+  // either customer or supplier can be specified - depending on who carried out the order
+  "supplier": {
+    "businessName": "L'allevamento In Collina",
+    "vatCode": "987643566",
+    "country": "Italy",
+    "isSustainable": true,
+    "certifications": [
+      // feel free to add more
+    ],
+    "ongoingPartnerships": [
+      // feel free to add more
+    ]
+    // feel free to add more
+  },
+  "restaurant": {
+    "businessName": "Raggù s.r.l",
+    "vatCode": "5464578",
+    "branchName": "Raggù Acero"
+  }
+}
