@@ -29,4 +29,4 @@ Connect to your Postgres database and add a new user to the table:
 docker exec -it postgres psql -U postgres -d flinkfood -c "INSERT INTO public.customer (id,username,first_name,last_name,birthdate,email,fiscal_code) VALUES (6, 'test', 'test', 'test', '2021-01-01', 'test', 'test');"
 ```
 A new entry will be added to the [MongoDB](mongodb://localhost:27017) at flinkfood/collections/users_sink
-with username = "TEST".
+with username = "Test". (duplicated for some reasons)
