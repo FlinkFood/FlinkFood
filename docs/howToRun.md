@@ -26,6 +26,7 @@ Compile and run the [`FirstLetterUppercase.java`](./flinkfood-demo/src/main/java
 ### 5. Connect to Postgres and Add a New User
 Connect to your Postgres database and add a new user to the table:
 ```bash
-docker exec -it postgres psql -U postgres -d flinkfood -c "INSERT INTO public.client VALUES(4, 'M', 'santiago', 37, 'lasagna');"
+docker exec -it postgres psql -U postgres -d flinkfood -c "INSERT INTO public.customer (id,username,first_name,last_name,birthdate,email,fiscal_code) VALUES (6, 'test', 'test', 'test', '2021-01-01', 'test', 'test');"
 ```
-A new entry will be added to the [MongoDB database](http://localhost:9000/topic/postgres.public.users) in the `users_sink` collection and the first letter of the user name will now be uppercase.
+A new entry will be added to the [MongoDB](mongodb://localhost:27017) at flinkfood/collections/users_sink
+with username = "TEST".
