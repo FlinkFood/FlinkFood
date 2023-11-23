@@ -10,6 +10,6 @@ curl -X POST 'http://localhost:8083/connectors' -H 'Content-Type: application/js
         "database.password": "postgres",
         "database.dbname": "flinkfood",
         "database.server.name": "postgres",
-        "table.include.list": "public.client"
+        "table.include.list": "public.customer"
     }
 }'
