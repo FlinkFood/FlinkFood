@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS restaurant_services (
     children_food BOOLEAN,
     FOREIGN KEY (restaurant_id) REFERENCES restaurant_info(id)
     );
+ALTER TABLE restaurant_services REPLICA IDENTITY FULL;
 
 CREATE TABLE IF NOT EXISTS restaurant_address (
     restaurant_id INT PRIMARY KEY, 
@@ -52,6 +53,7 @@ CREATE TABLE IF NOT EXISTS restaurant_address (
     country VARCHAR(255),
     FOREIGN KEY (restaurant_id) REFERENCES restaurant_info(id)
 );
+ALTER TABLE restaurant_address REPLICA IDENTITY FULL;
 
 CREATE TABLE IF NOT EXISTS restaurant_reviews (
     id INT PRIMARY KEY,
@@ -62,6 +64,7 @@ CREATE TABLE IF NOT EXISTS restaurant_reviews (
     FOREIGN KEY (restaurant_id) REFERENCES restaurant_info(id),
     FOREIGN KEY (customer_id) REFERENCES customer(id)
     );
+ALTER TABLE restaurant_reviews REPLICA IDENTITY FULL;
 
 
 CREATE TABLE IF NOT EXISTS dishes (
@@ -74,6 +77,7 @@ CREATE TABLE IF NOT EXISTS dishes (
     description VARCHAR(255),
     FOREIGN KEY (restaurant_id) REFERENCES restaurant_info(id)
     );
+ALTER TABLE dishes REPLICA IDENTITY FULL;
 
 
 CREATE TABLE IF NOT EXISTS ingredients (
@@ -107,6 +111,7 @@ CREATE TABLE IF NOT EXISTS reviews_dish (
     FOREIGN KEY (dish_id) REFERENCES dishes(id),
     FOREIGN KEY (customer_id) REFERENCES customer(id)
     );
+ALTER TABLE reviews_dish REPLICA IDENTITY FULL;
 
 CREATE TABLE IF NOT EXISTS customer_address (
     id serial PRIMARY KEY,
