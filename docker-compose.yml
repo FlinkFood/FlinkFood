@@ -31,7 +31,7 @@ services:
     ports:
       - 27017:27017
 
-# Zookeeper, single node
+  # Zookeeper, single node
   zookeeper:
     image: wurstmeister/zookeeper:latest
     container_name: zookeeper
@@ -43,7 +43,7 @@ services:
       - 2888:2888
       - 3888:3888
 
- # kafka single node     
+  # kafka single node
   kafka:
     image: wurstmeister/kafka:latest
     container_name: kafka
@@ -61,7 +61,7 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       #https://github.com/wurstmeister/kafka-docker/issues/553
 
-#kafdrop for topic/msg visualization
+  #kafdrop for topic/msg visualization
   kafdrop:
     image: obsidiandynamics/kafdrop
     container_name: kafdrop
@@ -74,7 +74,7 @@ services:
     depends_on:
       - kafka
 
-#postgres debezium-example image
+  #postgres debezium-example image
   postgres:
     image: debezium/postgres:16-alpine
     container_name: postgres
@@ -86,8 +86,11 @@ services:
       - POSTGRES_DB=flinkfood
     volumes:
       - ./postgres_entrypoint/:/docker-entrypoint-initdb.d/
+    command: >
+      -c max_wal_senders=20
+      -c max_replication_slots=20
 
-# debezium connector
+  # debezium connector
   kconnect:
     image: debezium/connect:1.9
     container_name: kconnect
