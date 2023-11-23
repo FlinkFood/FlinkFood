@@ -76,7 +76,7 @@ public class ResturantView {
         " restaurant_id INT,\n" +
         " customer_id INT,\n" +
         " rating DECIMAL(3,1),\n" +
-        " comment STRING\n" +
+        " review_comment STRING\n" +
         ") WITH (\n" +
         " 'connector' = 'kafka',\n" +
         " 'topic' = 'postgres.public.restaurant_reviews',\n" +
@@ -108,7 +108,7 @@ public class ResturantView {
         " dish_id INT,\n" +
         " customer_id INT,\n" +
         " rating DECIMAL(3,1),\n" +
-        " comment STRING\n" +
+        " review_comment STRING\n" +
         ") WITH (\n" +
         " 'connector' = 'kafka',\n" +
         " 'topic' = 'postgres.public.review_dish',\n" +
@@ -117,10 +117,10 @@ public class ResturantView {
         " 'format' = 'json'\n" +
         ")");
 
-        String sqlQuery = "SELECT r.ID AS restaurant_id, r.NAME AS restaurant_name, r.CITY, r.STATE, " +
-        "d.ID AS dish_id, d.NAME AS dish_name, d.PRICE, d.RATING " +
-        "FROM restaurants r " +
-        "JOIN dishes d ON r.ID = d.RESTAURANT_ID";
+        String sqlQuery = "SELECT r.id AS restaurant_id, r.name AS restaurant_name, " +
+        "s.take_away AS take_away, s.delivery AS delivery " +
+        "FROM restaurant_info r " +
+        "JOIN restaurant_services s ON r.id = s.restaurant_id";
 
         Table resultTable = tEnv.sqlQuery(sqlQuery);
 
