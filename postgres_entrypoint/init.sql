@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS restaurant_info (
     price_range VARCHAR(10),
     vat_code INT
 );
+ALTER TABLE restaurant_info REPLICA IDENTITY FULL;
 
 CREATE TABLE IF NOT EXISTS supplier (
     id serial PRIMARY KEY,
