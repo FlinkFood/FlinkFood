@@ -89,6 +89,7 @@ services:
     command: >
       -c max_wal_senders=20
       -c max_replication_slots=20
+
   # debezium connector
   kconnect:
     image: debezium/connect:1.9
