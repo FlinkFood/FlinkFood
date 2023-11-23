@@ -2,19 +2,15 @@
 package org.flinkfood.flinkjobs;
 
 // Importing necessary Flink libraries and external dependencies
-import com.mongodb.client.model.InsertOneModel;
-import org.apache.flink.api.common.functions.MapFunction;
+
 import org.apache.flink.connector.base.DeliveryGuarantee;
 import org.apache.flink.connector.mongodb.sink.MongoSink;
-import org.apache.flink.mongodb.shaded.org.bson.Document;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.Table;
-import org.apache.flink.table.api.TableResult;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.apache.flink.types.Row;
-import org.bson.BsonDocument;
-
+import org.flinkfood.serializers.RowToBsonDocument;
 
 // Class declaration for the Flink job
 public class ResturantView {
@@ -141,10 +137,21 @@ public class ResturantView {
         " 'properties.auto.offset.reset' = 'earliest'\n" +
         ")");
 
+        MongoSink<Row> sink = MongoSink.<Row>builder()
+                .setUri(MONGODB_URI)
+                .setDatabase(SINK_DB)
+                .setCollection(SINK_DB_TABLE)
+                .setBatchSize(1000)
+                .setBatchIntervalMs(1000)
+                .setMaxRetries(3)
+                .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
+                .setSerializationSchema(new RowToBsonDocument())
+                .build();
 
         Table result = tEnv.sqlQuery("SELECT * FROM restaurant_info");
         DataStream<Row> resultStream = tEnv.toChangelogStream(result);
-        resultStream.print();
+        resultStream.sinkTo(sink);
+
 
 
         //Execute the Flink job with the given name
