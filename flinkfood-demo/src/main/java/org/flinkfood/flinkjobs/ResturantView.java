@@ -2,40 +2,52 @@
 package org.flinkfood.flinkjobs;
 
 // Importing necessary Flink libraries and external dependencies
+import com.mongodb.client.model.InsertOneModel;
+import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.connector.base.DeliveryGuarantee;
+import org.apache.flink.connector.mongodb.sink.MongoSink;
+import org.apache.flink.mongodb.shaded.org.bson.Document;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.Table;
+import org.apache.flink.table.api.TableResult;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.apache.flink.types.Row;
+import org.bson.BsonDocument;
 
 
 // Class declaration for the Flink job
 public class ResturantView {
+
+    private static final String MONGODB_URI = "mongodb://localhost:27017";
+    private static final String SINK_DB = "flinkfood";
+    private static final String SINK_DB_TABLE = "users_sink";
 
     // Main method where the Flink job is defined
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         StreamTableEnvironment tEnv = StreamTableEnvironment.create(env);
 
-        // Define the restaurant_info table
+
+        // Define the restaurant_info tableu
         tEnv.executeSql("CREATE TABLE restaurant_info (\n" +
-        " id BIGINT,\n" +
+        " id INT,\n" +
         " name STRING,\n" +
-        " address STRING,\n" +
         " phone STRING,\n" +
         " email STRING,\n" +
-        " price_range STRING,\n" +
         " cuisine_type STRING,\n" +
+        " price_range STRING,\n" +
         " vat_code INT\n" +
         ") WITH (\n" +
         " 'connector' = 'kafka',\n" +
         " 'topic' = 'postgres.public.restaurant_info',\n" +
         " 'properties.bootstrap.servers' = 'localhost:9092',\n" +
-        " 'properties.group.id' = 'my-group',\n" +
-        " 'format' = 'json',\n" +
+        " 'properties.group.id' = 'restaurant_info_group',\n" +
+        " 'format' = 'debezium-json',\n" +
+        " 'debezium-json.schema-include' = 'true',\n" +
         " 'scan.startup.mode' = 'earliest-offset',\n" +
         " 'properties.auto.offset.reset' = 'earliest'\n" +
-        ")");
+        ")").print();
 
         // Define the restaurant_services table
         tEnv.executeSql("CREATE TABLE restaurant_services (\n" +
@@ -51,7 +63,7 @@ public class ResturantView {
         " 'connector' = 'kafka',\n" +
         " 'topic' = 'postgres.public.restaurant_services',\n" +
         " 'properties.bootstrap.servers' = 'localhost:9092',\n" +
-        " 'properties.group.id' = 'my-group',\n" +
+        " 'properties.group.id' = 'restaurant_services_group',\n" +
         " 'format' = 'json',\n" +
         " 'scan.startup.mode' = 'earliest-offset',\n" +
         " 'properties.auto.offset.reset' = 'earliest'\n" +
@@ -70,7 +82,7 @@ public class ResturantView {
         " 'connector' = 'kafka',\n" +
         " 'topic' = 'postgres.public.restaurant_address',\n" +
         " 'properties.bootstrap.servers' = 'localhost:9092',\n" +
-        " 'properties.group.id' = 'my-group',\n" +
+        " 'properties.group.id' = 'restaurant_address_group',\n" +
         " 'format' = 'json',\n" +
         " 'scan.startup.mode' = 'earliest-offset',\n" +
         " 'properties.auto.offset.reset' = 'earliest'\n" +
@@ -87,7 +99,7 @@ public class ResturantView {
         " 'connector' = 'kafka',\n" +
         " 'topic' = 'postgres.public.restaurant_reviews',\n" +
         " 'properties.bootstrap.servers' = 'localhost:9092',\n" +
-        " 'properties.group.id' = 'my-group',\n" +
+        " 'properties.group.id' = 'restaurant_reivews_group',\n" +
         " 'format' = 'json',\n" +
         " 'scan.startup.mode' = 'earliest-offset',\n" +
         " 'properties.auto.offset.reset' = 'earliest'\n" +
@@ -106,7 +118,7 @@ public class ResturantView {
         " 'connector' = 'kafka',\n" +
         " 'topic' = 'postgres.public.dishes',\n" +
         " 'properties.bootstrap.servers' = 'localhost:9092',\n" +
-        " 'properties.group.id' = 'my-group',\n" +
+        " 'properties.group.id' = 'dishes-group',\n" +
         " 'format' = 'json',\n" +
         " 'scan.startup.mode' = 'earliest-offset',\n" +
         " 'properties.auto.offset.reset' = 'earliest'\n" +
@@ -123,23 +135,17 @@ public class ResturantView {
         " 'connector' = 'kafka',\n" +
         " 'topic' = 'postgres.public.review_dish',\n" +
         " 'properties.bootstrap.servers' = 'localhost:9092',\n" +
-        " 'properties.group.id' = 'my-group',\n" +
+        " 'properties.group.id' = 'review_dish_group',\n" +
         " 'format' = 'json',\n" +
         " 'scan.startup.mode' = 'earliest-offset',\n" +
         " 'properties.auto.offset.reset' = 'earliest'\n" +
         ")");
 
-        String sqlQuery = "SELECT r.id AS restaurant_id, r.name AS restaurant_name, " +
-        "s.take_away AS take_away, s.delivery AS delivery " +
-        "FROM restaurant_info r " +
-        "JOIN restaurant_services s ON r.id = s.restaurant_id";
 
-        Table resultTable = tEnv.sqlQuery(sqlQuery);
-
-        // Convert the result table to a DataStream
-        DataStream<Row> resultStream = tEnv.toDataStream(resultTable);
-
+        Table result = tEnv.sqlQuery("SELECT * FROM restaurant_info");
+        DataStream<Row> resultStream = tEnv.toChangelogStream(result);
         resultStream.print();
+
 
         //Execute the Flink job with the given name
         env.execute("ResturantView");
