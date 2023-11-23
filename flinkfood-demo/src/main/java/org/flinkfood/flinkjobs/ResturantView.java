@@ -64,7 +64,7 @@ public class ResturantView {
         " 'topic' = 'postgres.public.restaurant_services',\n" +
         " 'properties.bootstrap.servers' = 'localhost:9092',\n" +
         " 'properties.group.id' = 'restaurant_services_group',\n" +
-        " 'format' = 'json',\n" +
+        " 'format' = 'debezium-json',\n" +
         " 'scan.startup.mode' = 'earliest-offset',\n" +
         " 'properties.auto.offset.reset' = 'earliest'\n" +
         ")");
@@ -83,7 +83,7 @@ public class ResturantView {
         " 'topic' = 'postgres.public.restaurant_address',\n" +
         " 'properties.bootstrap.servers' = 'localhost:9092',\n" +
         " 'properties.group.id' = 'restaurant_address_group',\n" +
-        " 'format' = 'json',\n" +
+        " 'format' = 'debezium-json',\n" +
         " 'scan.startup.mode' = 'earliest-offset',\n" +
         " 'properties.auto.offset.reset' = 'earliest'\n" +
         ")");
@@ -100,7 +100,7 @@ public class ResturantView {
         " 'topic' = 'postgres.public.restaurant_reviews',\n" +
         " 'properties.bootstrap.servers' = 'localhost:9092',\n" +
         " 'properties.group.id' = 'restaurant_reivews_group',\n" +
-        " 'format' = 'json',\n" +
+        " 'format' = 'debezium-json',\n" +
         " 'scan.startup.mode' = 'earliest-offset',\n" +
         " 'properties.auto.offset.reset' = 'earliest'\n" +
         ")");
@@ -119,7 +119,7 @@ public class ResturantView {
         " 'topic' = 'postgres.public.dishes',\n" +
         " 'properties.bootstrap.servers' = 'localhost:9092',\n" +
         " 'properties.group.id' = 'dishes-group',\n" +
-        " 'format' = 'json',\n" +
+        " 'format' = 'debezium-json',\n" +
         " 'scan.startup.mode' = 'earliest-offset',\n" +
         " 'properties.auto.offset.reset' = 'earliest'\n" +
         ")");
@@ -136,7 +136,7 @@ public class ResturantView {
         " 'topic' = 'postgres.public.review_dish',\n" +
         " 'properties.bootstrap.servers' = 'localhost:9092',\n" +
         " 'properties.group.id' = 'review_dish_group',\n" +
-        " 'format' = 'json',\n" +
+        " 'format' = 'debezium-json',\n" +
         " 'scan.startup.mode' = 'earliest-offset',\n" +
         " 'properties.auto.offset.reset' = 'earliest'\n" +
         ")");
