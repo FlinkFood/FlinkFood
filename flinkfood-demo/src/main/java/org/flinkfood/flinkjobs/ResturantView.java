@@ -32,7 +32,9 @@ public class ResturantView {
         " 'topic' = 'postgres.public.restaurant_info',\n" +
         " 'properties.bootstrap.servers' = 'localhost:9092',\n" +
         " 'properties.group.id' = 'my-group',\n" +
-        " 'format' = 'json'\n" +
+        " 'format' = 'json',\n" +
+        " 'scan.startup.mode' = 'earliest-offset',\n" +
+        " 'properties.auto.offset.reset' = 'earliest'\n" +
         ")");
 
         // Define the restaurant_services table
@@ -50,7 +52,9 @@ public class ResturantView {
         " 'topic' = 'postgres.public.restaurant_services',\n" +
         " 'properties.bootstrap.servers' = 'localhost:9092',\n" +
         " 'properties.group.id' = 'my-group',\n" +
-        " 'format' = 'json'\n" +
+        " 'format' = 'json',\n" +
+        " 'scan.startup.mode' = 'earliest-offset',\n" +
+        " 'properties.auto.offset.reset' = 'earliest'\n" +
         ")");
 
         // Define the restaurant_address table
@@ -67,7 +71,9 @@ public class ResturantView {
         " 'topic' = 'postgres.public.restaurant_address',\n" +
         " 'properties.bootstrap.servers' = 'localhost:9092',\n" +
         " 'properties.group.id' = 'my-group',\n" +
-        " 'format' = 'json'\n" +
+        " 'format' = 'json',\n" +
+        " 'scan.startup.mode' = 'earliest-offset',\n" +
+        " 'properties.auto.offset.reset' = 'earliest'\n" +
         ")");
 
         // Define the restaurant_reviews table
@@ -82,7 +88,9 @@ public class ResturantView {
         " 'topic' = 'postgres.public.restaurant_reviews',\n" +
         " 'properties.bootstrap.servers' = 'localhost:9092',\n" +
         " 'properties.group.id' = 'my-group',\n" +
-        " 'format' = 'json'\n" +
+        " 'format' = 'json',\n" +
+        " 'scan.startup.mode' = 'earliest-offset',\n" +
+        " 'properties.auto.offset.reset' = 'earliest'\n" +
         ")");
 
         // Define the dishes table
@@ -99,7 +107,9 @@ public class ResturantView {
         " 'topic' = 'postgres.public.dishes',\n" +
         " 'properties.bootstrap.servers' = 'localhost:9092',\n" +
         " 'properties.group.id' = 'my-group',\n" +
-        " 'format' = 'json'\n" +
+        " 'format' = 'json',\n" +
+        " 'scan.startup.mode' = 'earliest-offset',\n" +
+        " 'properties.auto.offset.reset' = 'earliest'\n" +
         ")");
 
         // Define the review_dish table
@@ -114,7 +124,9 @@ public class ResturantView {
         " 'topic' = 'postgres.public.review_dish',\n" +
         " 'properties.bootstrap.servers' = 'localhost:9092',\n" +
         " 'properties.group.id' = 'my-group',\n" +
-        " 'format' = 'json'\n" +
+        " 'format' = 'json',\n" +
+        " 'scan.startup.mode' = 'earliest-offset',\n" +
+        " 'properties.auto.offset.reset' = 'earliest'\n" +
         ")");
 
         String sqlQuery = "SELECT r.id AS restaurant_id, r.name AS restaurant_name, " +
