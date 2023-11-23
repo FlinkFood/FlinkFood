@@ -46,7 +46,7 @@ curl -X POST 'http://localhost:8083/connectors' -H 'Content-Type: application/js
     }
 }'
 sleep 5
-
+echo "Creating connectors for restaurant_reviews...\n"
 curl -X POST 'http://localhost:8083/connectors' -H 'Content-Type: application/json' -d '{
     "name": "postgres-restaurant_reviews-connector",
     "config": {
@@ -63,6 +63,7 @@ curl -X POST 'http://localhost:8083/connectors' -H 'Content-Type: application/js
 }'
 sleep 5
 
+echo "Creating connectors for dishes...\n"
 curl -X POST 'http://localhost:8083/connectors' -H 'Content-Type: application/json' -d '{
     "name": "postgres-dishes-connector",
     "config": {
@@ -79,8 +80,9 @@ curl -X POST 'http://localhost:8083/connectors' -H 'Content-Type: application/js
 }'
 sleep 5
 
+echo "Creating connectors for review_dish...\n"
 curl -X POST 'http://localhost:8083/connectors' -H 'Content-Type: application/json' -d '{
-    "name": "postgres-review_dish-connector",
+    "name": "postgres-reviews_dish-connector",
     "config": {
         "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
         "database.hostname": "postgres",
@@ -89,8 +91,8 @@ curl -X POST 'http://localhost:8083/connectors' -H 'Content-Type: application/js
         "database.password": "postgres",
         "database.dbname": "flinkfood",
         "database.server.name": "postgres",
-        "table.include.list": "public.review_dish",
-        "slot.name": "review_dish_replication_slot"
+        "table.include.list": "public.reviews_dish",
+        "slot.name": "reviews_dish_replication_slot"
     }
 }'
 sleep 5

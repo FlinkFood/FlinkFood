@@ -61,6 +61,7 @@ public class ResturantView {
         " 'properties.bootstrap.servers' = 'localhost:9092',\n" +
         " 'properties.group.id' = 'restaurant_services_group',\n" +
         " 'format' = 'debezium-json',\n" +
+        " 'debezium-json.schema-include' = 'true',\n" +
         " 'scan.startup.mode' = 'earliest-offset',\n" +
         " 'properties.auto.offset.reset' = 'earliest'\n" +
         ")");
@@ -80,6 +81,7 @@ public class ResturantView {
         " 'properties.bootstrap.servers' = 'localhost:9092',\n" +
         " 'properties.group.id' = 'restaurant_address_group',\n" +
         " 'format' = 'debezium-json',\n" +
+        " 'debezium-json.schema-include' = 'true',\n" +
         " 'scan.startup.mode' = 'earliest-offset',\n" +
         " 'properties.auto.offset.reset' = 'earliest'\n" +
         ")");
@@ -89,14 +91,15 @@ public class ResturantView {
         " id INT,\n" +
         " restaurant_id INT,\n" +
         " customer_id INT,\n" +
-        " rating DECIMAL(3,1),\n" +
+        " rating STRING,\n" +
         " review_comment STRING\n" +
         ") WITH (\n" +
         " 'connector' = 'kafka',\n" +
         " 'topic' = 'postgres.public.restaurant_reviews',\n" +
         " 'properties.bootstrap.servers' = 'localhost:9092',\n" +
-        " 'properties.group.id' = 'restaurant_reivews_group',\n" +
+        " 'properties.group.id' = 'restaurant_reviews_group',\n" +
         " 'format' = 'debezium-json',\n" +
+        " 'debezium-json.schema-include' = 'true',\n" +
         " 'scan.startup.mode' = 'earliest-offset',\n" +
         " 'properties.auto.offset.reset' = 'earliest'\n" +
         ")");
@@ -116,6 +119,7 @@ public class ResturantView {
         " 'properties.bootstrap.servers' = 'localhost:9092',\n" +
         " 'properties.group.id' = 'dishes-group',\n" +
         " 'format' = 'debezium-json',\n" +
+        " 'debezium-json.schema-include' = 'true',\n" +
         " 'scan.startup.mode' = 'earliest-offset',\n" +
         " 'properties.auto.offset.reset' = 'earliest'\n" +
         ")");
@@ -133,6 +137,7 @@ public class ResturantView {
         " 'properties.bootstrap.servers' = 'localhost:9092',\n" +
         " 'properties.group.id' = 'review_dish_group',\n" +
         " 'format' = 'debezium-json',\n" +
+        " 'debezium-json.schema-include' = 'true',\n" +
         " 'scan.startup.mode' = 'earliest-offset',\n" +
         " 'properties.auto.offset.reset' = 'earliest'\n" +
         ")");
@@ -148,7 +153,12 @@ public class ResturantView {
                 .setSerializationSchema(new RowToBsonDocument())
                 .build();
 
-        Table result = tEnv.sqlQuery("SELECT * FROM restaurant_info");
+        String joinQuery = "SELECT * FROM restaurant_info r " +
+        "JOIN restaurant_services s ON r.id = s.restaurant_id " +
+        "JOIN restaurant_address a ON r.id = a.restaurant_id " +
+        "JOIN restaurant_reviews rv ON r.id = rv.restaurant_id";
+
+        Table result = tEnv.sqlQuery(joinQuery);
         DataStream<Row> resultStream = tEnv.toChangelogStream(result);
         resultStream.sinkTo(sink);
 
