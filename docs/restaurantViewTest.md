@@ -1,7 +1,7 @@
 # RestaurantView
 1. First make sure all the containers are correctly reset:
 ```bash
- docker compose -f docker-compose.yml down -v
+ docker compose down -v
 ```
 
 2. Now, run all the docker containers:
@@ -12,11 +12,11 @@ This will run the containers in the background.
 
 3. Wait for some seconds to make sure the containers are properly started. Then we want to create the relevant kafka topics and kafka connectors to debezium. This is done by running the following command:
 ```bash
-bash startup.sh
+bash ../startup.sh
 ```
 or:
 ```bash
-./startup.sh
+../startup.sh
 ```
 **NOTE:** Usually the creation of these topics are quite slow (a couple of minutes), since kafka and debezium needs to initialize everything and we have a bunch of topics.
 You can check the creation of topics by going to [kafdrop dashboard](http://localhost:9000`) and check if these topics are created:
