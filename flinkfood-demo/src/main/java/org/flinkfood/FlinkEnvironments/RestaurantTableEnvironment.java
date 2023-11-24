@@ -138,9 +138,9 @@ public class RestaurantTableEnvironment {
 
     public Table createUnifiedRestaurantView() {
         String joinQuery = "SELECT * FROM restaurant_info r " +
-        "JOIN restaurant_services s ON r.id = s.restaurant_id " +
-        "JOIN restaurant_address a ON r.id = a.restaurant_id " +
-        "JOIN restaurant_reviews rv ON r.id = rv.restaurant_id";
+        "LEFT OUTER JOIN restaurant_services s ON r.id = s.restaurant_id " +
+        "LEFT OUTER JOIN restaurant_address a ON r.id = a.restaurant_id " +
+        "LEFT OUTER JOIN restaurant_reviews rv ON r.id = rv.restaurant_id";
 
         Table result = tEnv.sqlQuery(joinQuery);
         return result;
