@@ -21,7 +21,8 @@ public class RestaurantTableEnvironment {
         " email STRING,\n" +
         " cuisine_type STRING,\n" +
         " price_range STRING,\n" +
-        " vat_code INT\n" +
+        " vat_code INT,\n" +
+        " source_timestamp TIMESTAMP(3) METADATA FROM 'value.source.timestamp'\n" +
         ") WITH (\n" +
         " 'connector' = 'kafka',\n" +
         " 'topic' = 'postgres.public.restaurant_info',\n" +
@@ -137,12 +138,32 @@ public class RestaurantTableEnvironment {
     }
 
     public Table createUnifiedRestaurantView() {
-        String joinQuery = "SELECT * FROM restaurant_info r " +
-        "LEFT OUTER JOIN restaurant_services s ON r.id = s.restaurant_id " +
-        "LEFT OUTER JOIN restaurant_address a ON r.id = a.restaurant_id " +
-        "LEFT OUTER JOIN restaurant_reviews rv ON r.id = rv.restaurant_id";
-
-        return tEnv.sqlQuery(joinQuery);
+   String joinQuery =
+"SELECT * " +
+"FROM ( " +
+" SELECT " +
+" r.source_timestamp AS message_recieved, " +
+" r.name AS name, " +
+" a.street as street, " +
+" a.address_number as number, " +
+" a.zip_code AS zip_code, " +
+" a.city AS city, " +
+" a.province AS province, " +
+" a.country AS country, " +
+" r.vat_code AS vatCode, " +
+" r.email AS email, " +
+" s.take_away AS takeAway, " +
+" s.delivery AS delivery, " +
+" s.dine_in AS dineIn, " +
+" s.parking_lots AS parkingLots, " +
+" s.accessible AS accessibleEntrance, " +
+" s.children_area AS childrenArea, " +
+" s.children_food AS childrenFood " +
+" FROM restaurant_info r " +
+" LEFT JOIN restaurant_services s ON r.id = s.restaurant_id " +
+" LEFT JOIN restaurant_address a ON r.id = a.restaurant_id " +
+") AS subquery ";
+   return tEnv.sqlQuery(joinQuery);
     }
 
     public DataStream<Row> toDataStream(Table unifiedRestaurantTable) {
