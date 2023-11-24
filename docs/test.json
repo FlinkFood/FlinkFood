@@ -1,0 +1,163 @@
+[
+    {
+      "name": "public-restaurant_info-connector",
+      "config": {
+        "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+        "database.hostname": "postgres",
+        "database.port": "5432",
+        "database.user": "postgres",
+        "database.password": "postgres",
+        "database.dbname": "flinkfood",
+        "database.server.name": "postgres",
+        "table.include.list": "public.restaurant_info",
+        "name": "public-restaurant_info-connector"
+      },
+      "tasks": [],
+      "type": "source"
+    },
+    {
+      "name": "public-restaurant_branch-connector",
+      "config": {
+        "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+        "database.hostname": "postgres",
+        "database.port": "5432",
+        "database.user": "postgres",
+        "database.password": "postgres",
+        "database.dbname": "flinkfood",
+        "database.server.name": "postgres",
+        "table.include.list": "public.restaurant_branch",
+        "name": "public-restaurant_branch-connector"
+      },
+      "tasks": [],
+      "type": "source"
+    },
+    {
+      "name": "public-customer-connector",
+      "config": {
+        "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+        "database.hostname": "postgres",
+        "database.port": "5432",
+        "database.user": "postgres",
+        "database.password": "postgres",
+        "database.dbname": "flinkfood",
+        "database.server.name": "postgres",
+        "table.include.list": "public.customer",
+        "name": "public-customer-connector"
+      },
+      "tasks": [],
+      "type": "source"
+    },
+    {
+      "name": "public-dishes-connector",
+      "config": {
+        "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+        "database.hostname": "postgres",
+        "database.port": "5432",
+        "database.user": "postgres",
+        "database.password": "postgres",
+        "database.dbname": "flinkfood",
+        "database.server.name": "postgres",
+        "table.include.list": "public.dishes",
+        "name": "public-dishes-connector"
+      },
+      "tasks": [],
+      "type": "source"
+    },
+    {
+      "name": "public-dish_ingredients-connector",
+      "config": {
+        "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+        "database.hostname": "postgres",
+        "database.port": "5432",
+        "database.user": "postgres",
+        "database.password": "postgres",
+        "database.dbname": "flinkfood",
+        "database.server.name": "postgres",
+        "table.include.list": "public.dish_ingredients",
+        "name": "public-dish_ingredients-connector"
+      },
+      "tasks": [],
+      "type": "source"
+    },
+    {
+      "name": "public-ingredients-connector",
+      "config": {
+        "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+        "database.hostname": "postgres",
+        "database.port": "5432",
+        "database.user": "postgres",
+        "database.password": "postgres",
+        "database.dbname": "flinkfood",
+        "database.server.name": "postgres",
+        "table.include.list": "public.ingredients",
+        "name": "public-ingredients-connector"
+      },
+      "tasks": [],
+      "type": "source"
+    },
+    {
+      "name": "public-review_dish-connector",
+      "config": {
+        "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+        "database.hostname": "postgres",
+        "database.port": "5432",
+        "database.user": "postgres",
+        "database.password": "postgres",
+        "database.dbname": "flinkfood",
+        "database.server.name": "postgres",
+        "table.include.list": "public.review_dish",
+        "name": "public-review_dish-connector"
+      },
+      "tasks": [],
+      "type": "source"
+    },
+    {
+      "name": "public-orders-connector",
+      "config": {
+        "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+        "database.hostname": "postgres",
+        "database.port": "5432",
+        "database.user": "postgres",
+        "database.password": "postgres",
+        "database.dbname": "flinkfood",
+        "database.server.name": "postgres",
+        "table.include.list": "public.orders",
+        "name": "public-orders-connector"
+      },
+      "tasks": [],
+      "type": "source"
+    },
+    {
+      "name": "public-supplier-connector",
+      "config": {
+        "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+        "database.hostname": "postgres",
+        "database.port": "5432",
+        "database.user": "postgres",
+        "database.password": "postgres",
+        "database.dbname": "flinkfood",
+        "database.server.name": "postgres",
+        "table.include.list": "public.supplier",
+        "name": "public-supplier-connector"
+      },
+      "tasks": [],
+      "type": "source"
+    },
+    {
+      "name": "public-items-connector",
+      "config": {
+        "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+        "database.hostname": "postgres",
+        "database.port": "5432",
+        "database.user": "postgres",
+        "database.password": "postgres",
+        "database.dbname": "flinkfood",
+        "database.server.name": "postgres",
+        "table.include.list": "public.items",
+        "name": "public-items-connector"
+      },
+      "tasks": [],
+      "type": "source"
+    }
+  ]
+  
