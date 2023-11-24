@@ -150,8 +150,4 @@ public class RestaurantTableEnvironment {
         DataStream<Row> resultStream = tEnv.toChangelogStream(unifiedRestaurantTable);
         return resultStream;
     }
-
-    public StreamTableEnvironment getTableEnvironment() {
-        return this.tEnv;
-    }
 }
