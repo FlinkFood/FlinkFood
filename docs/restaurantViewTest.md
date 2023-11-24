@@ -1,4 +1,4 @@
-# RestaurantView
+# RestaurantView Test
 1. First make sure all the containers are correctly reset:
 ```bash
  docker compose down -v
@@ -12,12 +12,9 @@ This will run the containers in the background.
 
 3. Wait for some seconds to make sure the containers are properly started. Then we want to create the relevant kafka topics and kafka connectors to debezium. This is done by running the following command:
 ```bash
-bash ../startup.sh
-```
-or:
-```bash
 ../startup.sh
 ```
+
 **NOTE:** Usually the creation of these topics are quite slow (a couple of minutes), since kafka and debezium needs to initialize everything and we have a bunch of topics.
 You can check the creation of topics by going to [kafdrop dashboard](http://localhost:9000`) and check if these topics are created:
 - postgres.public.customer
@@ -29,11 +26,13 @@ You can check the creation of topics by going to [kafdrop dashboard](http://loca
 - postgres.public.reviews_dish
 
 4. Start the flink job by running the `RestaurantView.java` in your prefered IDE.
+
 5. Try INSERTING/UPDATING or DELETING some entries:
 ```bash
 docker exec -it postgres psql -U postgres -d flinkfood -c \
 "INSERT INTO public.restaurant_info (id,name,phone,email,cuisine_type,price_range,vat_code) VALUES (10, 'Test', 123456789, 'test@test.te', 'seafood', 'low', 123456789);"
 ```
+
 6. After some time (seconds) you should be able to view the mongoDB database and see a document collection under `flinkfood/restaurants_view`. 
 
 

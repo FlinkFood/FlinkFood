@@ -7,7 +7,7 @@ import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.apache.flink.types.Row;
 
 public class RestaurantTableEnvironment {
-    private StreamTableEnvironment tEnv;
+    private final StreamTableEnvironment tEnv;
 
     public RestaurantTableEnvironment(StreamExecutionEnvironment env) {
         this.tEnv = StreamTableEnvironment.create(env);
@@ -142,12 +142,10 @@ public class RestaurantTableEnvironment {
         "LEFT OUTER JOIN restaurant_address a ON r.id = a.restaurant_id " +
         "LEFT OUTER JOIN restaurant_reviews rv ON r.id = rv.restaurant_id";
 
-        Table result = tEnv.sqlQuery(joinQuery);
-        return result;
+        return tEnv.sqlQuery(joinQuery);
     }
 
     public DataStream<Row> toDataStream(Table unifiedRestaurantTable) {
-        DataStream<Row> resultStream = tEnv.toChangelogStream(unifiedRestaurantTable);
-        return resultStream;
+        return tEnv.toChangelogStream(unifiedRestaurantTable);
     }
 }

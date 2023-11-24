@@ -48,8 +48,6 @@ public class ResturantView {
         DataStream<Row> resultStream = rEnv.toDataStream(result);
         resultStream.sinkTo(sink);
 
-
-
         //Execute the Flink job with the given name
         env.execute("ResturantView");
     }
