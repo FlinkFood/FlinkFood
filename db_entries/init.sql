@@ -1,127 +1,68 @@
---REGULAR CLIENTS
-CREATE TABLE IF NOT EXISTS CLIENT
+--REGULAR customer
+CREATE TABLE IF NOT EXISTS customer
+
 (
-    ID serial PRIMARY KEY, 
-    GENDER VARCHAR(1) NOT NULL,
-    NAME VARCHAR(40) NOT NULL,
-    AGE INTEGER NOT NULL,
-    FAVORITE_FOOD VARCHAR(45) NOT NULL,
+    id serial PRIMARY KEY, 
+    gender VARCHAR(1) NOT NULL,
+    name VARCHAR(40) NOT NULL,
+    age INTEGER NOT NULL,
     check(GENDER in ('M', 'F'))
 );
 
---REGULAR FOOD ALLERGY
-CREATE TABLE IF NOT EXISTS FOOD_ALLERGY
+CREATE TABLE IF NOT EXISTS address
 (
-    ID serial PRIMARY KEY,
-    FOOD VARCHAR(40) NOT NULL
+    id serial PRIMARY KEY, 
+    customer_id integer REFERENCES customer (id) ,
+    street VARCHAR(30) NOT NULL,
+    street_number INTEGER NOT NULL,
+    zipCode VARCHAR(10) NOT NULL ,
+    city VARCHAR(30) NOT NULL,
+    province VARCHAR(30) NOT NULL,
+    country   VARCHAR(30) NOT NULL,
+    isDelivery BOOLEAN,
+    isPayment  BOOLEAN
 );
 
---ASSOCIATE CLIENTS WITH ALLERGIES
-CREATE TABLE IF NOT EXISTS CLIENT_ALLERGY
+
+CREATE TABLE IF NOT EXISTS orders
 (
-    CLIENT_ID INTEGER,
-    ALLERGY_ID INTEGER,
-    PRIMARY KEY (CLIENT_ID, ALLERGY_ID),
-    CONSTRAINT FK_ALLERGY_CLI FOREIGN KEY(CLIENT_ID) REFERENCES CLIENT(ID) ON DELETE CASCADE,
-    CONSTRAINT FK_ALLERGY_FOOD FOREIGN KEY(ALLERGY_ID) REFERENCES FOOD_ALLERGY(ID) ON DELETE CASCADE
+    id serial PRIMARY KEY, 
+    customer_id integer REFERENCES customer (id) ,
+    order_id VARCHAR(30) NOT NULL,
+    title VARCHAR(30) NOT NULL,
+    total_amount INTEGER NOT NULL,
+    restaurant VARCHAR(30) NOT NULL,
+    paid  BOOLEAN
 );
---This is just a PoC no need to add incrementing ID system in any table--
-
-INSERT INTO CLIENT (GENDER, NAME, AGE, FAVORITE_FOOD) VALUES('M', 'MARCOS PETRUCCI', 23, 'PASTA AL POMODORO');
-INSERT INTO CLIENT (GENDER, NAME, AGE, FAVORITE_FOOD) VALUES('M', 'GIOVANNI A', 23, 'PIZZA');
 
 
--- temporary table to choose random names to put on the table
-CREATE TEMPORARY TABLE temp_names (name VARCHAR(40));
-INSERT INTO temp_names (name)
-VALUES
-    ('Alice'),
-    ('Bob'),
-    ('Charlie'),
-    ('David'),
-    ('Eva'),
-    ('Frank'),
-    ('Grace'),
-    ('Henry'),
-    ('Ivy'),
-    ('Jack'),
-    ('Kate'),
-    ('Leo'),
-    ('Mia'),
-    ('Noah'),
-    ('Olivia'),
-    ('Peter'),
-    ('Quinn'),
-    ('Rachel'),
-    ('Sam'),
-    ('Tina'),
-    ('Ursula'),
-    ('Victor'),
-    ('Wendy'),
-    ('Xander'),
-    ('Yasmine'),
-    ('Zane'),
-    ('Abby'),
-    ('Ben'),
-    ('Cathy'),
-    ('Dylan'),
-    ('Elle'),
-    ('Finn'),
-    ('Giselle'),
-    ('Hank'),
-    ('Isabel'),
-    ('Jake'),
-    ('Katie');
+INSERT INTO customer
+ (gender, name, age) VALUES('M', 'MARCOS PETRUCCI', 23);
+INSERT INTO customer
+ (gender, name, age) VALUES('M', 'GIOVANNI A', 23);
 
--- insert the names into the CLIENT table
-INSERT INTO CLIENT (GENDER, NAME, AGE, FAVORITE_FOOD)
-SELECT
-    CASE WHEN random() < 0.5 THEN 'M' ELSE 'F' END, -- randomly assign gender
-    name,
-    floor(random() * 50) + 20, -- random age between 20 and 70
-    CASE WHEN random() < 0.5 THEN 'Pizza' ELSE 'Spaghetti' END -- assign random food between 2
-FROM temp_names;
+ INSERT INTO customer
+ (gender, name, age) VALUES('M', 'Mario Rossi', 23);
 
--- drop the temporary table used to set the names (might use it on next sprint)
-DROP TABLE temp_names;
-    
+ INSERT INTO address 
+ (customer_id,street,street_number,zipCode,city,province,country,isDelivery,isPayment) VALUES('1','Via del Corso','3','00118','Roma','RM','Italy',true,false);
+
+ INSERT INTO address 
+ (customer_id,street,street_number,zipCode,city,province,country,isDelivery,isPayment) VALUES('2','Via Dante','4','20121','Milano','MI','Italy',true,true);
+
+ INSERT INTO address 
+ (customer_id,street,street_number,zipCode,city,province,country,isDelivery,isPayment) VALUES('3','Via della Pace','10','62029','Tolentino','MC','Italy',true,false);
 
 
--- inserting food with the most common allergies
-INSERT INTO FOOD_ALLERGY (FOOD) VALUES
-    ('Peanuts'),
-    ('Shellfish'),
-    ('Lactose'),
-    ('Gluten'),
-    ('Soy'),
-    ('Eggs'),
-    ('Tree Nuts'),
-    ('Fish'),
-    ('Milk'),
-    ('Wheat');
-    
-
--- generation random relatioships between people and allergies
-INSERT INTO CLIENT_ALLERGY (CLIENT_ID, ALLERGY_ID) VALUES
-    (1, 1), -- Marcos is allergic to Peanuts
-    (2, 2), -- Giovanni is allergic to Shellfish
-    (3, 3), -- Allice is allergic to Lactose
-    (1, 5),
-    (4, 4),
-    (5, 5),
-    (2, 8),
-    (6, 6),
-    (3, 9),
-    (7, 7),
-    (4, 8),
-    (8, 8),
-    (2, 9),
-    (5, 9),
-    (9, 9),
-    (3, 6),
-    (10, 6),
-    (8, 7);
+INSERT INTO orders 
+ (customer_id,order_id,title,total_amount,restaurant,paid) VALUES('1','#1001','My first order',35,'Pizzeria La Capricciosa',true);
+ INSERT INTO orders 
+ (customer_id,order_id,title,total_amount,restaurant,paid) VALUES('2','#1002','My first order',50,'Sumo sushi',false);
+ INSERT INTO orders 
+ (customer_id,order_id,title,total_amount,restaurant,paid) VALUES('3','#1003','My first order',32,'Ristorante Il Vecchio Molino',true);
 
 
 
-SELECT * FROM CLIENT
+
+
+
