@@ -11,7 +11,7 @@ import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.apache.flink.types.Row;
 import org.flinkfood.FlinkEnvironments.RestaurantTableEnvironment;
-import org.flinkfood.serializers.RowToBsonDocument;
+import org.flinkfood.serializers.RestaurantRowToBsonDocument;
 
 // Class declaration for the Flink job
 public class ResturantView {
@@ -41,7 +41,7 @@ public class ResturantView {
                 .setBatchIntervalMs(1000)
                 .setMaxRetries(3)
                 .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
-                .setSerializationSchema(new RowToBsonDocument())
+                .setSerializationSchema(new RestaurantRowToBsonDocument())
                 .build();
 
         Table result = rEnv.createUnifiedRestaurantView();

@@ -139,30 +139,30 @@ public class RestaurantTableEnvironment {
 
     public Table createUnifiedRestaurantView() {
    String joinQuery =
-"SELECT * " +
-"FROM ( " +
-" SELECT " +
-" r.source_timestamp AS message_recieved, " +
-" r.name AS name, " +
-" a.street as street, " +
-" a.address_number as number, " +
-" a.zip_code AS zip_code, " +
-" a.city AS city, " +
-" a.province AS province, " +
-" a.country AS country, " +
-" r.vat_code AS vatCode, " +
-" r.email AS email, " +
-" s.take_away AS takeAway, " +
-" s.delivery AS delivery, " +
-" s.dine_in AS dineIn, " +
-" s.parking_lots AS parkingLots, " +
-" s.accessible AS accessibleEntrance, " +
-" s.children_area AS childrenArea, " +
-" s.children_food AS childrenFood " +
-" FROM restaurant_info r " +
-" LEFT JOIN restaurant_services s ON r.id = s.restaurant_id " +
-" LEFT JOIN restaurant_address a ON r.id = a.restaurant_id " +
-") AS subquery ";
+        "SELECT * " +
+        "FROM ( " +
+        " SELECT " +
+        " r.id AS ID, " +
+        " r.name AS name, " +
+        " a.street as street, " +
+        " a.address_number as number, " +
+        " a.zip_code AS zipCode, " +
+        " a.city AS city, " +
+        " a.province AS province, " +
+        " a.country AS country, " +
+        " r.vat_code AS vatCode, " +
+        " r.email AS email, " +
+        " s.take_away AS takeAway, " +
+        " s.delivery AS delivery, " +
+        " s.dine_in AS dineIn, " +
+        " s.parking_lots AS parkingLots, " +
+        " s.accessible AS accessibleEntrance, " +
+        " s.children_area AS childrenArea, " +
+        " s.children_food AS childrenFood " +
+        " FROM restaurant_info r " +
+        " INNER JOIN restaurant_services s ON r.id = s.restaurant_id " +
+        " INNER JOIN restaurant_address a ON r.id = a.restaurant_id " +
+        ") AS subquery ";
    return tEnv.sqlQuery(joinQuery);
     }
 
