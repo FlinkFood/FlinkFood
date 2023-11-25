@@ -1,6 +1,8 @@
 // Package declaration for the Flink job
 package org.flinkfood.flinkjobs;
 
+import com.mongodb.client.model.InsertOneModel;
+
 // Importing necessary Flink libraries and external dependencies
 
 import org.apache.flink.connector.base.DeliveryGuarantee;
@@ -8,8 +10,8 @@ import org.apache.flink.connector.mongodb.sink.MongoSink;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.Table;
-import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.apache.flink.types.Row;
+import org.bson.BsonDocument;
 import org.flinkfood.FlinkEnvironments.RestaurantTableEnvironment;
 import org.flinkfood.serializers.RestaurantRowToBsonDocument;
 
@@ -44,8 +46,8 @@ public class ResturantView {
                 .setSerializationSchema(new RestaurantRowToBsonDocument())
                 .build();
 
-        Table result = rEnv.createUnifiedRestaurantView();
-        DataStream<Row> resultStream = rEnv.toDataStream(result);
+        Table simpleUnifiedTable = rEnv.createSimpleUnifiedRestaurantView();
+        DataStream<Row> resultStream = rEnv.toDataStream(simpleUnifiedTable);
         resultStream.sinkTo(sink);
 
         //Execute the Flink job with the given name

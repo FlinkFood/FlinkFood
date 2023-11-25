@@ -172,6 +172,7 @@ public class RestaurantTableEnvironment {
     }
 
     public DataStream<Row> toDataStream(Table unifiedRestaurantTable) {
-        return tEnv.toChangelogStream(unifiedRestaurantTable);
+        DataStream<Row> dsRow = tEnv.toChangelogStream(unifiedRestaurantTable);
+        return dsRow;
     }
 }
