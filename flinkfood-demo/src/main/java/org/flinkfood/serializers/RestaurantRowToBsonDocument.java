@@ -1,8 +1,6 @@
 package org.flinkfood.serializers;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import com.mongodb.client.model.InsertOneModel;
 import com.mongodb.client.model.WriteModel;
@@ -19,14 +17,16 @@ import org.bson.BsonInt64;
 import org.bson.BsonNull;
 import org.bson.BsonString;
 
+import javax.annotation.Nonnull;
+
 // Remark: This is the worst code I've ever written. I'm sorry.
 public class RestaurantRowToBsonDocument implements MongoSerializationSchema<Row> {
-    final List<String> address_fields = Arrays.asList("street", "number", "city", "state", "country", "zipCode");
-    final List<String> status_fields = Arrays.asList("takeAway", "delivery", "dineIn");
-    final List<String> services_fields = Arrays.asList("parkingLots", "accessible", "childrenArea", "childrenFood");
+    // TODO: Source those from a config file
+    final List<String> address_fields = List.of("street", "number", "city", "state", "country", "zipCode");
+    final List<String> status_fields = List.of("takeAway", "delivery", "dineIn");
+    final List<String> services_fields = List.of("parkingLots", "accessible", "childrenArea", "childrenFood");
 
-    private BsonDocument addFieldToDocument(BsonDocument documentChange, String field_name, Object field) {
-        BsonDocument document = documentChange;
+    private void addFieldToDocument(BsonDocument document, String field_name, Object field) {
         if (field instanceof String) {
             document.append(field_name, new BsonString((String) field));
         } else if (field instanceof Integer) {
@@ -42,29 +42,25 @@ public class RestaurantRowToBsonDocument implements MongoSerializationSchema<Row
         } else {
             document.append(field_name, new BsonNull());
         }
-        return document;
     }
 
     private BsonDocument createSimpleRestaurantDocument(Row restaurant) {
         BsonDocument document = new BsonDocument();
-        String[] field_names = restaurant.getFieldNames(true).stream().toArray(String[]::new);
-
         BsonDocument address_document = new BsonDocument();
         BsonDocument status_document = new BsonDocument();
         BsonDocument services_document = new BsonDocument();
 
-        for (int i = 0; i < restaurant.getArity(); i++) {
-            Object field = restaurant.getField(i);
-            if(address_fields.contains(field_names[i])) {
-                address_document = this.addFieldToDocument(address_document, field_names[i], field);
-            }
-            else if(status_fields.contains(field_names[i])) {
-                status_document = this.addFieldToDocument(status_document, field_names[i], field);
-            }
-            else if(services_fields.contains(field_names[i])) {
-                services_document = this.addFieldToDocument(services_document, field_names[i], field);
+        Set<String> field_names = restaurant.getFieldNames(true);
+        assert field_names != null;
+        for (String field_name : field_names) {
+            if (address_fields.contains(field_name)) {
+                this.addFieldToDocument(address_document, field_name, restaurant.getField(field_name));
+            } else if (status_fields.contains(field_name)) {
+                this.addFieldToDocument(status_document, field_name, restaurant.getField(field_name));
+            } else if (services_fields.contains(field_name)) {
+                this.addFieldToDocument(services_document, field_name, restaurant.getField(field_name));
             } else {
-                document = this.addFieldToDocument(document, field_names[i], field);
+                this.addFieldToDocument(document, field_name, restaurant.getField(field_name));
             }
         }
         document.append("address", address_document);

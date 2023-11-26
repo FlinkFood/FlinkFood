@@ -62,22 +62,19 @@ public class FirstLetterUppercase {
 
         // Applying a map function to transform the data (capitalize the first letter of 'first_name' field)
         stream
-                .map(new MapFunction<String, String>() {
-                    @Override
-                    public String map(String value) throws Exception {
-                        // Parsing JSON, modifying 'first_name', and converting back to a string
-                        ObjectMapper mapper = new ObjectMapper();
-                        JsonNode msg = mapper
-                                .readTree(value)
-                                .path("payload")
-                                .path("after");
+                .map((MapFunction<String, String>) value -> {
+                    // Parsing JSON, modifying 'first_name', and converting back to a string
+                    ObjectMapper mapper = new ObjectMapper();
+                    JsonNode msg = mapper
+                            .readTree(value)
+                            .path("payload")
+                            .path("after");
 
-                        String username = msg.path("username").asText();
-                        username = username.substring(0, 1).toUpperCase() + username.substring(1);
-                        ((ObjectNode) msg).put("username", username);
+                    String username = msg.path("username").asText();
+                    username = username.substring(0, 1).toUpperCase() + username.substring(1);
+                    ((ObjectNode) msg).put("username", username);
 
-                        return mapper.writeValueAsString(msg);
-                    }
+                    return mapper.writeValueAsString(msg);
                 })
                 .setParallelism(1)
                 .sinkTo(sink);

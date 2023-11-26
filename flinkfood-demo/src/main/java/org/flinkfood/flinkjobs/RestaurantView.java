@@ -1,8 +1,6 @@
 // Package declaration for the Flink job
 package org.flinkfood.flinkjobs;
 
-import com.mongodb.client.model.InsertOneModel;
-
 // Importing necessary Flink libraries and external dependencies
 
 import org.apache.flink.connector.base.DeliveryGuarantee;
@@ -11,12 +9,11 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.types.Row;
-import org.bson.BsonDocument;
 import org.flinkfood.FlinkEnvironments.RestaurantTableEnvironment;
 import org.flinkfood.serializers.RestaurantRowToBsonDocument;
 
 // Class declaration for the Flink job
-public class ResturantView {
+public class RestaurantView {
 
     private static final String MONGODB_URI = "mongodb://localhost:27017";
     private static final String SINK_DB = "flinkfood";
@@ -50,6 +47,6 @@ public class ResturantView {
         resultStream.sinkTo(sink);
 
         //Execute the Flink job with the given name
-        env.execute("ResturantView");
+        env.execute("RestaurantView");
     }
 }
