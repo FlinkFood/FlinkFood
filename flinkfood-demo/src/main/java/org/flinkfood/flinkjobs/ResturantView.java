@@ -23,6 +23,8 @@ public class ResturantView {
     // Main method where the Flink job is defined
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        // checkpoint every 10secs - will be needed to sink to MongoDB the data later
+        env.enableCheckpointing(10000);
         RestaurantTableEnvironment rEnv = new RestaurantTableEnvironment(env);
 
         rEnv.createRestaurantInfoTable();

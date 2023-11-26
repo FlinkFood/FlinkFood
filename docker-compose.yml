@@ -95,7 +95,7 @@ services:
   # debezium connector
   kconnect:
     image: debezium/connect:1.9
-    container_name: kconnect
+    container_name: debezium-connect
     ports:
       - 8083:8083
     environment:
