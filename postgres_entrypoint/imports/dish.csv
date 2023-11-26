@@ -1,0 +1,9 @@
+id,restaurant_id,name,price,currency,category,description
+1,1,Spaghetti alla carbonara,1000,EUR,first course,"Spaghetti with eggs, guanciale and pecorino cheese"
+2,1,Saltimbocca alla romana,1500,EUR,second course,Veal with prosciutto and sage
+3,1,Tiramisù,500,EUR,dessert,Coffee-flavoured Italian dessert
+4,2,Kebab,500,EUR,main course,"Kebab with meat, salad and sauce"
+5,2,Falafel,500,EUR,main course,Falafel with salad and sauce
+6,3,Baklava,300,EUR,dessert,Sweet pastry with nuts and honey
+7,3,Spaghetti alla carbonara,1000,EUR,primo,"Spaghetti with eggs, guanciale and pecorino cheese"
+8,3,Saltimbocca alla romana,1500,EUR,secondo,"Veal with prosciutto, but no sage"

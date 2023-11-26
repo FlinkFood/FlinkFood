@@ -1,0 +1,8 @@
+id,restaurant_id,customer_id,rating,comment
+1,1,1,45,Great food and service!
+2,1,2,40,"Good food, but service could be better"
+3,2,3,50,Best kebab in town!
+4,2,4,45,"Great kebab, but a bit expensive"
+5,3,5,40,"Great food, but a bit expensive"
+6,3,1,45,Great food and service!
+7,4,2,40,"Good food, but service could be better"
