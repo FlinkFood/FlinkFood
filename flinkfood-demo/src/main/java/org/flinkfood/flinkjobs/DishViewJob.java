@@ -21,10 +21,10 @@ import org.flinkfood.schemas.*;
 public class DishViewJob {
 
         // Kafka and MongoDB connection details obtained from environment variables
-        private static final String KAFKA_URI = "kafka:9092";
+        private static final String KAFKA_URI = System.getenv("KAFKA_URI");
         private static final String SOURCE_DISH_TABLE = "postgres.public.dishes";
         private static final String SOURCE_RESTAURANT_INFO_TABLE = "postgres.public.restaurant_info";
-        private static final String MONGODB_URI = "mongodb://mongo:27017";
+        private static final String MONGODB_URI = System.getenv("MONGODB_URI");
         private static final String SINK_DB = "flinkfood";
         private static final String SINK_DB_TABLE = "users_sink";
 
@@ -50,7 +50,7 @@ public class DishViewJob {
                                 .build();
 
                 // Setting up MongoDB sink with relevant configurations
-                MongoSink<String> sink = MongoSink.<String>builder()
+                MongoSink<Row> sink = MongoSink.<Row>builder()
                                 .setUri(MONGODB_URI)
                                 .setDatabase(SINK_DB)
                                 .setCollection(SINK_DB_TABLE)
@@ -59,7 +59,9 @@ public class DishViewJob {
                                 .setMaxRetries(3)
                                 .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
                                 .setSerializationSchema(
-                                                (input, context) -> new InsertOneModel<>(BsonDocument.parse(input)))
+                                        // TODO: parse input and store it in MongoDB
+                                        // TODO: Determine if insert or update
+                                                (input, context) -> new InsertOneModel<>(BsonDocument.parse(input.toString())))
                                 .build();
 
                 // Setting up Flink execution environment
@@ -92,6 +94,7 @@ public class DishViewJob {
                 DataStream<Row> resultStream = tableEnv.toDataStream(result);
 
                 resultStream.print();
+                resultStream.sinkTo(sink);
 
                 env.execute("CustomerViewJob");
         }
