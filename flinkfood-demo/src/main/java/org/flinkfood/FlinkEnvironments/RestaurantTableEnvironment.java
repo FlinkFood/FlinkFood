@@ -136,7 +136,7 @@ public class RestaurantTableEnvironment {
                 "SELECT * " +
                 "FROM ( " +
                 " SELECT " +
-                " r.id AS ID, " +
+                " r.id AS restaurant_id, " +
                 " r.name AS name, " +
                 " a.street as street, " +
                 " a.address_number as number, " +

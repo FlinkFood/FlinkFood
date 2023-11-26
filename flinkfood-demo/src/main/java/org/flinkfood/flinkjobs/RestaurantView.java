@@ -3,6 +3,7 @@ package org.flinkfood.flinkjobs;
 
 // Importing necessary Flink libraries and external dependencies
 
+import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.connector.base.DeliveryGuarantee;
 import org.apache.flink.connector.mongodb.sink.MongoSink;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -44,9 +45,12 @@ public class RestaurantView {
 
         Table simpleUnifiedTable = rEnv.createSimpleUnifiedRestaurantView();
         DataStream<Row> resultStream = rEnv.toDataStream(simpleUnifiedTable);
-        resultStream.sinkTo(sink);
+        FlatMapFunction<Row, Row> aggregationFunction = new RestaurantAggregationFunction();
+        resultStream.flatMap(aggregationFunction)
+                .sinkTo(sink);
+
 
         //Execute the Flink job with the given name
-        env.execute("RestaurantView");
+        env.execute("Restaurant View");
     }
 }
