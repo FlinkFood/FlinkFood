@@ -30,6 +30,8 @@ services:
     restart: always
     ports:
       - 27017:27017
+    volumes:
+      - ./db_data/mongo_db:/data/db
 
   # Zookeeper, single node
   zookeeper:
