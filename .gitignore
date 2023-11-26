@@ -36,7 +36,7 @@ bin/
 # Ignore Apache Flink files
 .flink/
 
-# Ignore Kafka logs
+# Ignore logs
 logs/
 
 # Ignore Docker Compose override file
@@ -49,5 +49,5 @@ docker-compose.override.yml
 .DS_Store
 Thumbs.db
 
-# Postgres DB files
-/db-data
+# DB files
+/db_data
