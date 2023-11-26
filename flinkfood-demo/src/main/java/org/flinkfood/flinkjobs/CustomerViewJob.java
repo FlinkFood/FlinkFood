@@ -23,7 +23,7 @@ import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import com.mongodb.client.model.InsertOneModel;
 import org.bson.BsonDocument;
 import org.flinkfood.KafkaOrderSchema;
-import org.flinkfood.Order;
+import org.flinkfood.Orders;
 
 // Class declaration for the Flink job
 public class CustomerViewJob {
@@ -31,7 +31,7 @@ public class CustomerViewJob {
         // Kafka and MongoDB connection details obtained from environment variables
         private static final String KAFKA_URI = "localhost:9092";
         private static final String SOURCE_CUSTOMER_TABLE = "postgres.public.customer";
-        private static final String SOURCE_ADDRESS_TABLE = "postgres.public.address";
+        private static final String SOURCE_ADDRESS_TABLE = "postgres.public.customer_address";
         private static final String SOURCE_ORDER_TABLE = "postgres.public.orders";
         private static final String MONGODB_URI = "mongodb://localhost:27017";
         private static final String SINK_DB = "flinkfood";
@@ -50,7 +50,7 @@ public class CustomerViewJob {
                                 .build();
 
                 // Setting up Kafka source with relevant configurations
-                KafkaSource<Address> sourceAddress = KafkaSource.<Address>builder()
+                KafkaSource<Customer_address> sourceAddress = KafkaSource.<Customer_address>builder()
                                 .setBootstrapServers(KAFKA_URI)
                                 .setTopics(SOURCE_ADDRESS_TABLE)
                                 .setGroupId("my-group")
@@ -58,7 +58,7 @@ public class CustomerViewJob {
                                 .setValueOnlyDeserializer(new KafkaAddressSchema())
                                 .build();
                 // Setting up Kafka source with relevant configurations
-                KafkaSource<Order> sourceOrder = KafkaSource.<Order>builder()
+                KafkaSource<Orders> sourceOrder = KafkaSource.<Orders>builder()
                                 .setBootstrapServers(KAFKA_URI)
                                 .setTopics(SOURCE_ORDER_TABLE)
                                 .setGroupId("my-group")
@@ -86,16 +86,16 @@ public class CustomerViewJob {
                 DataStream<Customer> streamCustomer = env
                                 .fromSource(sourceCustomer, WatermarkStrategy.noWatermarks(), "Kafka Source")
                                 .setParallelism(1);
-                DataStream<Address> streamAddress = env
+                DataStream<Customer_address> streamAddress = env
                                 .fromSource(sourceAddress, WatermarkStrategy.noWatermarks(), "Kafka Source")
                                 .setParallelism(1);
 
-                DataStream<Order> streamOrder = env
+                DataStream<Orders> streamOrder = env
                                 .fromSource(sourceOrder, WatermarkStrategy.noWatermarks(), "Kafka Source")
                                 .setParallelism(1);
 
                 Table tableCustomer = tableEnv.fromDataStream(streamCustomer).select($("id").as("id_customer_table"),
-                                $("name"));
+                                $("first_name"), $("last_name"), $("birthdate"));
 
                 Table tableAddress = tableEnv.fromDataStream(streamAddress).select(
                                 $("id").as("id_address_table"),
@@ -103,16 +103,16 @@ public class CustomerViewJob {
 
                 Table tableOrder = tableEnv.fromDataStream(streamOrder)
                                 .select($("id").as("id_order_table"),
-                                                $("customer_id").as("customer_id_order"), $("total_amount"), $("title"),
-                                                $("restaurant"));
+                                                $("customer_id").as("customer_id_order"), $("name"), $("total_amount"), $("description"),
+                                                $("restaurant_id"));
 
                 Table result = tableCustomer.join(tableAddress)
                                 .where($("id_customer_table").isEqual($("customer_id_address")))
                                 .join(tableOrder)
                                 .where($("id_customer_table")
                                                 .isEqual($("customer_id_order")))
-                                .select($("name"), $("street"), $("city"), $("total_amount"), $("title"),
-                                                $("restaurant"));
+                                .select($("first_name"),$("last_name"), $("street"), $("city"), $("total_amount"), $("description"),
+                                                $("restaurant_id"));
 
                 DataStream<Row> resultStream = tableEnv.toDataStream(result);
 
