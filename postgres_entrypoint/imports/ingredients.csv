@@ -1,9 +1,0 @@
-id,name,description,carbs,proteins,fats,fibers,salt,calories
-1,Spaghetti,Pasta,75.00,12.00,1.50,3.00,0.00,350.00
-2,Guanciale,Pork cheek,21.00,88.00,94.00,0.50,3.00,255.00
-3,Pecorino,Cheese,1.00,26.00,24.00,23.00,3.00,999.00
-4,Veal,Meat,220.00,21.00,3.00,30.00,2.00,120.00
-5,Salmon,Fresh salmon fillet,0.00,20.00,10.00,0.00,1.50,200.00
-6,Avocado,Ripe avocado,12.00,2.00,15.00,10.00,0.50,160.00
-7,Tomato,Fresh tomato,5.00,1.00,0.50,2.00,0.10,30.00
-8,Chicken Breast,"Boneless, skinless chicken breast",0.00,25.00,3.00,0.00,0.50,120.00
