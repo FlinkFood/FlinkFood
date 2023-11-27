@@ -1,0 +1,10 @@
+id,name,phone,email,cuisine_type,price_range,vat_code
+1,Ristorante da Mario,1234567890,mario.gmail.com,italian,low,2345678
+2,Rambo Kebab,+39 351 79525892,rambo.gmail.com,arabic,medium,1234538547
+3,Pasta Paradise,+39 366 98765432,pasta.paradise@gmail.com,italian,high,98761234
+4,Sushi Sensation,+39 320 12345678,sushi.sensation@yahoo.com,japanese,expensive,65439876
+5,Mexican Fiesta,+39 333 87654321,mexican.fiesta@hotmail.com,mexican,medium,87651234
+6,Burger Bonanza,+39 347 54321678,burger.bonanza@gmail.com,american,affordable,34567890
+7,Thai Temptations,+39 366 87654321,thai.temptations@yahoo.com,thai,moderate,56789012
+8,Mediterranean Delight,+39 338 98765432,med.delight@hotmail.com,mediterranean,high,78901234
+9,Vegetarian Bliss,+39 320 65432109,veg.bliss@gmail.com,vegetarian,moderate,89012347

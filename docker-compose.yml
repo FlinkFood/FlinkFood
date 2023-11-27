@@ -2,6 +2,7 @@ version: "2.2"
 services:
   jobmanager:
     image: flink:latest
+    container_name: jobmanager
     ports:
       - "8081:8081"
     command: jobmanager
@@ -12,6 +13,7 @@ services:
 
   taskmanager:
     image: flink:latest
+    container_name: taskmanager
     depends_on:
       - jobmanager
     command: taskmanager
@@ -24,13 +26,15 @@ services:
 
   mongo:
     image: mongo:latest
+    container_name: mongo
     restart: always
     ports:
       - 27017:27017
 
-# Zookeeper, single node
+  # Zookeeper, single node
   zookeeper:
     image: wurstmeister/zookeeper:latest
+    container_name: zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -39,9 +43,10 @@ services:
       - 2888:2888
       - 3888:3888
 
- # kafka single node     
+  # kafka single node
   kafka:
     image: wurstmeister/kafka:latest
+    container_name: kafka
     restart: "no"
     links:
       - zookeeper
@@ -56,9 +61,10 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       #https://github.com/wurstmeister/kafka-docker/issues/553
 
-#kafdrop for topic/msg visualization
+  #kafdrop for topic/msg visualization
   kafdrop:
     image: obsidiandynamics/kafdrop
+    container_name: kafdrop
     restart: "no"
     environment:
       KAFKA_BROKERCONNECT: "kafka:29092"
@@ -68,9 +74,9 @@ services:
     depends_on:
       - kafka
 
-#postgres debezium-example image
+  #postgres debezium-example image
   postgres:
-    image: debezium/postgres:latest
+    image: debezium/postgres:16-alpine
     container_name: postgres
     ports:
       - 5432:5432
@@ -79,11 +85,15 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=flinkfood
     volumes:
-      - ./db_entries/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./postgres_entrypoint/:/docker-entrypoint-initdb.d/
+    command: >
+      -c max_wal_senders=20
+      -c max_replication_slots=20
 
-# debezium connector
+  # debezium connector
   kconnect:
     image: debezium/connect:1.9
+    container_name: kconnect
     ports:
       - 8083:8083
     environment:
@@ -97,4 +107,4 @@ services:
     depends_on:
       - kafka
       - zookeeper
-      - postgres  
+      - postgres

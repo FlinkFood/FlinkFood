@@ -13,6 +13,10 @@ logs/
 # Ignore IDE files
 .idea/
 .vscode/
+.classpath
+.factorypath
+.project
+.settings/
 
 # Ignore node modules for React
 node_modules/
