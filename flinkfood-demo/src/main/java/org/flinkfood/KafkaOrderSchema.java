@@ -1,11 +1,11 @@
 package org.flinkfood;
 
 import java.io.IOException;
-
+import org.flinkfood.Order;
 import org.apache.flink.api.common.serialization.AbstractDeserializationSchema;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;;
 
-public class KafkaOrderSchema extends AbstractDeserializationSchema<Orders> {
+public class KafkaOrderSchema extends AbstractDeserializationSchema<Order> {
 
     private static final long serialVersionUID = 1L;
     private transient ObjectMapper objectMapper;
@@ -16,7 +16,7 @@ public class KafkaOrderSchema extends AbstractDeserializationSchema<Orders> {
     }
 
     @Override
-    public Orders deserialize(byte[] message) throws IOException {
-        return objectMapper.readValue(message, Orders.class);
+    public Order deserialize(byte[] message) throws IOException {
+        return objectMapper.readValue(message, Order.class);
     }
 }

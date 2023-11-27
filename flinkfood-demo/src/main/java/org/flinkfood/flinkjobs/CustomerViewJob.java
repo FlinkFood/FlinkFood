@@ -23,7 +23,7 @@ import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import com.mongodb.client.model.InsertOneModel;
 import org.bson.BsonDocument;
 import org.flinkfood.KafkaOrderSchema;
-import org.flinkfood.Orders;
+import org.flinkfood.Order;
 
 // Class declaration for the Flink job
 public class CustomerViewJob {
@@ -32,7 +32,7 @@ public class CustomerViewJob {
         private static final String KAFKA_URI = "localhost:9092";
         private static final String SOURCE_CUSTOMER_TABLE = "postgres.public.customer";
         private static final String SOURCE_ADDRESS_TABLE = "postgres.public.customer_address";
-        private static final String SOURCE_ORDER_TABLE = "postgres.public.orders";
+        private static final String SOURCE_ORDER_TABLE = "postgres.public.order";
         private static final String MONGODB_URI = "mongodb://localhost:27017";
         private static final String SINK_DB = "flinkfood";
         private static final String SINK_DB_TABLE = "users_sink";
@@ -58,7 +58,7 @@ public class CustomerViewJob {
                                 .setValueOnlyDeserializer(new KafkaAddressSchema())
                                 .build();
                 // Setting up Kafka source with relevant configurations
-                KafkaSource<Orders> sourceOrder = KafkaSource.<Orders>builder()
+                KafkaSource<Order> sourceOrder = KafkaSource.<Order>builder()
                                 .setBootstrapServers(KAFKA_URI)
                                 .setTopics(SOURCE_ORDER_TABLE)
                                 .setGroupId("my-group")
@@ -90,7 +90,7 @@ public class CustomerViewJob {
                                 .fromSource(sourceAddress, WatermarkStrategy.noWatermarks(), "Kafka Source")
                                 .setParallelism(1);
 
-                DataStream<Orders> streamOrder = env
+                DataStream<Order> streamOrder = env
                                 .fromSource(sourceOrder, WatermarkStrategy.noWatermarks(), "Kafka Source")
                                 .setParallelism(1);
 
