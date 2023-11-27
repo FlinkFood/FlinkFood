@@ -67,7 +67,7 @@ public class CustomerViewJob {
                                 .build();
 
                 // Setting up MongoDB sink with relevant configurations
-                MongoSink<String> sink = MongoSink.<String>builder()
+                MongoSink<Row> sink = MongoSink.<Row>builder()
                                 .setUri(MONGODB_URI)
                                 .setDatabase(SINK_DB)
                                 .setCollection(SINK_DB_TABLE)
@@ -75,8 +75,7 @@ public class CustomerViewJob {
                                 .setBatchIntervalMs(1000)
                                 .setMaxRetries(3)
                                 .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
-                                .setSerializationSchema(
-                                                (input, context) -> new InsertOneModel<>(BsonDocument.parse(input)))
+                                .setSerializationSchema(new RowToBsonDocument())
                                 .build();
 
                 // Setting up Flink execution environment
@@ -117,6 +116,7 @@ public class CustomerViewJob {
                 DataStream<Row> resultStream = tableEnv.toDataStream(result);
 
                 resultStream.print();
+                resultStream.sinkTo(sink);
 
                 env.execute("CustomerViewJob");
         }
