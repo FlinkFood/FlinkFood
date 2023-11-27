@@ -8,10 +8,9 @@ import org.apache.flink.connector.mongodb.sink.MongoSink;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.Table;
-import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.apache.flink.types.Row;
 import org.flinkfood.FlinkEnvironments.RestaurantTableEnvironment;
-import org.flinkfood.serializers.RowToBsonDocument;
+import org.flinkfood.serializers.RestaurantRowToBsonDocument;
 
 // Class declaration for the Flink job
 public class RestaurantView {
@@ -24,7 +23,6 @@ public class RestaurantView {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         RestaurantTableEnvironment rEnv = new RestaurantTableEnvironment(env);
-
         rEnv.createRestaurantInfoTable();
         rEnv.createRestaurantServicesTable();
         rEnv.createRestaurantAddressTable();
@@ -41,11 +39,11 @@ public class RestaurantView {
                 .setBatchIntervalMs(1000)
                 .setMaxRetries(3)
                 .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
-                .setSerializationSchema(new RowToBsonDocument())
+                .setSerializationSchema(new RestaurantRowToBsonDocument())
                 .build();
 
-        Table result = rEnv.createUnifiedRestaurantView();
-        DataStream<Row> resultStream = rEnv.toDataStream(result);
+        Table simpleUnifiedTable = rEnv.createSimpleUnifiedRestaurantView();
+        DataStream<Row> resultStream = rEnv.toDataStream(simpleUnifiedTable);
         resultStream.sinkTo(sink);
 
         //Execute the Flink job with the given name
