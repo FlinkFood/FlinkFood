@@ -35,7 +35,7 @@ public class RestaurantTableEnvironment {
     }
 
     public void createRestaurantServicesTable() {
-        this.tEnv.executeSql("CREATE TABLE restaurant_services (" +
+        this.tEnv.executeSql("CREATE TABLE restaurant_service (" +
         " restaurant_id INT," +
         " take_away BOOLEAN," +
         " delivery BOOLEAN," +
@@ -46,7 +46,7 @@ public class RestaurantTableEnvironment {
         " children_food BOOLEAN" +
         ") WITH (" +
         " 'connector' = 'kafka'," +
-        " 'topic' = 'postgres.public.restaurant_services'," +
+        " 'topic' = 'postgres.public.restaurant_service'," +
         " 'properties.bootstrap.servers' = 'localhost:9092'," +
         " 'format' = 'debezium-json'," +
         " 'debezium-json.schema-include' = 'true'," +
@@ -76,7 +76,7 @@ public class RestaurantTableEnvironment {
     }
 
     public void createRestaurantReviewsTable() {
-        this.tEnv.executeSql("CREATE TABLE restaurant_reviews (" +
+        this.tEnv.executeSql("CREATE TABLE restaurant_review (" +
         " id INT," +
         " restaurant_id INT," +
         " customer_id INT," +
@@ -84,7 +84,7 @@ public class RestaurantTableEnvironment {
         " review_comment STRING" +
         ") WITH (" +
         " 'connector' = 'kafka'," +
-        " 'topic' = 'postgres.public.restaurant_reviews'," +
+        " 'topic' = 'postgres.public.restaurant_review'," +
         " 'properties.bootstrap.servers' = 'localhost:9092'," +
         " 'format' = 'debezium-json'," +
         " 'debezium-json.schema-include' = 'true'," +
@@ -94,17 +94,17 @@ public class RestaurantTableEnvironment {
     }
 
     public void createDishesTable() {
-        this.tEnv.executeSql("CREATE TABLE dishes (" +
+        this.tEnv.executeSql("CREATE TABLE dish (" +
         " id BIGINT," +
         " restaurant_id INT," +
         " name STRING," +
-        " price DECIMAL(5,2)," +
+        " price SMALLINT," +
         " currency STRING," +
         " category STRING," +
         " description STRING" +
         ") WITH (" +
         " 'connector' = 'kafka'," +
-        " 'topic' = 'postgres.public.dishes'," +
+        " 'topic' = 'postgres.public.dish'," +
         " 'properties.bootstrap.servers' = 'localhost:9092'," +
         " 'format' = 'debezium-json'," +
         " 'debezium-json.schema-include' = 'true'," +
@@ -118,7 +118,7 @@ public class RestaurantTableEnvironment {
         " id INT," +
         " dish_id INT," +
         " customer_id INT," +
-        " rating DECIMAL(3,1)," +
+        " rating SMALLINT," +
         " review_comment STRING" +
         ") WITH (" +
         " 'connector' = 'kafka'," +
@@ -154,7 +154,7 @@ public class RestaurantTableEnvironment {
                 " s.children_area AS childrenArea, " +
                 " s.children_food AS childrenFood " +
                 " FROM restaurant_info r " +
-                " INNER JOIN restaurant_services s ON r.id = s.restaurant_id " +
+                " INNER JOIN restaurant_service s ON r.id = s.restaurant_id " +
                 " INNER JOIN restaurant_address a ON r.id = a.restaurant_id " +
                 ") AS subquery ";
         return this.tEnv.sqlQuery(joinQuery);
