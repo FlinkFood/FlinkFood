@@ -1,0 +1,9 @@
+id,name,description,carbs,proteins,fats,fibers,salt,calories
+1,Spaghetti,Pasta,75,12,1,3,0,35000
+2,Guanciale,Pork cheek,21,88,94,0,3,25500
+3,Pecorino,Cheese,1,26,24,23,3,99900
+4,Veal,Meat,22,21,3,30,2,12000
+5,Salmon,Fresh salmon fillet,0,20,10,0,1,20000
+6,Avocado,Ripe avocado,12,2,15,10,0,16000
+7,Tomato,Fresh tomato,5,1,0,2,010,3000
+8,Chicken Breast,"Boneless, skinless chicken breast",0,25,3,0,0,12000
