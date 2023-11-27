@@ -14,7 +14,7 @@ import org.flinkfood.FlinkEnvironments.RestaurantTableEnvironment;
 import org.flinkfood.serializers.RowToBsonDocument;
 
 // Class declaration for the Flink job
-public class ResturantView {
+public class RestaurantView {
 
     private static final String MONGODB_URI = "mongodb://localhost:27017";
     private static final String SINK_DB = "flinkfood";
@@ -49,6 +49,6 @@ public class ResturantView {
         resultStream.sinkTo(sink);
 
         //Execute the Flink job with the given name
-        env.execute("ResturantView");
+        env.execute("RestaurantView");
     }
 }
