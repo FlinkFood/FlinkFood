@@ -1,4 +1,3 @@
-#!/bin/bash
 curl -X POST 'http://localhost:8083/connectors' -H 'Content-Type: application/json' -d '{
     "name": "postgres-connector",
     "config": {
@@ -9,6 +8,13 @@ curl -X POST 'http://localhost:8083/connectors' -H 'Content-Type: application/js
         "database.password": "postgres",
         "database.dbname": "flinkfood",
         "database.server.name": "postgres",
-        "schema.whitelist": "public"
+        "schema.whitelist": "public",
+        "transforms": "unwrap",
+        "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
+        "key.converter":"org.apache.kafka.connect.json.JsonConverter",
+        "key.converter.schemas.enable":false,
+        "value.converter":"org.apache.kafka.connect.json.JsonConverter",
+        "value.converter.schemas.enable":false,
+        "schemas.enable":false
     }
 }'
