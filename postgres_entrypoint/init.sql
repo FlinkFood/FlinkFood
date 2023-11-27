@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS restaurant_review (
     id INT PRIMARY KEY,
     restaurant_id INT,
     customer_id INT,
-    rating SMALLINT CHECK ( rating >= 0 ),
+    rating SMALLINT CHECK ( rating >= 0 and rating <= 10 ),
     comment VARCHAR(255),
     FOREIGN KEY (restaurant_id) REFERENCES restaurant_info (id),
     FOREIGN KEY (customer_id) REFERENCES customer (id)
@@ -84,12 +84,12 @@ CREATE TABLE IF NOT EXISTS ingredient (
    id INT PRIMARY KEY,
    name VARCHAR(255),
    description VARCHAR(255),
-   carbs SMALLINT CHECK ( carbs >= 0 ), -- in grams*10+2 for 2 digits after the comma precision (e.g. 12.34 -> 1234)
-   proteins SMALLINT CHECK ( proteins >= 0 ),
-   fats SMALLINT CHECK ( fats >= 0 ),
-   fibers SMALLINT CHECK ( fibers >= 0 ),
-   salt SMALLINT CHECK ( salt >= 0 ),
-   calories INT CHECK ( calories >= 0 ) -- in kcal *10+2 for 2 digits after the comma precision (e.g. 123.45 -> 12345)
+   carbs SMALLINT CHECK ( carbs >= 0 AND carbs <= 100 ), -- in grams
+   proteins SMALLINT CHECK ( proteins >= 0 AND proteins <= 100),
+   fats SMALLINT CHECK ( fats >= 0 AND fats <= 100),
+   fibers SMALLINT CHECK ( fibers >= 0 AND fibers <= 100),
+   salt SMALLINT CHECK ( salt >= 0 AND salt <= 100 ),
+   calories INT CHECK ( calories >= 0 ) -- in kcal 
 );
 ALTER TABLE ingredient REPLICA IDENTITY FULL;
 
