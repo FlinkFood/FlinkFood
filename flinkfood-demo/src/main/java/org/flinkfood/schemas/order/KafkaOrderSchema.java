@@ -1,7 +1,7 @@
-package org.flinkfood;
+package org.flinkfood.schemas.order;
 
 import java.io.IOException;
-import org.flinkfood.Order;
+
 import org.apache.flink.api.common.serialization.AbstractDeserializationSchema;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;;
 

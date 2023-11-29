@@ -1,4 +1,4 @@
-package org.flinkfood.flinkjobs;
+package org.flinkfood.schemas.customer;
 
 public class Customer_address {
 

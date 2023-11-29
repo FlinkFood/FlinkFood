@@ -1,4 +1,4 @@
-package org.flinkfood.schemas;
+package org.flinkfood.schemas.dish;
 
 public class Dish {
 

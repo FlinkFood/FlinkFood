@@ -1,4 +1,4 @@
-package org.flinkfood.flinkjobs;
+package org.flinkfood.serializers;
 import com.mongodb.client.model.InsertOneModel;
 import com.mongodb.client.model.WriteModel;
 import org.apache.flink.connector.mongodb.sink.writer.context.MongoSinkContext;
@@ -7,7 +7,7 @@ import org.apache.flink.types.Row;
 import org.bson.BsonDocument;
 import org.bson.BsonString;
 
-public class RowToBsonDocument implements MongoSerializationSchema<Row> {
+public class GeneralRowToBsonDocument implements MongoSerializationSchema<Row> {
 
     @Override
     public WriteModel<BsonDocument> serialize(Row row, MongoSinkContext mongoSinkContext) {
