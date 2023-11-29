@@ -11,7 +11,10 @@ import org.apache.flink.table.api.*;
 import org.apache.flink.types.Row;
 import static org.apache.flink.table.api.Expressions.*;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
-import org.flinkfood.schemas.*;
+import org.flinkfood.schemas.dish.Dish;
+import org.flinkfood.schemas.dish.KafkaDishSchema;
+import org.flinkfood.schemas.restaurant.KafkaRestaurantInfoSchema;
+import org.flinkfood.schemas.restaurant.RestaurantInfo;
 
 // Class declaration for the Flink job
 public class DishViewJob {

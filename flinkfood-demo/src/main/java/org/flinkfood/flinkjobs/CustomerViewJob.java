@@ -3,13 +3,7 @@ package org.flinkfood.flinkjobs;
 
 // Importing necessary Flink libraries and external dependencies
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.api.common.eventtime.SerializableTimestampAssigner;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
-import org.apache.flink.api.common.functions.MapFunction;
-import org.apache.flink.api.common.serialization.SimpleStringSchema;
-import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.JsonNode;
-import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.flink.connector.mongodb.sink.MongoSink;
 import org.apache.flink.connector.base.DeliveryGuarantee;
 import org.apache.flink.connector.kafka.source.KafkaSource;
@@ -20,10 +14,13 @@ import org.apache.flink.types.Row;
 import static org.apache.flink.table.api.Expressions.*;
 
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
-import com.mongodb.client.model.InsertOneModel;
-import org.bson.BsonDocument;
-import org.flinkfood.KafkaOrderSchema;
-import org.flinkfood.Order;
+import org.flinkfood.schemas.order.KafkaOrderSchema;
+import org.flinkfood.schemas.order.Order;
+import org.flinkfood.schemas.customer.Customer;
+import org.flinkfood.schemas.customer.Customer_address;
+import org.flinkfood.schemas.customer.KafkaAddressSchema;
+import org.flinkfood.schemas.customer.KafkaCustomerSchema;
+import org.flinkfood.serializers.GeneralRowToBsonDocument;
 
 // Class declaration for the Flink job
 public class CustomerViewJob {
@@ -75,7 +72,7 @@ public class CustomerViewJob {
                                 .setBatchIntervalMs(1000)
                                 .setMaxRetries(3)
                                 .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
-                                .setSerializationSchema(new RowToBsonDocument())
+                                .setSerializationSchema(new GeneralRowToBsonDocument())
                                 .build();
 
                 // Setting up Flink execution environment

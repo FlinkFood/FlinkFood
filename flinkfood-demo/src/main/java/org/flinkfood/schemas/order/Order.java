@@ -1,4 +1,4 @@
-package org.flinkfood;
+package org.flinkfood.schemas.order;
 
 import java.sql.Date;
 
