@@ -6,6 +6,8 @@ import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.apache.flink.types.Row;
 
+import java.util.Optional;
+
 public class RestaurantTableEnvironment {
     private final StreamTableEnvironment tEnv;
 
@@ -124,9 +126,9 @@ public class RestaurantTableEnvironment {
         ")");
     }
 
-    public Table createSimpleUnifiedRestaurantView() {
-        String joinQuery =
-                "SELECT * " +
+    public Table createSimpleUnifiedRestaurantView(Optional<String> joinQuery) {
+        String query = joinQuery
+                .orElse("SELECT * " +
                 "FROM ( " +
                 " SELECT " +
                 " r.id AS ID, " +
@@ -149,8 +151,8 @@ public class RestaurantTableEnvironment {
                 " FROM restaurant_info r " +
                 " INNER JOIN restaurant_service s ON r.id = s.restaurant_id " +
                 " INNER JOIN restaurant_address a ON r.id = a.restaurant_id " +
-                ") AS subquery ";
-        return this.tEnv.sqlQuery(joinQuery);
+                ") AS subquery ");
+        return this.tEnv.sqlQuery(query);
     }
 
     public Table getRestaurantReviews(int ID) {
