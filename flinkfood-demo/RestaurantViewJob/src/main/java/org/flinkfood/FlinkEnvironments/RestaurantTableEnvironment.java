@@ -8,6 +8,7 @@ import org.apache.flink.types.Row;
 
 public class RestaurantTableEnvironment {
     private final StreamTableEnvironment tEnv;
+    private static final String KAFKA_URI = System.getenv("KAFKA_URI");
 
     public RestaurantTableEnvironment(StreamExecutionEnvironment env) {
         this.tEnv = StreamTableEnvironment.create(env);
@@ -25,7 +26,7 @@ public class RestaurantTableEnvironment {
         ") WITH (" +
         " 'connector' = 'kafka'," +
         " 'topic' = 'postgres.public.restaurant_info'," +
-        " 'properties.bootstrap.servers' = 'kafka:29092'," +
+        " 'properties.bootstrap.servers' = '"+ KAFKA_URI +"'," +
         " 'format' = 'json'," +
         " 'scan.startup.mode' = 'earliest-offset'," +
         " 'properties.auto.offset.reset' = 'earliest'" +
@@ -45,7 +46,7 @@ public class RestaurantTableEnvironment {
         ") WITH (" +
         " 'connector' = 'kafka'," +
         " 'topic' = 'postgres.public.restaurant_service'," +
-        " 'properties.bootstrap.servers' = 'kafka:29092'," +
+        " 'properties.bootstrap.servers' = '"+ KAFKA_URI +"'," +
         " 'format' = 'json'," +
         " 'scan.startup.mode' = 'earliest-offset'," +
         " 'properties.auto.offset.reset' = 'earliest'" +
@@ -64,7 +65,7 @@ public class RestaurantTableEnvironment {
         ") WITH (" +
         " 'connector' = 'kafka'," +
         " 'topic' = 'postgres.public.restaurant_address'," +
-        " 'properties.bootstrap.servers' = 'kafka:29092'," +
+        " 'properties.bootstrap.servers' = '"+ KAFKA_URI +"'," +
         " 'format' = 'json'," +
         " 'scan.startup.mode' = 'earliest-offset'," +
         " 'properties.auto.offset.reset' = 'earliest'" +
@@ -81,7 +82,7 @@ public class RestaurantTableEnvironment {
         ") WITH (" +
         " 'connector' = 'kafka'," +
         " 'topic' = 'postgres.public.restaurant_review'," +
-        " 'properties.bootstrap.servers' = 'kafka:29092'," +
+        " 'properties.bootstrap.servers' = '"+ KAFKA_URI +"'," +
         " 'format' = 'json'," +
         " 'scan.startup.mode' = 'earliest-offset'," +
         " 'properties.auto.offset.reset' = 'earliest'" +
@@ -100,7 +101,7 @@ public class RestaurantTableEnvironment {
         ") WITH (" +
         " 'connector' = 'kafka'," +
         " 'topic' = 'postgres.public.dish'," +
-        " 'properties.bootstrap.servers' = 'kafka:29092'," +
+        " 'properties.bootstrap.servers' = '"+ KAFKA_URI +"'," +
         " 'format' = 'json'," +
         " 'scan.startup.mode' = 'earliest-offset'," +
         " 'properties.auto.offset.reset' = 'earliest'" +
@@ -117,7 +118,7 @@ public class RestaurantTableEnvironment {
         ") WITH (" +
         " 'connector' = 'kafka'," +
         " 'topic' = 'postgres.public.review_dish'," +
-        " 'properties.bootstrap.servers' = 'kafka:29092'," +
+        " 'properties.bootstrap.servers' = '"+ KAFKA_URI +"'," +
         " 'format' = 'json'," +
         " 'scan.startup.mode' = 'earliest-offset'," +
         " 'properties.auto.offset.reset' = 'earliest'" +
