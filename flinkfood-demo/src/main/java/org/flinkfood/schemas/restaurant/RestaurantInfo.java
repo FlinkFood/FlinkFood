@@ -1,5 +1,11 @@
 package org.flinkfood.schemas.restaurant;
 
+import org.apache.flink.api.common.serialization.AbstractDeserializationSchema;
+import org.apache.flink.api.common.serialization.DeserializationSchema;
+import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
+
 public class RestaurantInfo {
 
     public int id;
@@ -74,5 +80,21 @@ public class RestaurantInfo {
 
     public void setVat_code(String vat_code) {
         this.vat_code = vat_code;
+    }
+
+    public static class Deserializer extends AbstractDeserializationSchema<RestaurantInfo> {
+
+        private static final long serialVersionUID = 1L;
+        private transient ObjectMapper objectMapper;
+
+        @Override
+        public void open(DeserializationSchema.InitializationContext context) {
+            objectMapper = new ObjectMapper();
+        }
+
+        @Override
+        public RestaurantInfo deserialize(byte[] message) throws IOException {
+            return objectMapper.readValue(message, RestaurantInfo.class);
+        }
     }
 }

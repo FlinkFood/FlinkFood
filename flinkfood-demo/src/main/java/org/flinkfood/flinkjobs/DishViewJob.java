@@ -13,7 +13,6 @@ import static org.apache.flink.table.api.Expressions.*;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.flinkfood.schemas.dish.Dish;
 import org.flinkfood.schemas.dish.KafkaDishSchema;
-import org.flinkfood.schemas.restaurant.KafkaRestaurantInfoSchema;
 import org.flinkfood.schemas.restaurant.RestaurantInfo;
 
 // Class declaration for the Flink job
@@ -42,7 +41,7 @@ public class DishViewJob {
                                 .setTopics(SOURCE_RESTAURANT_INFO_TABLE)
                                 .setGroupId("my-group")
                                 .setStartingOffsets(OffsetsInitializer.earliest())
-                                .setValueOnlyDeserializer(new KafkaRestaurantInfoSchema())
+                                .setValueOnlyDeserializer(new RestaurantInfo.Deserializer())
                                 .build();
 
                 // Setting up Flink execution environment
