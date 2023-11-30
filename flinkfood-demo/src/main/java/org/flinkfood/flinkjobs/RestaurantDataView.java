@@ -93,6 +93,7 @@ public class RestaurantDataView {
                 .equalTo(RestaurantService::getRestaurant_id)
                 .window(TumblingEventTimeWindows.of(Time.seconds(5)))
                 .apply((CoGroupFunction<RestaurantInfo, RestaurantService, RestaurantView>) (first, second, out) ->
+                        //TODO: specify the collector type expandin the lamba StreamRecordCollector could do the trick
                         first.forEach(restInfo ->
                             second.forEach(rest_service ->
                                     out.collect(new RestaurantView().with(restInfo).with(rest_service)))))
