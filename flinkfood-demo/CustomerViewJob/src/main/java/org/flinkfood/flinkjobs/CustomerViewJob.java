@@ -26,11 +26,11 @@ import org.flinkfood.serializers.GeneralRowToBsonDocument;
 public class CustomerViewJob {
 
         // Kafka and MongoDB connection details obtained from environment variables
-        private static final String KAFKA_URI = "localhost:9092";
+        private static final String KAFKA_URI = System.getenv("KAFKA_URI");
         private static final String SOURCE_CUSTOMER_TABLE = "postgres.public.customer";
         private static final String SOURCE_ADDRESS_TABLE = "postgres.public.customer_address";
         private static final String SOURCE_ORDER_TABLE = "postgres.public.order";
-        private static final String MONGODB_URI = "mongodb://localhost:27017";
+        private static final String MONGODB_URI = System.getenv("MONGODB_SERVER");
         private static final String SINK_DB = "flinkfood";
         private static final String SINK_DB_TABLE = "users_sink";
 
