@@ -147,10 +147,14 @@ public class RestaurantTableEnvironment {
                 " s.parking_lots AS parkingLots, " +
                 " s.accessible AS accessibleEntrance, " +
                 " s.children_area AS childrenArea, " +
-                " s.children_food AS childrenFood " +
+                " s.children_food AS childrenFood, " +
+                " rv.customer_id AS customerID, " +
+                " rv.rating AS rating, " +
+                " rv.review_comment AS reviewComment " +
                 " FROM restaurant_info r " +
                 " INNER JOIN restaurant_service s ON r.id = s.restaurant_id " +
                 " INNER JOIN restaurant_address a ON r.id = a.restaurant_id " +
+                " INNER JOIN restaurant_review rv ON r.id = rv.restaurant_id " +
                 ") AS subquery ");
         return this.tEnv.sqlQuery(query);
     }

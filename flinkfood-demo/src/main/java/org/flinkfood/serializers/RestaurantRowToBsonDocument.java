@@ -16,15 +16,39 @@ import org.bson.BsonInt32;
 import org.bson.BsonInt64;
 import org.bson.BsonNull;
 import org.bson.BsonString;
+import org.flinkfood.viewFields.RestaurantViewAttribute;
 
-import javax.annotation.Nonnull;
+import static org.flinkfood.viewFields.RestaurantViewAttribute.*;
 
 // Remark: This is the worst code I've ever written. I'm sorry.
 public class RestaurantRowToBsonDocument implements MongoSerializationSchema<Row> {
     // TODO: Source those from a config file
-    final List<String> address_fields = List.of("street", "number", "city", "state", "country", "zipCode");
-    final List<String> status_fields = List.of("takeAway", "delivery", "dineIn");
-    final List<String> services_fields = List.of("parkingLots", "accessible", "childrenArea", "childrenFood");
+    @Override
+    public WriteModel<BsonDocument> serialize(Row row, MongoSinkContext mongoSinkContext) {
+        return new InsertOneModel<>(createSimpleRestaurantDocument(row));
+    }
+
+    /**
+     * Creates a simple restaurant document with the following structure:
+     * @param restaurant is a row with all the fields of the aggregated view
+     * @return document with annidated fields (not in array form!!)
+     */
+    private BsonDocument createSimpleRestaurantDocument(Row restaurant) {
+        BsonDocument document = new BsonDocument();
+        Set<String> field_names = restaurant.getFieldNames(true);
+
+        Arrays.stream(RestaurantViewAttribute.values())
+                .distinct().forEach(attribute ->
+                {
+                    var doc = new BsonDocument();
+                    assert field_names != null;
+                    field_names.stream().filter(attribute.getAttributes()::contains)
+                            .forEach(field_name -> this.addFieldToDocument(doc, field_name, restaurant.getField(field_name)));
+                    document.append(attribute.getName(), doc);
+                }
+        );
+        return document;
+    }
 
     private void addFieldToDocument(BsonDocument document, String field_name, Object field) {
         if (field instanceof String) {
@@ -42,39 +66,5 @@ public class RestaurantRowToBsonDocument implements MongoSerializationSchema<Row
         } else {
             document.append(field_name, new BsonNull());
         }
-    }
-
-    private BsonDocument createSimpleRestaurantDocument(Row restaurant) {
-        BsonDocument document = new BsonDocument();
-        BsonDocument address_document = new BsonDocument();
-        BsonDocument status_document = new BsonDocument();
-        BsonDocument services_document = new BsonDocument();
-
-        Set<String> field_names = restaurant.getFieldNames(true);
-        assert field_names != null;
-        for (String field_name : field_names) {
-            if (address_fields.contains(field_name)) {
-                this.addFieldToDocument(address_document, field_name, restaurant.getField(field_name));
-            } else if (status_fields.contains(field_name)) {
-                this.addFieldToDocument(status_document, field_name, restaurant.getField(field_name));
-            } else if (services_fields.contains(field_name)) {
-                this.addFieldToDocument(services_document, field_name, restaurant.getField(field_name));
-            } else {
-                this.addFieldToDocument(document, field_name, restaurant.getField(field_name));
-            }
-        }
-        document.append("address", address_document);
-        document.append("status", status_document);
-        document.append("services", services_document);
-        return document;
-    }
-
-    @Override
-    public WriteModel<BsonDocument> serialize(Row row, MongoSinkContext mongoSinkContext) {
-        BsonDocument document = createSimpleRestaurantDocument(row);
-        BsonArray reviews = new BsonArray();
-        document.append("reviews", reviews);
-        // FIXME: reviews are an empty array
-        return new InsertOneModel<>(document);
     }
 }

@@ -4,18 +4,20 @@ import com.mongodb.client.model.WriteModel;
 import org.apache.flink.connector.mongodb.sink.writer.context.MongoSinkContext;
 import org.apache.flink.connector.mongodb.sink.writer.serializer.MongoSerializationSchema;
 import org.apache.flink.types.Row;
-import org.bson.BsonDocument;
-import org.bson.BsonString;
+import org.bson.*;
+
+import java.util.Objects;
 
 public class GeneralRowToBsonDocument implements MongoSerializationSchema<Row> {
 
     @Override
     public WriteModel<BsonDocument> serialize(Row row, MongoSinkContext mongoSinkContext) {
         BsonDocument document = new BsonDocument();
-        String[] field_names = row.getFieldNames(true).stream().toArray(String[]::new);
-        for (int i = 0; i < row.getArity(); i++) {
-            document.append(field_names[i], new BsonString(String.valueOf(row.getField(i))));
-        }
+        Objects.requireNonNull(row.getFieldNames(true))
+                .forEach(field_name ->
+                    document.put("field_name",
+                                 (BsonValue) row.getField(field_name)));
         return new InsertOneModel<>(document);
     }
+
 }
