@@ -71,9 +71,10 @@ public class RestaurantRowToBsonDocument implements MongoSerializationSchema<Row
 
     @Override
     public WriteModel<BsonDocument> serialize(Row row, MongoSinkContext mongoSinkContext) {
-        BsonDocument document = this.createSimpleRestaurantDocument(row);
+        BsonDocument document = createSimpleRestaurantDocument(row);
         BsonArray reviews = new BsonArray();
         document.append("reviews", reviews);
+        // FIXME: reviews are an empty array
         return new InsertOneModel<>(document);
     }
 }

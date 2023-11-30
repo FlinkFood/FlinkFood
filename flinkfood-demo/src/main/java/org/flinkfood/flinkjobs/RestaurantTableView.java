@@ -42,7 +42,7 @@ public class RestaurantTableView {
                 .setBatchIntervalMs(1000)
                 .setMaxRetries(3)
                 .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
-                .setSerializationSchema(new RestaurantRowToBsonDocument())
+                .setSerializationSchema(new RestaurantRowToBsonDocument( ))
                 .build();
 
         //read from file the query TODO: replace with a proper input query
