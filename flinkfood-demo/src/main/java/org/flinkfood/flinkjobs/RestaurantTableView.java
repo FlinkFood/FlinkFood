@@ -9,16 +9,13 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.types.Row;
-import org.flinkfood.FlinkEnvironments.RestaurantTableEnvironment;
+import org.flinkfood.flinkEnvironments.RestaurantTableEnvironment;
 import org.flinkfood.serializers.RestaurantRowToBsonDocument;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Optional;
-import java.util.Scanner;
 
 // Class declaration for the Flink job
-public class RestaurantView {
+public class RestaurantTableView {
 
     private static final String MONGODB_URI = "mongodb://localhost:27017";
     private static final String SINK_DB = "flinkfood";
@@ -26,6 +23,7 @@ public class RestaurantView {
 
     // Main method where the Flink job is defined
     public static void main(String[] args) throws Exception {
+
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         RestaurantTableEnvironment rEnv = new RestaurantTableEnvironment(env);
         rEnv.createRestaurantInfoTable();
@@ -49,33 +47,11 @@ public class RestaurantView {
 
         //read from file the query TODO: replace with a proper input query
         Optional<String> query = ReadFile.read("./.config/query.sql");
-        System.out.println(query.toString());
         Table simpleUnifiedTable = rEnv.createSimpleUnifiedRestaurantView(query);
         DataStream<Row> resultStream = rEnv.toDataStream(simpleUnifiedTable);
         resultStream.sinkTo(sink);
 
         //Execute the Flink job with the given name
-        env.execute("RestaurantView");
-    }
-}
-
- class ReadFile {
-    public static Optional<String> read(String fileWithPath) {
-        StringBuilder content = new StringBuilder();
-        try {
-            File myObj = new File(fileWithPath);
-            Scanner myReader = new Scanner(myObj);
-            while (myReader.hasNextLine()) {
-                String data = myReader.nextLine();
-                content.append(data);
-            }
-            myReader.close();
-        } catch (FileNotFoundException e) {
-            System.out.println("An error occurred.");
-            // TODO: replace with more robust error handling
-            e.printStackTrace();
-            return Optional.empty();
-        }
-        return Optional.of(content.toString());
+        env.execute("RestaurantTableView");
     }
 }

@@ -1,4 +1,4 @@
-package org.flinkfood.FlinkEnvironments;
+package org.flinkfood.flinkEnvironments;
 
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
