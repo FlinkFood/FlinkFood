@@ -1,7 +1,9 @@
 version: "2.2"
 services:
   jobmanager:
-    image: flink:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.flink
     container_name: jobmanager
     ports:
       - "8081:8081"
@@ -14,6 +16,8 @@ services:
         jobmanager.rpc.address: jobmanager
         # Kafka bootstrap servers configuration
         kafka.bootstrap.servers: "kafka:29092"
+    depends_on:
+      - kconnect
 
   taskmanager:
     image: flink:latest
