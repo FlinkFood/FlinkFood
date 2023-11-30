@@ -8,15 +8,14 @@ import org.bson.*;
 
 import java.util.Objects;
 
-public class GeneralRowToBsonDocument implements MongoSerializationSchema<Row> {
+public class GeneralRowToBsonDocument implements MongoSerializationSchema<Row>, InsertBsonField {
 
     @Override
     public WriteModel<BsonDocument> serialize(Row row, MongoSinkContext mongoSinkContext) {
         BsonDocument document = new BsonDocument();
         Objects.requireNonNull(row.getFieldNames(true))
                 .forEach(field_name ->
-                    document.put("field_name",
-                                 (BsonValue) row.getField(field_name)));
+                        addFieldToDocument(document, field_name, row.getField(field_name)));
         return new InsertOneModel<>(document);
     }
 

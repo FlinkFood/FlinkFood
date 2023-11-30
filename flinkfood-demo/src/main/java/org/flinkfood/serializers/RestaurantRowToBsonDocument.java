@@ -21,7 +21,7 @@ import org.flinkfood.viewFields.RestaurantViewAttribute;
 import static org.flinkfood.viewFields.RestaurantViewAttribute.*;
 
 // Remark: This is the worst code I've ever written. I'm sorry.
-public class RestaurantRowToBsonDocument implements MongoSerializationSchema<Row> {
+public class RestaurantRowToBsonDocument implements MongoSerializationSchema<Row>, InsertBsonField {
     // TODO: Source those from a config file
     @Override
     public WriteModel<BsonDocument> serialize(Row row, MongoSinkContext mongoSinkContext) {
@@ -43,28 +43,11 @@ public class RestaurantRowToBsonDocument implements MongoSerializationSchema<Row
                     var doc = new BsonDocument();
                     assert field_names != null;
                     field_names.stream().filter(attribute.getAttributes()::contains)
-                            .forEach(field_name -> this.addFieldToDocument(doc, field_name, restaurant.getField(field_name)));
+                            .forEach(field_name -> addFieldToDocument(doc, field_name, restaurant.getField(field_name)));
                     document.append(attribute.getName(), doc);
                 }
         );
         return document;
     }
 
-    private void addFieldToDocument(BsonDocument document, String field_name, Object field) {
-        if (field instanceof String) {
-            document.append(field_name, new BsonString((String) field));
-        } else if (field instanceof Integer) {
-            document.append(field_name, new BsonInt32((Integer) field));
-        } else if (field instanceof Long) {
-            document.append(field_name, new BsonInt64((Long) field));
-        } else if (field instanceof Double) {
-            document.append(field_name, new BsonDouble((Double) field));
-        } else if (field instanceof Boolean) {
-            document.append(field_name, new BsonBoolean((Boolean) field));
-        } else if (field instanceof Date) {
-            document.append(field_name, new BsonDateTime(((Date) field).getTime()));
-        } else {
-            document.append(field_name, new BsonNull());
-        }
-    }
 }
