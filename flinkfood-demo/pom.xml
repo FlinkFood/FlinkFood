@@ -220,7 +220,7 @@
                 </filters>
                 <transformers>
                   <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                    <mainClass>org.flinkfood.flinkjobs.FirstLetterUppercase</mainClass>
+                    <mainClass>org.flinkfood.flinkjobs.RestaurantTableView</mainClass>
                   </transformer>
                   <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                 </transformers>
