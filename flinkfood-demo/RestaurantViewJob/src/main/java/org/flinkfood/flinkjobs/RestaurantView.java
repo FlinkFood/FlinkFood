@@ -15,7 +15,7 @@ import org.flinkfood.serializers.RestaurantRowToBsonDocument;
 // Class declaration for the Flink job
 public class RestaurantView {
 
-    private static final String MONGODB_URI = "mongodb://localhost:27017";
+    private static final String MONGODB_URI = "mongodb://mongo:27017";
     private static final String SINK_DB = "flinkfood";
     private static final String SINK_DB_TABLE = "restaurants_view";
 

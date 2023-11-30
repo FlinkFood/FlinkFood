@@ -10,6 +10,8 @@ services:
       - |
         FLINK_PROPERTIES=
         jobmanager.rpc.address: jobmanager
+        # Kafka bootstrap servers configuration
+        kafka.bootstrap.servers: "kafka:29092"
 
   taskmanager:
     image: flink:latest
