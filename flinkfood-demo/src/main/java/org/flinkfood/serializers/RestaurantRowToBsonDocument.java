@@ -7,18 +7,9 @@ import com.mongodb.client.model.WriteModel;
 import org.apache.flink.connector.mongodb.sink.writer.context.MongoSinkContext;
 import org.apache.flink.connector.mongodb.sink.writer.serializer.MongoSerializationSchema;
 import org.apache.flink.types.Row;
-import org.bson.BsonArray;
-import org.bson.BsonBoolean;
-import org.bson.BsonDateTime;
 import org.bson.BsonDocument;
-import org.bson.BsonDouble;
-import org.bson.BsonInt32;
-import org.bson.BsonInt64;
-import org.bson.BsonNull;
-import org.bson.BsonString;
+import org.flinkfood._helper.InsertBsonField;
 import org.flinkfood.viewFields.RestaurantViewAttribute;
-
-import static org.flinkfood.viewFields.RestaurantViewAttribute.*;
 
 // Remark: This is the worst code I've ever written. I'm sorry.
 public class RestaurantRowToBsonDocument implements MongoSerializationSchema<Row>, InsertBsonField {

@@ -5,7 +5,7 @@ import com.mongodb.client.model.WriteModel;
 import org.apache.flink.connector.mongodb.sink.writer.context.MongoSinkContext;
 import org.apache.flink.connector.mongodb.sink.writer.serializer.MongoSerializationSchema;
 import org.bson.BsonDocument;
-import org.flinkfood.serializers.InsertBsonField;
+import org.flinkfood._helper.InsertBsonField;
 
 public class ReviewDish {
     private int id;

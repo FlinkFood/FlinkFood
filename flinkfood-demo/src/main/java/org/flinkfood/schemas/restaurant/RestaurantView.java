@@ -2,20 +2,14 @@ package org.flinkfood.schemas.restaurant;
 
 import com.mongodb.client.model.InsertOneModel;
 import com.mongodb.client.model.WriteModel;
-import org.apache.flink.api.common.serialization.SerializationSchema;
-import org.apache.flink.connector.mongodb.sink.config.MongoWriteOptions;
 import org.apache.flink.connector.mongodb.sink.writer.context.MongoSinkContext;
 import org.apache.flink.connector.mongodb.sink.writer.serializer.MongoSerializationSchema;
 import org.bson.*;
-import org.bson.conversions.Bson;
 import org.flinkfood.schemas.dish.Dish;
 import org.flinkfood.schemas.order.Order;
-import org.flinkfood.serializers.InsertBsonField;
+import org.flinkfood._helper.InsertBsonField;
 
-import java.util.Date;
 import java.util.List;
-
-import static org.apache.flink.streaming.api.functions.sink.filesystem.rollingpolicies.DefaultRollingPolicy.builder;
 
 public class RestaurantView {
     private RestaurantInfo restaurantInfo;

@@ -1,4 +1,4 @@
-package org.flinkfood.serializers;
+package org.flinkfood._helper;
 
 import org.bson.*;
 

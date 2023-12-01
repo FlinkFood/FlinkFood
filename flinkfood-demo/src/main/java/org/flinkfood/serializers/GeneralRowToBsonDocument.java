@@ -5,6 +5,7 @@ import org.apache.flink.connector.mongodb.sink.writer.context.MongoSinkContext;
 import org.apache.flink.connector.mongodb.sink.writer.serializer.MongoSerializationSchema;
 import org.apache.flink.types.Row;
 import org.bson.*;
+import org.flinkfood._helper.InsertBsonField;
 
 import java.util.Objects;
 

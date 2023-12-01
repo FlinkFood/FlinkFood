@@ -9,13 +9,11 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.types.Row;
+import org.flinkfood._helper.ReadFile;
 import org.flinkfood.flinkEnvironments.RestaurantTableEnvironment;
 import org.flinkfood.serializers.RestaurantRowToBsonDocument;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Optional;
-import java.util.Scanner;
 
 // Class declaration for the Flink job
 public class RestaurantTableView {
@@ -58,23 +56,4 @@ public class RestaurantTableView {
         env.execute("RestaurantTableView");
     }
 }
-class ReadFile {
-    public static Optional<String> read(String fileWithPath) {
-        StringBuilder content = new StringBuilder();
-        try {
-            File myObj = new File(fileWithPath);
-            Scanner myReader = new Scanner(myObj);
-            while (myReader.hasNextLine()) {
-                String data = myReader.nextLine();
-                content.append(data);
-            }
-            myReader.close();
-        } catch (FileNotFoundException e) {
-            System.out.println("An error occurred.");
-            // TODO: replace with more robust error handling
-            e.printStackTrace();
-            return Optional.empty();
-        }
-        return Optional.of(content.toString());
-    }
-}
+
