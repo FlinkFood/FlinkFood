@@ -2,6 +2,8 @@ package org.flinkfood.schemas.restaurant; ;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Objects;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -231,24 +233,26 @@ public class RestaurantAddress implements Serializable {
         if (other == this) {
             return true;
         }
-        if ((other instanceof RestaurantAddress) == false) {
+        if (!(other instanceof RestaurantAddress)) {
             return false;
         }
         RestaurantAddress rhs = ((RestaurantAddress) other);
-        return ((((((((this.zipCode == rhs.zipCode) || ((this.zipCode != null) && this.zipCode.equals(rhs.zipCode))) && ((this.country == rhs.country) || ((this.country != null) && this.country.equals(rhs.country)))) && ((this.province == rhs.province) || ((this.province != null) && this.province.equals(rhs.province)))) && ((this.city == rhs.city) || ((this.city != null) && this.city.equals(rhs.city)))) && ((this.street == rhs.street) || ((this.street != null) && this.street.equals(rhs.street)))) && ((this.addressNumber == rhs.addressNumber) || ((this.addressNumber != null) && this.addressNumber.equals(rhs.addressNumber)))) && ((this.restaurantId == rhs.restaurantId) || ((this.restaurantId != null) && this.restaurantId.equals(rhs.restaurantId))));
+        return  Objects.equals(this.zipCode, rhs.zipCode) &&
+                Objects.equals(this.country, rhs.country) &&
+                Objects.equals(this.province, rhs.province) &&
+                Objects.equals(this.city, rhs.city) &&
+                Objects.equals(this.street, rhs.street) &&
+                Objects.equals(this.addressNumber, rhs.addressNumber) &&
+                Objects.equals(this.restaurantId, rhs.restaurantId);
     }
 
     public static class Deserializer extends AbstractDeserializationSchema<RestaurantAddress> {
-
         private static final long serialVersionUID = 1L;
-
         ObjectMapper mapper;
-
         @Override
         public void open(InitializationContext context) {
             mapper = new ObjectMapper();
         }
-
         @Override
         public RestaurantAddress deserialize(byte[] message) throws IOException {
             return mapper.readValue(message, RestaurantAddress.class);
