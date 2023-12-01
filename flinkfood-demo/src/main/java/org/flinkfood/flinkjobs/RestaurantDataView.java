@@ -4,14 +4,15 @@ package org.flinkfood.flinkjobs;
 // Importing necessary Flink libraries and external dependencies
 
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import org.apache.flink.api.common.functions.JoinFunction;
 import org.apache.flink.connector.base.DeliveryGuarantee;
 import org.apache.flink.connector.kafka.source.KafkaSource;
 import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
 import org.apache.flink.connector.mongodb.sink.MongoSink;
 import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.DataStreamSink;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
-import org.flinkfood._helper.MyRestaurantCoGroupFunction;
 import org.flinkfood.schemas.restaurant.RestaurantAddress;
 import org.flinkfood.schemas.restaurant.RestaurantInfo;
 import org.flinkfood.schemas.restaurant.RestaurantView;
@@ -81,18 +82,19 @@ public class RestaurantDataView {
          */
 
 
-        //actual job: aggregation
-        DataStream<RestaurantView> restaurantViewDataStream =
+  /*      // actual job: aggregation
+        DataStreamSink<RestaurantView> restaurantViewDataStream =
         restaurantInfoDataStream.map(restaurantInfo -> new RestaurantView().with(restaurantInfo))
-                ;/*.coGroup(restaurantAddressDataStream)
+                .join(restaurantAddressDataStream)
                 .where(RestaurantView::getRestaurantId)
                 .equalTo(RestaurantAddress::getRestaurantId)
                 .window(TumblingEventTimeWindows.of(Time.seconds(5)))
-                .apply(new MyRestaurantCoGroupFunction());
-                */
-        restaurantViewDataStream.print();
-        restaurantViewDataStream
+                .apply(JoinFunction<RestaurantView, RestaurantAddress> (r))
                 .sinkTo(sink);
+*/
+        //restaurantViewDataStream.print();
+        //restaurantViewDataStream.sinkTo(sink);
+        //restaurantViewDataStream.setParallelism(3);
 
         //Execute the Flink job with the given name
         env.execute("RestaurantDataView");
