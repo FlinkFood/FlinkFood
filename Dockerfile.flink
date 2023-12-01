@@ -19,13 +19,9 @@ ENV PATH $PATH:$JAVA_HOME/bin
 
 # Copy the local contents into the container at /app
 COPY flinkfood-demo/ .
-COPY startup.sh .
 
 # Run Maven build and create necessary directories
 RUN mvn clean package
-
-# Make startup.sh executable
-RUN chmod +x startup.sh
 
 # Execute startup.sh and wait for Flink to start
 # RUN bash startup.sh && sleep 10
