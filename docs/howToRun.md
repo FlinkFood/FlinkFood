@@ -12,6 +12,8 @@ docker-compose up -d --build
 
 **NOTE:** Since this command does alot of things. You might have to wait some minutes before things are fully up and running. However, most of the computation is cached for future runs of this commands, making it much faster.
 
+### What is this flink_start.sh file.
+This file is used by the docker container to start some flink stuff. We do not have to run this file manually.
 ## The hard way
 ### 1. Start Containers with Docker Compose
 
