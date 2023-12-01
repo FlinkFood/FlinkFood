@@ -12,7 +12,9 @@ import org.apache.flink.connector.mongodb.sink.MongoSink;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
+import org.apache.flink.streaming.api.windowing.evictors.TimeEvictor;
 import org.flinkfood._helper.CoFlatMapFunctionImpl_;
+import org.flinkfood._helper.CoGroupFunctionImpl_;
 import org.flinkfood.schemas.restaurant.RestaurantAddress;
 import org.flinkfood.schemas.restaurant.RestaurantInfo;
 import org.flinkfood.schemas.restaurant.RestaurantView;
@@ -72,6 +74,7 @@ public class RestaurantDataView {
         DataStream<RestaurantAddress> restaurantAddressDataStream = env
                 .fromSource(RestaurantAddressSource, WatermarkStrategy.forMonotonousTimestamps(), "Kafka Restaurant Address Source")
                 .keyBy(RestaurantAddress::getRestaurantId);
+
         /* not used in testing
         DataStream<RestaurantService> restaurantServiceDataStream = env
                 .fromSource(RestaurantServiceSource, WatermarkStrategy.noWatermarks(), "Kafka Restaurant Service Source")
@@ -81,27 +84,14 @@ public class RestaurantDataView {
                 .setParallelism(5);
          */
 
-
         // actual job: aggregation
-        //DataStream<RestaurantView> restaurantViewDataStream =
-        //I wanted to use the join function, but it seems that it is not possible to use it
-        restaurantInfoDataStream.join(restaurantAddressDataStream)
+        restaurantInfoDataStream
+                .coGroup(restaurantAddressDataStream)
                 .where(RestaurantInfo::getId)
                 .equalTo(RestaurantAddress::getRestaurantId)
-                .window(TumblingEventTimeWindows.of(Time.seconds(5)))
-                .apply((JoinFunction<RestaurantInfo, RestaurantAddress, RestaurantView>)
-                        (restaurantInfo, restaurantAddress) -> new RestaurantView().with(restaurantInfo).with(restaurantAddress))
+                .window(TumblingEventTimeWindows.of(Time.hours(100)))
+                .apply(new CoGroupFunctionImpl_())
                 .sinkTo(sink);
-
-        /*restaurantInfoDataStream
-                .map(restaurantInfo -> new RestaurantView().with(restaurantInfo))
-                .keyBy(RestaurantView::getRestaurantId)
-                /* this doesn't correctly aggregate the data, but creates a new object for each message
-                .connect(restaurantAddressDataStream)
-                .keyBy(RestaurantView::getRestaurantId, RestaurantAddress::getRestaurantId)
-                .flatMap(new CoFlatMapFunctionImpl_())
-                .sinkTo(sink);*/
-
 
         //Execute the Flink job with the given name
         env.execute("RestaurantDataView");

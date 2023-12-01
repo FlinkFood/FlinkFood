@@ -150,11 +150,12 @@ public class RestaurantTableEnvironment {
                 " rv.id AS reviewID, " +
                 " rv.customer_id AS customerID, " +
                 " rv.rating AS rating, " +
-                "rv.comment AS comment" +
+                " rv.comment AS comment " +
                 " FROM restaurant_info r " +
                 " INNER JOIN restaurant_service s ON r.id = s.restaurant_id " +
                 " INNER JOIN restaurant_address a ON r.id = a.restaurant_id " +
-                " INNER JOIN restaurant_review rv ON r.id = rv.restaurant_id ");
+                " INNER JOIN restaurant_review rv ON r.id = rv.restaurant_id "
+                );
         return this.tEnv.sqlQuery(query);
     }
 

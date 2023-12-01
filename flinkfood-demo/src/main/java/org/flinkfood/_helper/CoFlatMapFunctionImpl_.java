@@ -9,9 +9,7 @@ import org.flinkfood.schemas.restaurant.RestaurantView;
 public class CoFlatMapFunctionImpl_ implements CoFlatMapFunction<RestaurantView, RestaurantAddress, RestaurantView> {
 
     private DataStream.Collector<RestaurantView> out;
-    public CoFlatMapFunctionImpl_() {
-
-    }
+    public CoFlatMapFunctionImpl_() {}
 
     @Override
     public void flatMap1(RestaurantView value, Collector<RestaurantView> out) throws Exception {

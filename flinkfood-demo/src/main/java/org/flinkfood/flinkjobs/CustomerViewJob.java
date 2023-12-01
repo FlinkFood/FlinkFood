@@ -54,6 +54,7 @@ public class CustomerViewJob {
                                 .setStartingOffsets(OffsetsInitializer.earliest())
                                 .setValueOnlyDeserializer(new KafkaAddressSchema())
                                 .build();
+
                 // Setting up Kafka source with relevant configurations
                 KafkaSource<Order> sourceOrder = KafkaSource.<Order>builder()
                                 .setBootstrapServers(KAFKA_URI)
@@ -82,6 +83,7 @@ public class CustomerViewJob {
                 DataStream<Customer> streamCustomer = env
                                 .fromSource(sourceCustomer, WatermarkStrategy.noWatermarks(), "Kafka Source")
                                 .setParallelism(1);
+
                 DataStream<Customer_address> streamAddress = env
                                 .fromSource(sourceAddress, WatermarkStrategy.noWatermarks(), "Kafka Source")
                                 .setParallelism(1);
