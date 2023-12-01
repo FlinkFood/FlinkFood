@@ -22,14 +22,14 @@ public class RestaurantRowToBsonDocument implements MongoSerializationSchema<Row
     /**
      * Creates a simple restaurant document with the following structure:
      * @param restaurant is a row with all the fields of the aggregated view
-     * @return document with annidated fields (not in array form!!)
+     * @return document with nested fields (not in array form!!)
      */
     private BsonDocument createSimpleRestaurantDocument(Row restaurant) {
         BsonDocument document = new BsonDocument();
         Set<String> field_names = restaurant.getFieldNames(true);
 
         Arrays.stream(RestaurantViewAttribute.values())
-                .distinct().forEach(attribute ->
+                .forEach(attribute ->
                 {
                     var doc = new BsonDocument();
                     assert field_names != null;
