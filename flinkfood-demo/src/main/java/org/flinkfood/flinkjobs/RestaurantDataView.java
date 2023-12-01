@@ -82,19 +82,18 @@ public class RestaurantDataView {
          */
 
 
-  /*      // actual job: aggregation
-        DataStreamSink<RestaurantView> restaurantViewDataStream =
+        // actual job: aggregation
+        DataStream<RestaurantView> restaurantViewDataStream =
         restaurantInfoDataStream.map(restaurantInfo -> new RestaurantView().with(restaurantInfo))
                 .join(restaurantAddressDataStream)
                 .where(RestaurantView::getRestaurantId)
                 .equalTo(RestaurantAddress::getRestaurantId)
                 .window(TumblingEventTimeWindows.of(Time.seconds(5)))
-                .apply(JoinFunction<RestaurantView, RestaurantAddress> (r))
-                .sinkTo(sink);
-*/
-        //restaurantViewDataStream.print();
-        //restaurantViewDataStream.sinkTo(sink);
-        //restaurantViewDataStream.setParallelism(3);
+                .apply((JoinFunction<RestaurantView, RestaurantAddress, RestaurantView>) RestaurantView::with);
+
+        restaurantViewDataStream.sinkTo(sink);
+                //.join(...etc
+                //.sinkTo(sink);
 
         //Execute the Flink job with the given name
         env.execute("RestaurantDataView");
