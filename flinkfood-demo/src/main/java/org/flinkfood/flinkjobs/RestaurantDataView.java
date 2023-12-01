@@ -10,9 +10,9 @@ import org.apache.flink.connector.kafka.source.KafkaSource;
 import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
 import org.apache.flink.connector.mongodb.sink.MongoSink;
 import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.datastream.DataStreamSink;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
+import org.flinkfood._helper.CoFlatMapFunctionImpl_;
 import org.flinkfood.schemas.restaurant.RestaurantAddress;
 import org.flinkfood.schemas.restaurant.RestaurantInfo;
 import org.flinkfood.schemas.restaurant.RestaurantView;
@@ -66,12 +66,12 @@ public class RestaurantDataView {
 
         // Creates a Flink data stream for the restaurants
         DataStream<RestaurantInfo> restaurantInfoDataStream = env
-                .fromSource(RestaurantInfoSource, WatermarkStrategy.noWatermarks(), "Kafka Restaurant Info Source")
-                .setParallelism(5); // 5 is the number of parallel jobs
+                .fromSource(RestaurantInfoSource, WatermarkStrategy.forMonotonousTimestamps(), "Kafka Restaurant Info Source")
+                .keyBy(RestaurantInfo::getId);
 
         DataStream<RestaurantAddress> restaurantAddressDataStream = env
-                .fromSource(RestaurantAddressSource, WatermarkStrategy.noWatermarks(), "Kafka Restaurant Address Source")
-                .setParallelism(5); // 5 is the number of parallel jobs
+                .fromSource(RestaurantAddressSource, WatermarkStrategy.forMonotonousTimestamps(), "Kafka Restaurant Address Source")
+                .keyBy(RestaurantAddress::getRestaurantId);
         /* not used in testing
         DataStream<RestaurantService> restaurantServiceDataStream = env
                 .fromSource(RestaurantServiceSource, WatermarkStrategy.noWatermarks(), "Kafka Restaurant Service Source")
@@ -83,17 +83,25 @@ public class RestaurantDataView {
 
 
         // actual job: aggregation
-        DataStream<RestaurantView> restaurantViewDataStream =
-        restaurantInfoDataStream.map(restaurantInfo -> new RestaurantView().with(restaurantInfo))
-                .join(restaurantAddressDataStream)
-                .where(RestaurantView::getRestaurantId)
+        //DataStream<RestaurantView> restaurantViewDataStream =
+        //I wanted to use the join function, but it seems that it is not possible to use it
+        restaurantInfoDataStream.join(restaurantAddressDataStream)
+                .where(RestaurantInfo::getId)
                 .equalTo(RestaurantAddress::getRestaurantId)
                 .window(TumblingEventTimeWindows.of(Time.seconds(5)))
-                .apply((JoinFunction<RestaurantView, RestaurantAddress, RestaurantView>) RestaurantView::with);
+                .apply((JoinFunction<RestaurantInfo, RestaurantAddress, RestaurantView>)
+                        (restaurantInfo, restaurantAddress) -> new RestaurantView().with(restaurantInfo).with(restaurantAddress))
+                .sinkTo(sink);
 
-        restaurantViewDataStream.sinkTo(sink);
-                //.join(...etc
-                //.sinkTo(sink);
+        /*restaurantInfoDataStream
+                .map(restaurantInfo -> new RestaurantView().with(restaurantInfo))
+                .keyBy(RestaurantView::getRestaurantId)
+                /* this doesn't correctly aggregate the data, but creates a new object for each message
+                .connect(restaurantAddressDataStream)
+                .keyBy(RestaurantView::getRestaurantId, RestaurantAddress::getRestaurantId)
+                .flatMap(new CoFlatMapFunctionImpl_())
+                .sinkTo(sink);*/
+
 
         //Execute the Flink job with the given name
         env.execute("RestaurantDataView");

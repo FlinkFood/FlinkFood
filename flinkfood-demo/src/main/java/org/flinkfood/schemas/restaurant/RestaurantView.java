@@ -96,7 +96,7 @@ public class RestaurantView {
         var doc = new BsonDocument();
         doc.append("restaurant_info", restaurantInfo == null ? new BsonDocument() : restaurantInfo.toBson());
         doc.append("restaurant_address", restaurantAddress == null ? new BsonDocument() : restaurantAddress.toBson());
-        //FIXME: complete
+        // FIXME: complete
 //        doc.append("restaurant_service", restaurantService == null ? new BsonDocument() : restaurantService.toBson());
 //        doc.append("restaurant_reviews", restaurantReviews == null ? new BsonArray() : new BsonArray(restaurantReviews.stream().map(RestaurantReview::toBson).toList()));
 //        doc.append("dishes", dishes == null ? new BsonArray() : new BsonArray(dishes.stream().map(Dish::toBson).toList()));
