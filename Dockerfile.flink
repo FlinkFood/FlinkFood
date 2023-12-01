@@ -29,9 +29,8 @@ RUN chmod +x startup.sh
 
 # Execute startup.sh and wait for Flink to start
 # RUN bash startup.sh && sleep 10
+COPY flink_start.sh /opt/flink/entry.sh
+RUN chmod +x /opt/flink/entry.sh
 
-# Run Flink jobs
-RUN flink run /opt/flink/CustomerViewJob/target/customerview-1.0.jar
-RUN flink run /opt/flink/DishViewJob/target/dishview-1.0.jar
-RUN flink run /opt/flink/RestaurantViewJob/target/restaurantview-1.0.jar
-CMD ["sleep", "infinity"]
+# Execute the entry script as the CMD
+CMD ["/opt/flink/entry.sh"]
