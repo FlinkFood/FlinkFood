@@ -150,7 +150,7 @@ public class RestaurantTableEnvironment {
                 " s.children_food AS childrenFood, " +
                 " rv.customer_id AS customerID, " +
                 " rv.rating AS rating, " +
-                " rv.review_comment AS reviewComment " +
+                " rv.comment AS reviewComment " +
                 " FROM restaurant_info r " +
                 " INNER JOIN restaurant_service s ON r.id = s.restaurant_id " +
                 " INNER JOIN restaurant_address a ON r.id = a.restaurant_id " +
