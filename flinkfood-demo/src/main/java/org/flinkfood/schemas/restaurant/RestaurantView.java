@@ -2,6 +2,8 @@ package org.flinkfood.schemas.restaurant;
 
 import com.mongodb.client.model.InsertOneModel;
 import com.mongodb.client.model.WriteModel;
+import org.apache.flink.api.common.serialization.SerializationSchema;
+import org.apache.flink.connector.mongodb.sink.config.MongoWriteOptions;
 import org.apache.flink.connector.mongodb.sink.writer.context.MongoSinkContext;
 import org.apache.flink.connector.mongodb.sink.writer.serializer.MongoSerializationSchema;
 import org.bson.*;
@@ -78,20 +80,21 @@ public class RestaurantView {
     public List<Order> getOrders() {
         return orders;
     }
-    public int getRestaurant_id() {
+    public int getRestaurantId() {
         return restaurantInfo.getId();
     }
 
     public static class Serializer implements MongoSerializationSchema<RestaurantView>, InsertBsonField {
 
         @Override
+        public void open(SerializationSchema.InitializationContext initializationContext, MongoSinkContext sinkContext, MongoWriteOptions sinkConfiguration) throws Exception {
+            initializationContext.getMetricGroup().addGroup("MongoDB");
+            System.out.print("test RESTAURANT VIEW");
+        }
+
+        @Override
         public WriteModel<BsonDocument> serialize(RestaurantView element, MongoSinkContext sinkContext) {
-            var document = new BsonDocument();
-            addFieldToDocument(document, "id", element.getRestaurantInfo().getId());
-            addFieldToDocument(document, "name", element.getRestaurantInfo().getName());
-            addFieldToDocument(document, "phone", element.getRestaurantInfo().getPhone());
-            //TODO :complete
-            return new InsertOneModel<>(document);
+            return new InsertOneModel<>(new BsonDocument().append("restaurant_id", new BsonInt32(element.getRestaurantId())));
         }
     }
 }

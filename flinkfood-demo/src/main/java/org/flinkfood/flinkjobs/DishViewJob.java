@@ -19,7 +19,7 @@ import org.flinkfood.schemas.restaurant.RestaurantInfo;
 public class DishViewJob {
 
         // Kafka and MongoDB connection details obtained from environment variables
-        private static final String KAFKA_URI = System.getenv("KAFKA_URI");
+        private static final String KAFKA_URI = "localhost:9092";
         private static final String SOURCE_DISH_TABLE = "postgres.public.dishes";
         private static final String SOURCE_RESTAURANT_INFO_TABLE = "postgres.public.restaurant_info";
 

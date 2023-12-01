@@ -4,7 +4,7 @@ import java.util.List;
 
 public enum RestaurantViewAttribute {
     SERVICES("services", List.of("parkingLots", "accessible", "childrenArea", "childrenFood")),
-    REVIEWS("reviews", List.of("id", "restaurantId", "userId", "rating", "comment", "date")),
+    REVIEWS("reviews", List.of("id", "restaurantId", "customerId", "rating", "comment")),
     ADDRESS("address", List.of("street", "number", "zipCode", "city", "province", "country")),
     STATUS("status", List.of("id", "name", "vatCode", "email"));
 

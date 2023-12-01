@@ -71,13 +71,4 @@ public class ReviewDish {
     public void setRestaurant_id(int restaurant_id) {
         this.restaurant_id = restaurant_id;
     }
-
-    public static class Serializer implements MongoSerializationSchema<ReviewDish>, InsertBsonField {
-        @Override
-        public WriteModel<BsonDocument> serialize(ReviewDish element, MongoSinkContext sinkContext) {
-            var doc = new BsonDocument();
-            addFieldToDocument(doc, "id", element.getId());
-            return new InsertOneModel<>(doc);
-        }
-    }
 }
