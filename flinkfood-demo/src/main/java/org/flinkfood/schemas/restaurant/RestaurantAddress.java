@@ -14,6 +14,7 @@ import org.apache.flink.api.common.serialization.AbstractDeserializationSchema;
 import org.apache.flink.connector.mongodb.sink.writer.context.MongoSinkContext;
 import org.apache.flink.connector.mongodb.sink.writer.serializer.MongoSerializationSchema;
 import org.bson.BsonDocument;
+import org.bson.BsonValue;
 import org.flinkfood._helper.InsertBsonField;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -26,7 +27,7 @@ import org.flinkfood._helper.InsertBsonField;
         "province",
         "country"
 })
-public class RestaurantAddress implements Serializable {
+public class RestaurantAddress implements Serializable, InsertBsonField {
 
     @JsonProperty("restaurant_id")
     private Integer restaurantId;
@@ -244,6 +245,18 @@ public class RestaurantAddress implements Serializable {
                 Objects.equals(this.street, rhs.street) &&
                 Objects.equals(this.addressNumber, rhs.addressNumber) &&
                 Objects.equals(this.restaurantId, rhs.restaurantId);
+    }
+
+    public BsonDocument toBson() {
+        var doc = new BsonDocument();
+        addFieldToDocument(doc, "restaurant_id", restaurantId);
+        addFieldToDocument(doc, "street", street);
+        addFieldToDocument(doc, "address_number", addressNumber);
+        addFieldToDocument(doc, "zip_code", zipCode);
+        addFieldToDocument(doc, "city", city);
+        addFieldToDocument(doc, "province", province);
+        addFieldToDocument(doc, "country", country);
+        return doc;
     }
 
     public static class Deserializer extends AbstractDeserializationSchema<RestaurantAddress> {

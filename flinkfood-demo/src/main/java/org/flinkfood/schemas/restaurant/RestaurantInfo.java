@@ -9,6 +9,7 @@ import org.apache.flink.connector.mongodb.sink.config.MongoWriteOptions;
 import org.apache.flink.connector.mongodb.sink.writer.context.MongoSinkContext;
 import org.apache.flink.connector.mongodb.sink.writer.serializer.MongoSerializationSchema;
 import org.bson.BsonDocument;
+import org.bson.BsonValue;
 import org.flinkfood._helper.InsertBsonField;
 
 import java.io.IOException;
@@ -27,7 +28,7 @@ import java.util.Objects;
         "price_range",
         "vat_code"
 })
-public class RestaurantInfo implements Serializable
+public class RestaurantInfo implements Serializable, InsertBsonField
 {
 
     @JsonProperty("id")
@@ -221,6 +222,21 @@ public class RestaurantInfo implements Serializable
                 ", priceRange='" + priceRange + '\'' +
                 ", vatCode=" + vatCode +
                 '}';
+    }
+
+    /*
+     * Document composition, null safe
+     */
+    public BsonDocument toBson() {
+        var doc = new BsonDocument();
+        addFieldToDocument(doc, "id", id);
+        addFieldToDocument(doc, "name", name);
+        addFieldToDocument(doc, "phone", phone);
+        addFieldToDocument(doc, "email", email);
+        addFieldToDocument(doc, "cuisine_type", cuisineType);
+        addFieldToDocument(doc, "price_range", priceRange);
+        addFieldToDocument(doc, "vat_code", vatCode);
+        return doc;
     }
 
     public static class Deserializer extends AbstractDeserializationSchema<RestaurantInfo> {
