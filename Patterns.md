@@ -1,7 +1,7 @@
 # Document for pattern exploration
 ## TODO:
 - [ ] Create a huge set of data (I'd go with the restaurant views if it's okay for you)
-- [ ] Find a tool to evaluate Flink performance -> cpu and memory usage
+- [ ] Find a tool to evaluate Flink performance -> cpu and memory usage http://localhost:8081/#/job-manager/metrics could be of help
 
 If we stick with the TableStream:
 - [ ] Create a json/yaml whatever configuration file for the flink tables
