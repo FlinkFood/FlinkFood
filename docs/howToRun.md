@@ -94,7 +94,7 @@ This is going to create a `.jar` file for each Flink job. The .jar files are goi
 | RestaurantViewJob | `./flinkfood-demo/RestaurantViewJob/target/restaurantview-1.0.jar` |
 | DishViewJob |`./flinkfood-demo/DishViewJob/target/dishview-1.0.jar` |
  
-These jobs can now be submitted to the [Flink dashboard](localhost:8081).
+These jobs can now be submitted to the [Flink dashboard](http://localhost:8081).
 
 #### 4.2 Using an IDE
 Sometimes it can be a benefit to quickly be able to test if your Flinkjob is doing what you would expect in a quick way. 
