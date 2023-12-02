@@ -1,3 +1,18 @@
+# Table of Contents
+1. [How to run Flinkfood](#how-to-run-flinkfood)
+   1.1 [Prerequisites](#prerequisites)
+       1.1.1 [Quick Note](#quick-note)
+   1.2 [The easy way](#the-easy-way)
+       1.2.1 [What is this flink_start.sh file?](#what-is-this-flink_startsh-file)
+   1.3 [The hard way](#the-hard-way)
+       1.3.1 [Start Containers with Docker Compose](#1-start-containers-with-docker-compose)
+       1.3.2 [Execute the Startup Script](#2-execute-the-startup-script)
+       1.3.3 [Set Environment Variables](#3-set-environment-variables)
+       1.3.4 [Compile and Run the Java Jobs](#4-compile-and-run-the-java-jobs)
+           1.3.4.1 [Using Maven](#41-using-maven)
+           1.3.4.2 [Using an IDE](#42-using-an-ide)
+       1.3.5 [Connect to Postgres and Add a New User](#5-connect-to-postgres-and-add-a-new-user)
+
 # How to run Flinkfood
 
 This file is intended to give you an introduction on how to run the Flinkfood application. There is an easy way. And there is an hard way, which contains more details on how things are setup.
