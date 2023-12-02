@@ -81,14 +81,9 @@ export KAFKA_URI=localhost:9092
 
 ### 4. Compile and Run the Java Jobs
 #### 4.1 Using Maven
-To compile and run the Java jobs make sure you are using **JDK11**. Make sure your terminal is in the folder:
-```
-./flinkfood-demo/
-```
-
-Then run the command
+To compile and run the command
 ```bash
-mvn clean package
+cd ../flinkfood-demo; mvn clean package
 ```
 
 This is going to create a `.jar` file for each Flink job. The .jar files are going to be placed in the following locations:
