@@ -1,15 +1,22 @@
 version: "2.2"
 services:
   jobmanager:
-    image: flink:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.flink
     container_name: jobmanager
     ports:
       - "8081:8081"
-    command: jobmanager
     environment:
+      - KAFKA_URI=kafka:29092
+      - MONGODB_SERVER=mongodb://mongo:27017
       - |
         FLINK_PROPERTIES=
         jobmanager.rpc.address: jobmanager
+        # Kafka bootstrap servers configuration
+        kafka.bootstrap.servers: "kafka:29092"
+    depends_on:
+      - kconnect
 
   taskmanager:
     image: flink:latest
@@ -22,7 +29,7 @@ services:
       - |
         FLINK_PROPERTIES=
         jobmanager.rpc.address: jobmanager
-        taskmanager.numberOfTaskSlots: 2
+        taskmanager.numberOfTaskSlots: 3
 
   mongo:
     image: mongo:latest
