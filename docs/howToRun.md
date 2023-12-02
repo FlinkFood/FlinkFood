@@ -44,6 +44,7 @@ command. When the daemon's not running, you'll see a
 `"can't connect to Docker daemon"` message.
 
 To start the deamon, follow the steps on the [Docker Docs page](https://docs.docker.com/config/daemon/start/).
+
 ## The easy way
 You can start the Flinkfood application by running this simple command. It will compile your program and submit your flinkjobs to the Flink jobmanager. You can monitor your jobs after running this command at the [Flinkfood dashboard](http://localhost:8081/#/overview).
 
@@ -78,8 +79,35 @@ export MONGODB_URI=mongodb://localhost:27017
 export KAFKA_URI=localhost:9092
 ```
 
-### 4. Compile and Run the Java Job
-Compile and run the [`FirstLetterUppercase.java`](../flinkfood-demo/src/main/java/org/flinkfood/flinkjobs/FirstLetterUppercase.java) job. Make sure you are using **JDK11**. It is easier to do this via an IDE, but it can also be done by running `mvn clean package` to compile the code and run it with the `java` command.
+### 4. Compile and Run the Java Jobs
+#### 4.1 Using Maven
+To compile and run the Java jobs make sure you are using **JDK11**. Make sure your terminal is in the folder:
+```
+./flinkfood-demo/
+```
+
+Then run the command
+```bash
+mvn clean package
+```
+
+This is going to create a `.jar` file for each Flink job. The .jar files are going to be placed in the following locations:
+
+| Flink Job | Location of .jar file |
+| ----------| --------------------- |
+| CustomerViewJob |`./flinkfood-demo/CustomerViewJob/target/customerview-1.0.jar` |
+| RestaurantViewJob | `./flinkfood-demo/RestaurantViewJob/target/restaurantview-1.0.jar` |
+| DishViewJob |`./flinkfood-demo/DishViewJob/target/dishview-1.0.jar` |
+ 
+These jobs can now be submitted to the [Flink dashboard](localhost:8081).
+
+#### 4.2 Using an IDE
+Sometimes it can be a benefit to quickly be able to test if your Flinkjob is doing what you would expect in a quick way. 
+
+##### Intellij
+Before running, make sure you have gone to run configuration. In this menu click "Modify Options" and select the entry `Add depedency with "provided" scope to classpath`
+
+Now, if you have followed the previous steps of the "Hard way" you can press the Run button and your service will start
 
 ### 5. Connect to Postgres and Add a New User
 Connect to your Postgres database and add a new user to the table:
