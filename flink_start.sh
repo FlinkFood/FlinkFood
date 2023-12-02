@@ -7,6 +7,7 @@ export MONGODB_SERVER=mongodb://mongo:27017
 echo "Starting jobmanager..."
 /opt/flink/bin/jobmanager.sh start
 
+sleep 10 &&
 echo "Sending Kafka Connectors to Kafka Connect..."
 curl -X POST 'http://kconnect:8083/connectors' -H 'Content-Type: application/json' -d '{
     "name": "postgres-connector",
