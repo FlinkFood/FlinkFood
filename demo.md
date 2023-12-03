@@ -27,10 +27,10 @@ Go to your preferred mongoDB discovery view. I personally use:[MongoDB Compass |
 
 Currently there should be 3 views in the Flinkfood database:
 
--   restaurants<sub>view</sub>
--   users<sub>sink</sub>
+-   restaurants_view
+-   users_sink
 
-Currently a restaurant<sub>view</sub> should look like this:
+Currently a restaurant_view should look like this:
 ```json
 {
   "ID": 1,
@@ -61,6 +61,12 @@ Currently a restaurant<sub>view</sub> should look like this:
 ```
 
 After making sure all of this works, you should be able to go ahead with your demonstration.
+
+## Running the SQL commands in this demo
+To run the SQL commands in this demo, please make sure you are inside the docker container for postgresql:
+```sh
+docker -it exec postgres bash 
+```
 
 # Demonstration
 
