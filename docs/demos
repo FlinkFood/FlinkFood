@@ -1,0 +1,158 @@
+#+title: Demo
+This file is intended to give an overview of how to demo the FlinkFood application
+
+* Before starting the demo :ATTACH:
+:PROPERTIES:
+:ID:       32f8b2df-4f01-48c0-8da0-3eb1135d5850
+:END:
+Before starting the demo make sure you have started the application. This is smart since during the demo, you might experience issues with processes taking longer than usual since we are streaming the demo online. To start everything up, do this:
+#+begin_src sh
+docker compose up -d --build
+#+end_src
+
+After waiting a while visit [[http://localhost:8081/#/overview][Apache Flink Web Dashboard]] and make sure that it has three running jobs (surviving for more than 1 minute).
+
+Go to your preferred mongoDB discovery view. I personally use:[[https://www.mongodb.com/products/tools/compass][MongoDB Compass | MongoDB]]. Connect to: mongodb://localhost:27017.
+
+Currently there should be 3 views in the Flinkfood database:
+- restaurants_view
+- users_sink
+
+Currently a restaurant_view should look like this:
+#+begin_src json
+{
+  "ID": 1,
+  "name": "Ristorante da Mario",
+  "province": "RM",
+  "vatCode": 2345678,
+  "email": "mario.gmail.com",
+  "accessibleEntrance": true,
+  "address": {
+    "street": "Via Roma",
+    "number": "1",
+    "zipCode": 12345,
+    "city": "Roma",
+    "country": "Italy"
+  },
+  "status": {
+    "takeAway": true,
+    "delivery": true,
+    "dineIn": true
+  },
+  "services": {
+    "parkingLots": 10,
+    "childrenArea": true,
+    "childrenFood": true
+  },
+  "reviews": []
+}
+#+end_src
+
+After making sure all of this works, you should be able to go ahead with your demonstration.
+
+* Demonstration
+The point of this demonstration is to show that our Flink engine is dynamically listening to data changes in a set of databases. It then takes this new data, puts it together into single views and stores it in a final database. This new database is visible for the Flinkfood users
+** Introduction - Putting things into a context
+*** The input databases
+First of all, we want to show that this are the different databases the Flinkfood project fetches datafrom and creates single views out of
+#+begin_src sql :engine postgresql :dbhost localhost :dbport 5432 :dbuser postgres :dbpassword postgres :database flinkfood
+\dt
+#+end_src
+#+RESULTS:
+| List of relations |                    |       |          |
+|-------------------+--------------------+-------+----------|
+| Schema            | Name               | Type  | Owner    |
+| public            | certification      | table | postgres |
+| public            | customer           | table | postgres |
+| public            | customer_address   | table | postgres |
+| public            | dish               | table | postgres |
+| public            | dish_ingredient    | table | postgres |
+| public            | fidelity_card      | table | postgres |
+| public            | ingredient         | table | postgres |
+| public            | item               | table | postgres |
+| public            | order              | table | postgres |
+| public            | partnership        | table | postgres |
+| public            | payment_method     | table | postgres |
+| public            | restaurant_address | table | postgres |
+| public            | restaurant_info    | table | postgres |
+| public            | restaurant_review  | table | postgres |
+| public            | restaurant_service | table | postgres |
+| public            | reviews_dish       | table | postgres |
+| public            | supplier           | table | postgres |
+
+*** Example restaurant - Da mario
+This is an example on how a table the Flinkfood project addresses looks like:
+#+begin_src sql :engine postgresql :dbhost localhost :dbport 5432 :dbuser postgres :dbpassword postgres :database flinkfood
+SELECT * FROM restaurant_info WHERE name='Ristorante da Mario';
+#+end_src
+
+#+RESULTS:
+| id | name                |      phone | email           | cuisine_type | price_range | vat_code |
+|----+---------------------+------------+-----------------+--------------+-------------+----------|
+|  1 | Ristorante da Mario | 1234567890 | mario.gmail.com | italian      | low         |  2345678 |
+
+The services the restaurant provides:
+#+begin_src sql :engine postgresql :dbhost localhost :dbport 5432 :dbuser postgres :dbpassword postgres :database flinkfood
+SELECT * FROM restaurant_service WHERE restaurant_id=1;
+#+end_src
+
+#+RESULTS:
+| restaurant_id | take_away | delivery | dine_in | parking_lots | accessible | children_area | children_food |
+|---------------+-----------+----------+---------+--------------+------------+---------------+---------------|
+|             1 | t         | t        | t       |           10 | t          | t             | t             |
+
+
+The address of the restaurant:
+#+begin_src sql :engine postgresql :dbhost localhost :dbport 5432 :dbuser postgres :dbpassword postgres :database flinkfood
+SELECT * FROM restaurant_address WHERE restaurant_id=1;
+#+end_src
+
+#+RESULTS:
+| restaurant_id | street   | address_number | zip_code | city | province | country |
+|---------------+----------+----------------+----------+------+----------+---------|
+|             1 | Via Roma |              1 |    12345 | Roma | RM       | Italy   |
+
+*** Example jobs.
+Visit [[http://localhost:8081/#/overview][Apache Flink Web Dashboard]] and show the different jobs running.
+Go to the RestaurantViewJob and show the overview. On the left in the overview you can see our sources for the integration. This makes it easier for customers and the Flinkfood team to visualize what is going on. You can also see how the JOIN operations are done in the pipeline. Making it easier to debug.
+
+In the rest of the demo we will see examples of usages for these jobs.
+
+*** Example single view.
+Go to your MongoDB visuzalizer and show an example of how the Restaurant view looks before the first aggregations. Here we can emphesize that there is more data in this table then the first table (address, services).
+** The restaurant owner
+*Scenario*: You are a restaurant owner of Ristorante da Mario, and need your to change your buisness email addres for you restaurant. You would like this change to also be visible for the flinkfood users. You follow these steps:
+
+1. Update the Restaurant email address:
+   1. Show that the aggregation is happening in the running job in the Apache Flink dashboard
+   2. Show the new entry in the single view.
+#+begin_src sql :engine postgresql :dbhost localhost :dbport 5432 :dbuser postgres :dbpassword postgres :database flinkfood
+UPDATE restaurant_info SET email='mario@gmail.com' WHERE id = 1;
+#+end_src
+#+RESULTS:
+| UPDATE 1 |
+|----------|
+** The customer
+*Scenario*: You are the customer of the FlinkFood service. This is your information on the service:
+#+begin_src sql :engine postgresql :dbhost localhost :dbport 5432 :dbuser postgres :dbpassword postgres :database flinkfood
+SELECT * FROM customer WHERE id=1;
+#+end_src
+
+#+RESULTS:
+| id | username   | first_name | last_name |  birthdate | email           | fiscal_code      |
+|----+------------+------------+-----------+------------+-----------------+------------------|
+|  1 | mariogamer | Mario      | Rossi     | 1990-01-01 | mario@gmail.com | RSSMRA90A01H501A |
+
+
+Now, you are buying a dish of Pizza Margarita from your good friend, the owner of Ristorante da Mario.
+#+begin_src sql :engine postgresql :dbhost localhost :dbport 5432 :dbuser postgres :dbpassword postgres :database flinkfood
+INSERT INTO public.order (id, name, customer_id, restaurant_id, supplier_id, order_date, payment_date, delivery_date, description, total_amount, currency, supply_order)
+VALUES
+(11, 'ord-987654321-AAAA', 1, 1, 3, '2023-12-03', '2023-12-03', '2023-12-03', 'Pizza Margarita', 15, 'USD', 'f');
+#+end_src
+
+#+RESULTS:
+| INSERT 0 1 |
+|------------|
+
+Now you are so happy since you can see the change in the user single view (Show mongoDB)
