@@ -14,7 +14,7 @@ def generate_rest_info():
     first_word = random.choice(first_words)
     name = first_word + ' ' + random.choice(rest_of_names)
 
-    phone = str(random.randint(1000000000, 9999999999))
+    phone = str(random.randint(100000000, 999999999))
 
     email_list = ["gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "aol.com", "icloud.com", "zoho.com", "protonmail.com", "gmx.com", "mail.com"]
     email = first_word + '@' + random.choice(email_list)
@@ -25,7 +25,7 @@ def generate_rest_info():
     price_range_list = ['$', '$$', '$$$', '$$$$']
     price_range = random.choice(price_range_list)
 
-    vat_code = random.randint(1000000000, 9999999999)
+    vat_code = random.randint(10000000, 99999999)
 
     return (name,phone,email,cuisine_type,price_range,vat_code) #tuple to be added on the table
 
@@ -55,4 +55,4 @@ def save_to_csv(addresses, filename):
 number_of_restaurants = 10000 #set the number of restaurants you want
 num_lines = 10000 #set the number of lines you want
 addresses = generate_rest_infos(num_lines)
-save_to_csv(addresses, 'restaurant_info.csv')
+save_to_csv(addresses, '../../restaurant_info.csv')
