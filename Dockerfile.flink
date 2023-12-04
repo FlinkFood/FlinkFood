@@ -1,21 +1,21 @@
-# Use the Flink base image
-FROM flink:latest
+## BUILD STAGE
+FROM eclipse-temurin:18-jdk AS build
 
 # Set the working directory in the container
 WORKDIR /opt/flink
 
 # Update the package lists and install necessary packages
 RUN apt-get update && \
-    apt-get install -y maven curl && \
-    apt-get clean
+   apt-get install -y maven wget && \
+   apt-get clean
 
-# Install OpenJDK 18 alongside the existing version
-RUN apt-get install -y openjdk-18-jdk
+# Download kafka binaries, so we can communicate with the kafka cluster
+RUN wget https://archive.apache.org/dist/kafka/3.0.0/kafka_2.13-3.0.0.tgz && \
+    tar xzf kafka_2.13-3.0.0.tgz && \
+    rm kafka_2.13-3.0.0.tgz
 
-# Set environment variables for Java
-ENV JAVA_HOME /usr/lib/jvm/java-18-openjdk-amd64
-RUN java -version
-ENV PATH $PATH:$JAVA_HOME/bin
+# Add the Kafka command-line tools to the PATH
+ENV PATH="/opt/flink/kafka_2.13-3.0.0/bin:${PATH}"
 
 # Copy the local contents into the container at /app
 COPY flinkfood-demo/ .
@@ -23,10 +23,19 @@ COPY flinkfood-demo/ .
 # Run Maven build and create necessary directories
 RUN mvn clean package
 
-# Execute startup.sh and wait for Flink to start
-# RUN bash startup.sh && sleep 10
+# Copy the entry script to the build stage
 COPY flink_start.sh /opt/flink/entry.sh
 RUN chmod +x /opt/flink/entry.sh
+
+## RUN STAGE
+# Use a smaller base image for the runtime stage
+FROM flink:latest
+
+# Set the working directory in the container
+WORKDIR /opt/flink
+
+# Copy necessary files from the build stage
+COPY --from=build /opt/flink /opt/flink
 
 # Execute the entry script as the CMD
 CMD ["/opt/flink/entry.sh"]
