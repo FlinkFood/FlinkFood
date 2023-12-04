@@ -1,0 +1,33 @@
+## BUILD STAGE
+FROM eclipse-temurin:18-jdk AS build
+
+# Set the working directory in the container
+WORKDIR /opt/flink
+
+# Update the package lists and install necessary packages
+RUN apt-get update && \
+   apt-get install -y maven curl && \
+   apt-get clean
+
+# Copy the local contents into the container at /app
+COPY flinkfood-demo/ .
+
+# Run Maven build and create necessary directories
+RUN mvn clean package
+
+# Copy the entry script to the build stage
+COPY flink_start.sh /opt/flink/entry.sh
+RUN chmod +x /opt/flink/entry.sh
+
+## RUN STAGE
+# Use a smaller base image for the runtime stage
+FROM flink:latest
+
+# Set the working directory in the container
+WORKDIR /opt/flink
+
+# Copy necessary files from the build stage
+COPY --from=build /opt/flink /opt/flink
+
+# Execute the entry script as the CMD
+CMD ["/opt/flink/entry.sh"]

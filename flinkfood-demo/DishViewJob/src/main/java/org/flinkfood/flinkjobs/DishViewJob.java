@@ -21,7 +21,7 @@ public class DishViewJob {
 
         // Kafka and MongoDB connection details obtained from environment variables
         private static final String KAFKA_URI = System.getenv("KAFKA_URI");
-        private static final String SOURCE_DISH_TABLE = "postgres.public.dishes";
+        private static final String SOURCE_DISH_TABLE = "postgres.public.dish";
         private static final String SOURCE_RESTAURANT_INFO_TABLE = "postgres.public.restaurant_info";
 
         // Main method where the Flink job is defined
