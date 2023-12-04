@@ -54,3 +54,6 @@ Thumbs.db
 
 # Pom stuff
 dependency-reduced-pom.xml
+
+# Docs
+*.org
