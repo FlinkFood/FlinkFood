@@ -75,15 +75,6 @@ public class RestaurantDataView {
                 .fromSource(RestaurantAddressSource, WatermarkStrategy.forMonotonousTimestamps(), "Kafka Restaurant Address Source")
                 .keyBy(RestaurantAddress::getRestaurantId);
 
-        /* not used in testing
-        DataStream<RestaurantService> restaurantServiceDataStream = env
-                .fromSource(RestaurantServiceSource, WatermarkStrategy.noWatermarks(), "Kafka Restaurant Service Source")
-                .setParallelism(5);
-        DataStream<Order> orderDataStream = env
-                .fromSource(OrderSource, WatermarkStrategy.noWatermarks(), "Kafka Order Source")
-                .setParallelism(5);
-         */
-
         // actual job: aggregation
         restaurantInfoDataStream
                 .coGroup(restaurantAddressDataStream)
