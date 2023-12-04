@@ -5,6 +5,8 @@ I've implemented a configurable sql command in the [config directory](../../.con
 It's used to create a table enviroment for the data exploration. [here @ line 52](../../flinkfood-demo/src/main/java/org/flinkfood/flinkjobs/RestaurantTableView.java#here)
 
 ## DataSteam Pattern
+Variuos approaches, no result!
+
 1. Approach with datastreams connected and keyed with the right
   ids are flatmapped into a RestaurantView but they are not joined:
   the restaurantViews are created with distinct objects from the streams (not joined)
@@ -46,3 +48,16 @@ restaurantInfoDataStream
    .apply(new CoGroupFunctionImpl_())
    .sinkTo(sink);
 ```
+
+## Conclusion
+
+Working with the flink-SQL pattern throughout this sprint It’s the best approach.
+
+It’s easy to use and implementat; all the streams must be implemented with the same pattern by the end of the sprint.
+This approach is also configurable: It’s better to have the implementation ready for configuration by the client (e.g. using a json file).
+
+This choice is made without taking into account the performance parameter, that was evaluated due to inability of Datastream testing.
+
+The resolution must be to keep the experimentation going as a sub-goal of the sprint.
+
+** summary document can be found at the [link](https://docs.google.com/document/d/1wxCYG6w6nJVDsFXKLeSPREIqDegXsupX1SYRR2fyJKM/edit)**
