@@ -9,14 +9,13 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.types.Row;
-import org.flinkfood._helper.ReadFile;
 import org.flinkfood.flinkEnvironments.RestaurantTableEnvironment;
 import org.flinkfood.serializers.RestaurantRowToBsonDocument;
 
 import java.util.Optional;
 
 // Class declaration for the Flink job
-public class RestaurantTableView {
+public class RestaurantView {
 
     private static final String MONGODB_URI = System.getenv("MONGODB_SERVER");
     private static final String SINK_DB = "flinkfood";
