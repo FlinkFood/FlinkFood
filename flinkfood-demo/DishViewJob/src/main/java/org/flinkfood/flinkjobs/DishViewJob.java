@@ -4,8 +4,10 @@ package org.flinkfood.flinkjobs;
 // Importing necessary Flink libraries and external dependencies
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import org.apache.flink.connector.base.DeliveryGuarantee;
 import org.apache.flink.connector.kafka.source.KafkaSource;
 import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
+import org.apache.flink.connector.mongodb.sink.MongoSink;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.table.api.*;
 import org.apache.flink.types.Row;
@@ -15,6 +17,7 @@ import org.flinkfood.schemas.dish.Dish;
 import org.flinkfood.schemas.dish.KafkaDishSchema;
 import org.flinkfood.schemas.restaurant.KafkaRestaurantInfoSchema;
 import org.flinkfood.schemas.restaurant.RestaurantInfo;
+import org.flinkfood.serializers.DishRowToBsonDocument;
 
 // Class declaration for the Flink job
 public class DishViewJob {
@@ -23,6 +26,9 @@ public class DishViewJob {
         private static final String KAFKA_URI = System.getenv("KAFKA_URI");
         private static final String SOURCE_DISH_TABLE = "postgres.public.dish";
         private static final String SOURCE_RESTAURANT_INFO_TABLE = "postgres.public.restaurant_info";
+        private static final String MONGODB_URI = System.getenv("MONGODB_SERVER");
+        private static final String SINK_DB = "flinkfood";
+        private static final String SINK_DB_TABLE = "dish_view";
 
         // Main method where the Flink job is defined
         public static void main(String[] args) throws Exception {
@@ -51,9 +57,9 @@ public class DishViewJob {
 
                 // Creates a Flink data stream for the dishes
                 DataStream<Dish> dishStream = env
-                .fromSource(dishSource, WatermarkStrategy.noWatermarks(), "Kafka Dish Source")
-                .setParallelism(1);
-                
+                                .fromSource(dishSource, WatermarkStrategy.noWatermarks(), "Kafka Dish Source")
+                                .setParallelism(1);
+
                 // Creates a Flink data stream for the restaurants
                 DataStream<RestaurantInfo> restaurantInfoStream = env
                                 .fromSource(restaurantInfoSource, WatermarkStrategy.noWatermarks(),
@@ -64,26 +70,39 @@ public class DishViewJob {
                 Table dishTable = tableEnv.fromDataStream(dishStream).select(
                                 $("id").as("dish_id"),
                                 $("name").as("dish_name"),
+                                $("price").as("dish_price"),
+                                $("currency").as("price_currency"),
+                                $("description").as("dish_description"),
                                 $("restaurant_id"));
 
                 // Creates a Flink table for the restaurants
-                Table restaurantInfoTable = tableEnv.fromDataStream(restaurantInfoStream).select(
-                                $("id"),
-                                $("name").as("restaurant_name"));
+                Table restaurantInfoTable = tableEnv
+                                .fromDataStream(restaurantInfoStream)
+                                .select($("*"));
 
                 // Joins the two tables in a single table and selects some arbitrary fields
                 Table result = dishTable
                                 .join(restaurantInfoTable)
                                 .where($("restaurant_id").isEqual($("id")))
-                                .select($("dish_name"), $("dish_id"), $("restaurant_name"));
+                                .select($("*"));
 
-                // Converts the result table in a Flink data stream 
+                // Converts the result table in a Flink data stream
                 DataStream<Row> resultStream = tableEnv.toDataStream(result);
-                
-                // Print data coming from the stream in the console 
-                resultStream.print();
-                
-                // Starts job execution 
+
+                MongoSink<Row> sink = MongoSink.<Row>builder()
+                                .setUri(MONGODB_URI)
+                                .setDatabase(SINK_DB)
+                                .setCollection(SINK_DB_TABLE)
+                                .setBatchSize(1000)
+                                .setBatchIntervalMs(1000)
+                                .setMaxRetries(3)
+                                .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
+                                .setSerializationSchema(new DishRowToBsonDocument())
+                                .build();
+
+                resultStream.sinkTo(sink);
+
+                // Starts job execution
                 env.execute("DishViewJob");
         }
 }
