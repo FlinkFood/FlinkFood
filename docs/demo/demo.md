@@ -64,7 +64,7 @@ After making sure all of this works, you should be able to go ahead with your de
 ## NOTE: Where to run SQL commands
 Make sure you are in the postgre container when running the commands:
 ```sh
-docker exec -it postgre bash
+docker exec -it postgres psql -U postgres -d flinkfood
 ```
 
 # Demonstration
