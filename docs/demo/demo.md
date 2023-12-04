@@ -1,22 +1,21 @@
-# Table of Contents
+### Table of Contents
 
-1.  [Before starting the demo](#org317d684):ATTACH:
-2.  [Demonstration](#orgca7d5b0)
-    1.  [Introduction - Putting things into a context](#org0dcbb46)
-        1.  [The input databases](#org4974d61)
-        2.  [Example restaurant - Da mario](#orga370746)
-        3.  [Example jobs.](#orge3bf807)
-        4.  [Example single view.](#org4bf7276)
-    2.  [The restaurant owner](#org64e7f11)
-    3.  [The customer](#org1884158)
+- [Before starting the demo](#before-starting-the-demo)
+      * [NOTE: Where to run SQL commands](#note--where-to-run-sql-commands)
+- [Demonstration](#demonstration)
+      * [Introduction - Putting things into a context [org317d684]](#introduction---putting-things-into-a-context--org317d684-)
+  + [The input databases](#the-input-databases)
+    + [Example restaurant - Da mario](#example-restaurant---da-mario)
+          + [Example jobs.](#example-jobs)
+          + [Example single view.](#example-single-view)
+      * [The restaurant owner](#the-restaurant-owner)
+      * [The customer](#the-customer)
 
 This file is intended to give an overview of how to demo the FlinkFood application
-
-
-# Before starting the demo 
+# Before starting the demo
 
 Before starting the demo make sure you have started the application. This is smart since during the demo, you might experience issues with processes taking longer than usual since we are streaming the demo online. To start everything up, do this:
-```sql
+```bash
 docker compose up -d --build
 ```
 
@@ -63,7 +62,7 @@ After making sure all of this works, you should be able to go ahead with your de
 
 ## NOTE: Where to run SQL commands
 Make sure you are in the postgre container when running the commands:
-```sh
+```bash
 docker exec -it postgres psql -U postgres -d flinkfood
 ```
 
@@ -71,24 +70,15 @@ docker exec -it postgres psql -U postgres -d flinkfood
 
 The point of this demonstration is to show that our Flink engine is dynamically listening to data changes in a set of databases. It then takes this new data, puts it together into single views and stores it in a final database. This new database is visible for the Flinkfood users
 
-
-<a id="org0dcbb46"></a>
-
 ## Introduction - Putting things into a context
-
-
-<a id="org4974d61"></a>
 
 ### The input databases
 
-First of all, we want to show that this are the different databases the Flinkfood project fetches datafrom and creates single views out of
+First of all, we want to show that this are the different databases the Flinkfood project fetches data from and creates single views out of
 
 ```sql
 \dt
 ```
-
-
-<a id="orga370746"></a>
 
 ### Example restaurant - Da mario
 
@@ -110,9 +100,6 @@ The address of the restaurant:
 SELECT * FROM restaurant_address WHERE restaurant_id=1;
 ```
 
-
-<a id="orge3bf807"></a>
-
 ### Example jobs.
 
 Visit [Apache Flink Web Dashboard](http://localhost:8081/#/overview) and show the different jobs running.
@@ -120,15 +107,9 @@ Go to the RestaurantViewJob and show the overview. On the left in the overview y
 
 In the rest of the demo we will see examples of usages for these jobs.
 
-
-<a id="org4bf7276"></a>
-
 ### Example single view.
 
-Go to your MongoDB visuzalizer and show an example of how the Restaurant view looks before the first aggregations. Here we can emphesize that there is more data in this table then the first table (address, services).
-
-
-<a id="org64e7f11"></a>
+Go to your MongoDB visualizer and show an example of how the Restaurant view looks before the first aggregations. Here we can emphesize that there is more data in this table then the first table (address, services).
 
 ## The restaurant owner
 
@@ -137,12 +118,10 @@ Go to your MongoDB visuzalizer and show an example of how the Restaurant view lo
 1.  Update the Restaurant email address:
     1.  Show that the aggregation is happening in the running job in the Apache Flink dashboard
     2.  Show the new entry in the single view.
-
-    UPDATE restaurant_info SET email='mario@gmail.com' WHERE id = 1;
-
-
-<a id="org1884158"></a>
-
+        ```sql
+        UPDATE restaurant_info SET email='mario@gmail.com' WHERE id = 1;
+        ```
+        
 ## The customer
 
 **Scenario**: You are the customer of the FlinkFood service. This is your information on the service:
@@ -155,8 +134,7 @@ Now, you are buying a dish of Pizza Margarita from your good friend, the owner o
 
 ```sql 
 INSERT INTO public.order (id, name, customer_id, restaurant_id, supplier_id, order_date, payment_date, delivery_date, description, total_amount, currency, supply_order)
-VALUES
-(11, 'ord-987654321-AAAA', 1, 1, 3, '2023-12-03', '2023-12-03', '2023-12-03', 'Pizza Margarita', 15, 'USD', 'f');
+VALUES (11, 'ord-987654321-AAAA', 1, 1, 3, '2023-12-03', '2023-12-03', '2023-12-03', 'Pizza Margarita', 15, 'USD', 'f');
 ```
 
 Now you are so happy since you can see the change in the user single view (Show mongoDB)
