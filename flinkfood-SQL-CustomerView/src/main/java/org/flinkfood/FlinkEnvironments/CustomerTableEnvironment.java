@@ -20,7 +20,7 @@ public class CustomerTableEnvironment {
                 " username STRING," +
                 " first_name STRING," +
                 " last_name STRING," +
-                " birthdate INT," + //DEBEZIUM received the date type as INTEGER
+                " birthdate INT," + //DEBEZIUM receives the date type as INTEGER
                 " email STRING," +
                 " fisca_code STRING" +
                 ") WITH (" +
@@ -46,6 +46,45 @@ public class CustomerTableEnvironment {
                 ") WITH (" +
                 " 'connector' = 'kafka'," +
                 " 'topic' = 'postgres.public.customer_address'," +
+                " 'properties.bootstrap.servers' = '"+ KAFKA_URI +"'," +
+                " 'format' = 'json'," +
+                " 'scan.startup.mode' = 'earliest-offset'," +
+                " 'properties.auto.offset.reset' = 'earliest'" +
+                ")");
+    }
+
+    public void createPayment_methodTable() {
+        this.tEnv.executeSql("CREATE TABLE payment_method (" +
+                " id INT," +
+                " customer_id INT," +
+                " name STRING" +
+                ") WITH (" +
+                " 'connector' = 'kafka'," +
+                " 'topic' = 'postgres.public.payment_method'," +
+                " 'properties.bootstrap.servers' = '"+ KAFKA_URI +"'," +
+                " 'format' = 'json'," +
+                " 'scan.startup.mode' = 'earliest-offset'," +
+                " 'properties.auto.offset.reset' = 'earliest'" +
+                ")");
+    }
+
+    public void createOrderTable() {
+        this.tEnv.executeSql("CREATE TABLE order (" +
+                " id INT," +
+                " name STRING," +
+                " customer_id INT," +
+                " restaurant_id INT," +
+                " supplier_id INT," +
+                " order_date INT," +
+                " payment_date INT," +
+                " delivery_date INT," +
+                " description INT," +
+                " total_amount INT," +
+                " currency STRING," +
+                " supply_order BOOLEAN," +
+                ") WITH (" +
+                " 'connector' = 'kafka'," +
+                " 'topic' = 'postgres.public.order'," +
                 " 'properties.bootstrap.servers' = '"+ KAFKA_URI +"'," +
                 " 'format' = 'json'," +
                 " 'scan.startup.mode' = 'earliest-offset'," +
