@@ -1,17 +1,20 @@
 ### Table of Contents
 
 - [Before starting the demo](#before-starting-the-demo)
-      * [NOTE: Where to run SQL commands](#note--where-to-run-sql-commands)
+  * [NOTE: Where to run SQL commands](#note--where-to-run-sql-commands)
 - [Demonstration](#demonstration)
-      * [Introduction - Putting things into a context [org317d684]](#introduction---putting-things-into-a-context--org317d684-)
-  + [The input databases](#the-input-databases)
+  * [Introduction - Putting things into a context](#introduction---putting-things-into-a-context)
+    + [The input databases](#the-input-databases)
     + [Example restaurant - Da mario](#example-restaurant---da-mario)
-          + [Example jobs.](#example-jobs)
-          + [Example single view.](#example-single-view)
-      * [The restaurant owner](#the-restaurant-owner)
-      * [The customer](#the-customer)
+    + [Example jobs.](#example-jobs)
+    + [Example single view.](#example-single-view)
+  * [The restaurant owner](#the-restaurant-owner)
+  * [The customer](#the-customer)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
 This file is intended to give an overview of how to demo the FlinkFood application
+
 # Before starting the demo
 
 Before starting the demo make sure you have started the application. This is smart since during the demo, you might experience issues with processes taking longer than usual since we are streaming the demo online. To start everything up, do this:
