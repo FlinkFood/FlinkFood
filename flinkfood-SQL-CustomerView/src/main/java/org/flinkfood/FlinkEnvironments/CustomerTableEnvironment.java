@@ -22,7 +22,7 @@ public class CustomerTableEnvironment {
                 " last_name STRING," +
                 " birthdate INT," + //DEBEZIUM receives the date type as INTEGER
                 " email STRING," +
-                " fisca_code STRING" +
+                " fiscal_code STRING" +
                 ") WITH (" +
                 " 'connector' = 'kafka'," +
                 " 'topic' = 'postgres.public.customer'," +
@@ -34,11 +34,11 @@ public class CustomerTableEnvironment {
     }
 
     public void createCustomer_addressTable() {
-        this.tEnv.executeSql("CREATE TABLE restaurant_service (" +
+        this.tEnv.executeSql("CREATE TABLE customer_address (" +
                 " id INT," +
                 " customer_id INT," +
                 " street STRING," +
-                " address_number INT," +
+                " address_number STRING," +
                 " zip_code INT," +
                 " city STRING," +
                 " province STRING," +
@@ -94,9 +94,7 @@ public class CustomerTableEnvironment {
 
     public Table createSimpleUnifiedRestaurantView() {
         String joinQuery =
-                "SELECT * " +
-                        " FROM customer c " +
-                        " INNER JOIN customer_address a ON a.customer_id = c.id ";
+                "SELECT * FROM customer c INNER JOIN customer_address a ON a.customer_id = c.id ";
         return this.tEnv.sqlQuery(joinQuery);
     }
 

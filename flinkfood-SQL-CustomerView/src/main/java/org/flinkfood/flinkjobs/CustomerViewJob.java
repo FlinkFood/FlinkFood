@@ -12,10 +12,10 @@ import org.flinkfood.FlinkEnvironments.CustomerTableEnvironment;
 // Class declaration for the Flink job
 public class CustomerViewJob {
 
-    private static final String MONGODB_URI = System.getenv("MONGODB_SERVER");
+    /*private static final String MONGODB_URI = System.getenv("MONGODB_SERVER");
     private static final String SINK_DB = "flinkfood";
     private static final String SINK_DB_TABLE = "customer_view";
-
+    */
     // Main method where the Flink job is defined
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -24,7 +24,8 @@ public class CustomerViewJob {
         rEnv.createCustomer_addressTable();
         rEnv.createSimpleUnifiedRestaurantView();
 
-        /*MongoSink<Row> sink = MongoSink.<Row>builder()
+        /*
+        MongoSink<Row> sink = MongoSink.<Row>builder()
                 .setUri(MONGODB_URI)
                 .setDatabase(SINK_DB)
                 .setCollection(SINK_DB_TABLE)
