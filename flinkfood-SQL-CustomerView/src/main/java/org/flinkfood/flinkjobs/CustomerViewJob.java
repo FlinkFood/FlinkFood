@@ -43,6 +43,6 @@ public class CustomerViewJob {
         resultStream.print();
 
         //Execute the Flink job with the given name
-        env.execute("CystinerViewJob");
+        env.execute("CustomerViewJob");
     }
 }

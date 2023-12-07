@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.flinkfood.jobs.restaurant</groupId>
-  <artifactId>restaurantview</artifactId>
+  <groupId>org.flinkfood.jobs.customer</groupId>
+  <artifactId>CustomerView</artifactId>
   <version>1.0</version>
   <packaging>jar</packaging>
-  <name>restaurant-view</name>
+  <name>customer-view</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <flink.version>1.18.0</flink.version>
@@ -164,7 +164,7 @@
               </filters>
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>org.flinkfood.flinkjobs.RestaurantView</mainClass>
+                  <mainClass>org.flinkfood.flinkjobs.CustomerViewJob</mainClass>
                 </transformer>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
               </transformers>
