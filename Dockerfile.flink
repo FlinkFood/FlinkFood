@@ -6,10 +6,6 @@ WORKDIR /opt/flink
 
 # Update the package lists and install necessary packages
 RUN apt-get update && \
-<<<<<<< HEAD
-   apt-get install -y maven curl && \
-   apt-get clean
-=======
    apt-get install -y maven wget && \
    apt-get clean
 
@@ -20,7 +16,6 @@ RUN wget https://archive.apache.org/dist/kafka/3.0.0/kafka_2.13-3.0.0.tgz && \
 
 # Add the Kafka command-line tools to the PATH
 ENV PATH="/opt/flink/kafka_2.13-3.0.0/bin:${PATH}"
->>>>>>> 350f54a3b684272ea9797b13a20bb6112e207193
 
 # Copy the local contents into the container at /app
 COPY flinkfood-demo/ .
