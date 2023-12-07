@@ -4,6 +4,15 @@
 export KAFKA_URI=kafka:29092
 export MONGODB_SERVER=mongodb://mongo:27017
 
+# Function to check if Kafka topic exists
+topic_exists() {
+  local topic_name=$1
+  local kafka_bootstrap_servers=$KAFKA_URI
+
+  # Check if the topic exists
+  /opt/flink/kafka_2.13-3.0.0/bin/kafka-topics.sh --bootstrap-server $kafka_bootstrap_servers --list | grep -Fxq $topic_name
+}
+
 echo "Starting jobmanager..."
 /opt/flink/bin/jobmanager.sh start
 
@@ -35,10 +44,41 @@ curl -X POST 'http://kconnect:8083/connectors' -H 'Content-Type: application/jso
        "schemas.enable":false
    }
 }' &&
-echo "\nWaiting 5 seconds for Kafka Connect to start...\n"
-sleep 5 && # Wait for Kafka Connect to start
 
-echo "Starting Flink jobs..."
+
+echo "\nWaiting for Kafka topics to be available...\n"
+
+# Array of Kafka topics to check
+topics=(
+  "postgres.public.certification"
+  "postgres.public.customer"
+  "postgres.public.customer_address"
+  "postgres.public.dish"
+  "postgres.public.dish_ingredient"
+  "postgres.public.fidelity_card"
+  "postgres.public.ingredient"
+  "postgres.public.item"
+  "postgres.public.order"
+  "postgres.public.payment_method"
+  "postgres.public.restaurant_address"
+  "postgres.public.restaurant_info"
+  "postgres.public.restaurant_review"
+  "postgres.public.restaurant_service"
+  "postgres.public.reviews_dish"
+  "postgres.public.supplier"
+)
+
+# Check if all topics exist
+for topic in "${topics[@]}"; do
+  while ! topic_exists $topic; do
+    echo "Waiting for Kafka topic $topic to be available..."
+    sleep 5
+  done
+  echo "Kafka topic $topic is now available."
+done
+
+# Continue the program after all topics are available
+echo "All Kafka topics are available. Continuing the program..."
 
 # Run Flink jobs
 /opt/flink/bin/flink run --detached /opt/flink/CustomerViewJob/target/customerview-1.0.jar &&
