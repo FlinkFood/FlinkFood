@@ -50,9 +50,7 @@ public class RestaurantRowToBsonDocument implements MongoSerializationSchema<Row
         BsonDocument status_document = new BsonDocument();
         BsonDocument services_document = new BsonDocument();
 
-        Set<String> field_names = restaurant.getFieldNames(true);
-        assert field_names != null;
-        for (String field_name : field_names) {
+        restaurant.getFieldNames(true).forEach((String field_name) -> {
             if (address_fields.contains(field_name)) {
                 this.addFieldToDocument(address_document, field_name, restaurant.getField(field_name));
             } else if (status_fields.contains(field_name)) {
@@ -61,8 +59,9 @@ public class RestaurantRowToBsonDocument implements MongoSerializationSchema<Row
                 this.addFieldToDocument(services_document, field_name, restaurant.getField(field_name));
             } else {
                 this.addFieldToDocument(document, field_name, restaurant.getField(field_name));
-            }
-        }
+                //TODO
+            }});
+
         document.append("address", address_document);
         document.append("status", status_document);
         document.append("services", services_document);
@@ -75,5 +74,28 @@ public class RestaurantRowToBsonDocument implements MongoSerializationSchema<Row
         BsonArray reviews = new BsonArray();
         document.append("reviews", reviews);
         return new InsertOneModel<>(document);
+    }
+
+    /**
+     * Merge all the restaurant views into a single one. If the values in the same field are different, both are kept in a list.
+     * @param view1
+     * @param view2
+     * @return
+     */
+    public static Row mergeViews(Row view1, Row view2) {
+        Row merged = new Row(view1.getArity());
+        for (int i = 0; i < view1.getArity(); i++) {
+            Object value1 = view1.getField(i);
+            Object value2 = view2.getField(i);
+            if (value1.equals(value2)) {
+                merged.setField(i, value1);
+            } else {
+                List<Object> list = new ArrayList<>();
+                list.add(value1);
+                list.add(value2);
+                merged.setField(i, list);
+            }
+        }
+        return merged;
     }
 }

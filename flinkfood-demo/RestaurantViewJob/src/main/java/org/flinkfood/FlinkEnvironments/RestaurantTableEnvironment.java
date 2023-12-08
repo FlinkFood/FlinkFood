@@ -125,12 +125,16 @@ public class RestaurantTableEnvironment {
         ")");
     }
 
+    public StreamTableEnvironment gettEnv() {
+        return tEnv;
+    }
+
     public Table createSimpleUnifiedRestaurantView() {
         String joinQuery =
                 "SELECT * " +
                 "FROM ( " +
                 " SELECT " +
-                " r.id AS ID, " +
+                " r.id AS id, " +
                 " r.name AS name, " +
                 " a.street as street, " +
                 " a.address_number as number, " +
@@ -150,12 +154,14 @@ public class RestaurantTableEnvironment {
                 " FROM restaurant_info r " +
                 " INNER JOIN restaurant_service s ON r.id = s.restaurant_id " +
                 " INNER JOIN restaurant_address a ON r.id = a.restaurant_id " +
-                ") AS subquery ";
-        return this.tEnv.sqlQuery(joinQuery);
+                ") AS view";
+        tEnv. sqlQuery(joinQuery)
+                .execute();
+        return tEnv.from("view");
     }
 
-    public Table getRestaurantReviews(int ID) {
-        String query = "SELECT * FROM restaurant_reviews WHERE restaurant_id = " + ID;
+    public Table getRestaurantReviews(int id) {
+        String query = "SELECT * FROM restaurant_reviews WHERE restaurant_id = " + id;
         return this.tEnv.sqlQuery(query);
     }
 

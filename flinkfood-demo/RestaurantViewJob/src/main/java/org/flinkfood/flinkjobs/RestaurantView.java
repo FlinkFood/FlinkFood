@@ -8,9 +8,14 @@ import org.apache.flink.connector.mongodb.sink.MongoSink;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.Table;
+import org.apache.flink.table.expressions.Expression;
 import org.apache.flink.types.Row;
 import org.flinkfood.FlinkEnvironments.RestaurantTableEnvironment;
+import org.flinkfood.SVAccumulator;
+import org.flinkfood.SVAggregator;
 import org.flinkfood.serializers.RestaurantRowToBsonDocument;
+
+import static org.apache.flink.table.api.Expressions.*;
 
 // Class declaration for the Flink job
 public class RestaurantView {
@@ -30,7 +35,7 @@ public class RestaurantView {
         rEnv.createDishesTable();
         rEnv.createReviewDishTable();
 
-
+/*
         MongoSink<Row> sink = MongoSink.<Row>builder()
                 .setUri(MONGODB_URI)
                 .setDatabase(SINK_DB)
@@ -41,12 +46,23 @@ public class RestaurantView {
                 .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
                 .setSerializationSchema(new RestaurantRowToBsonDocument())
                 .build();
-
+*/
         Table simpleUnifiedTable = rEnv.createSimpleUnifiedRestaurantView();
-        DataStream<Row> resultStream = rEnv.toDataStream(simpleUnifiedTable);
-        resultStream.sinkTo(sink);
+
+        rEnv.gettEnv()
+                .from("view")
+                .groupBy($("id"))
+                .flatAggregate(call(SVAggregator.class, $("*")).as("view"))
+                .select($("view"))
+                .execute()
+                .print();
+
+
+        // DataStream<Row> resultStream = rEnv.toDataStream(simpleUnifiedTable);
+        // resultStream.sinkTo(sink);
 
         //Execute the Flink job with the given name
         env.execute("RestaurantView");
     }
+
 }
