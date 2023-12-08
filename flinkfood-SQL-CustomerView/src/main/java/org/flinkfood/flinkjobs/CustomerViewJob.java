@@ -22,22 +22,9 @@ public class CustomerViewJob {
         CustomerTableEnvironment rEnv = new CustomerTableEnvironment(env);
         rEnv.createCustomerTable();
         rEnv.createCustomer_addressTable();
-        rEnv.createSimpleUnifiedRestaurantView();
+        rEnv.createSimpleUnifiedCustomerView();
 
-        /*
-        MongoSink<Row> sink = MongoSink.<Row>builder()
-                .setUri(MONGODB_URI)
-                .setDatabase(SINK_DB)
-                .setCollection(SINK_DB_TABLE)
-                .setBatchSize(1000)
-                .setBatchIntervalMs(1000)
-                .setMaxRetries(3)
-                .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
-                .setSerializationSchema(new RestaurantRowToBsonDocument())
-                .build();
-        */
-
-        Table simpleUnifiedTable = rEnv.createSimpleUnifiedRestaurantView();
+        Table simpleUnifiedTable = rEnv.createSimpleUnifiedCustomerView();
         DataStream<Row> resultStream = rEnv.toDataStream(simpleUnifiedTable);
         //resultStream.sinkTo(sink);
         resultStream.print();

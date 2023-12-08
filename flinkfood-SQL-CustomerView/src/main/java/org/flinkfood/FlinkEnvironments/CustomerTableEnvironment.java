@@ -92,7 +92,7 @@ public class CustomerTableEnvironment {
                 ")");
     }
 
-    public Table createSimpleUnifiedRestaurantView() {
+    public Table createSimpleUnifiedCustomerView() {
         String joinQuery =
                 "SELECT * FROM customer c INNER JOIN customer_address a ON a.customer_id = c.id ";
         return this.tEnv.sqlQuery(joinQuery);
