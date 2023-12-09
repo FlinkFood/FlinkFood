@@ -42,7 +42,7 @@ public class CustomerTableEnvironment {
                 " zip_code INT," +
                 " city STRING," +
                 " province STRING," +
-                " COUNTRY STRING" +
+                " country STRING" +
                 ") WITH (" +
                 " 'connector' = 'kafka'," +
                 " 'topic' = 'postgres.public.customer_address'," +
