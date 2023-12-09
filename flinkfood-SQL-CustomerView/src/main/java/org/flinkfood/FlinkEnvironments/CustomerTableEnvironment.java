@@ -92,9 +92,11 @@ public class CustomerTableEnvironment {
                 ")");
     }
 
-    public Table createSimpleUnifiedCustomerView() {
-        String joinQuery =
-                "SELECT (FROM_UNIXTIME(c.birthdate*86400), a.street) FROM customer c INNER JOIN customer_address a ON a.customer_id = c.id ";
+    public Table createCustomerView() {
+        String joinQuery =  "SELECT ("+
+                "c.username, c.first_name, c.last_name, " +
+                "DATE_FORMAT(FROM_UNIXTIME(c.birthdate*86400),'dd-MM-yyyy')," +
+                "c.email, a.country, a.province, a.street, a.address_number) FROM customer c INNER JOIN customer_address a ON a.customer_id = c.id ";
         return this.tEnv.sqlQuery(joinQuery);
     }
 

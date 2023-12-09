@@ -36,7 +36,7 @@ public class CustomerViewJob {
                                 .setSerializationSchema(new CustomerRowToBSON())
                                 .build();
         
-        Table simpleUnifiedTable = rEnv.createSimpleUnifiedCustomerView();
+        Table simpleUnifiedTable = rEnv.createCustomerView();
         DataStream<Row> resultStream = rEnv.toDataStream(simpleUnifiedTable);
         resultStream.sinkTo(sink);
         resultStream.print();
