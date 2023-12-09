@@ -94,7 +94,7 @@ public class CustomerTableEnvironment {
 
     public Table createSimpleUnifiedCustomerView() {
         String joinQuery =
-                "SELECT * FROM customer c INNER JOIN customer_address a ON a.customer_id = c.id ";
+                "SELECT (FROM_UNIXTIME(c.birthdate*86400), a.street) FROM customer c INNER JOIN customer_address a ON a.customer_id = c.id ";
         return this.tEnv.sqlQuery(joinQuery);
     }
 
