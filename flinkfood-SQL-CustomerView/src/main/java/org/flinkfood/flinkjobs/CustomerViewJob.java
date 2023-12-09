@@ -8,14 +8,15 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.types.Row;
 import org.flinkfood.FlinkEnvironments.CustomerTableEnvironment;
+import org.flinkfood.serializer.CustomerRowToBSON;;
 
 // Class declaration for the Flink job
 public class CustomerViewJob {
 
-  /* private static final String MONGODB_URI = "mongodb://localhost:27017";
+    private static final String MONGODB_URI = "mongodb://localhost:27017";
     private static final String SINK_DB = "flinkfood";
     private static final String SINK_DB_TABLE = "users_sink";
-*/
+
     // Main method where the Flink job is defined
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -24,7 +25,7 @@ public class CustomerViewJob {
         rEnv.createCustomer_addressTable();
         //rEnv.createSimpleUnifiedCustomerView();
 
-      /*  MongoSink<Row> sink = MongoSink.<Row>builder()
+       MongoSink<Row> sink = MongoSink.<Row>builder()
                                 .setUri(MONGODB_URI)
                                 .setDatabase(SINK_DB)
                                 .setCollection(SINK_DB_TABLE)
@@ -34,11 +35,10 @@ public class CustomerViewJob {
                                 .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
                                 .setSerializationSchema(new CustomerRowToBSON())
                                 .build();
-            */
         
         Table simpleUnifiedTable = rEnv.createSimpleUnifiedCustomerView();
         DataStream<Row> resultStream = rEnv.toDataStream(simpleUnifiedTable);
-       // resultStream.sinkTo(sink);
+        resultStream.sinkTo(sink);
         resultStream.print();
 
         //Execute the Flink job with the given name
