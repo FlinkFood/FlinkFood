@@ -17,10 +17,7 @@ import org.bson.BsonNull;
 import org.bson.BsonString;
 
 public class CustomerRowToBSON implements MongoSerializationSchema<Row> {
-
-    //final List<String> customer_fields = List.of("id", "username", "first_name", "last_name", "birthdate", "email", "fiscal_code");
-    //final List<String> customerAddress_fields = List.of("street", "address_number", "zip_code", "city", "province", "country");
-
+    
     private void addFieldToDocument(BsonDocument document, String field_name, Object field) {
         if (field instanceof String) {
             document.append(field_name, new BsonString((String) field));
@@ -41,22 +38,12 @@ public class CustomerRowToBSON implements MongoSerializationSchema<Row> {
 
     private BsonDocument createSimpleCustomerDocument(Row customer) {
         BsonDocument document = new BsonDocument();
-        //BsonDocument customer_doc = new BsonDocument();
-        //BsonDocument customerAddrdoc = new BsonDocument();
 
         Set<String> field_names = customer.getFieldNames(true);
         assert field_names != null;
         for (String field_name : field_names) {
-           /* if (customer_fields.contains(field_name)) {
-                this.addFieldToDocument(customer_doc, field_name, customer.getField(field_name));
-            } else if (customerAddress_fields.contains(field_name)) {
-                this.addFieldToDocument(customerAddrdoc, field_name, customer.getField(field_name));
-            }else {*/
                 this.addFieldToDocument(document, field_name, customer.getField(field_name));
-            //}
         }
-        //document.append("customer", customer_doc);
-        //document.append("customer_address", customerAddrdoc);
         return document;
     }
 

@@ -92,22 +92,6 @@ public class CustomerTableEnvironment {
                 ")");
     }
 
-    //TO-DO FIX mongoDB, probably renaming each field
-    public Table createCustomerView() {
-        String joinQuery =  "SELECT "+
-                "(customer.username,"+
-                "customer.first_name, customer.last_name, " +
-                "DATE_FORMAT(FROM_UNIXTIME(customer.birthdate*86400),'dd-MM-yyyy')," +
-                "customer.email, customer_address.country,"+
-                "customer_address.province,"+
-                "customer_address.street, customer_address.address_number,"+
-                "payment_method.name)"+
-                "FROM customer, customer_address, payment_method "+
-                "WHERE (customer.id = customer_address.customer_id "+
-                        "AND customer.id = payment_method.customer_id)";
-        return this.tEnv.sqlQuery(joinQuery);
-    }
-
     public Table createFinalCustomerView()
     {   
         String joinQuery = 
@@ -120,30 +104,15 @@ public class CustomerTableEnvironment {
                         "a.country AS country, "+
                         "a.province AS province, "+
                         "a.street AS street, "+
-                        "a.address_number AS addressNumber "+
+                        "a.address_number AS addressNumber, "+
+                        "p.name AS paymentName "+
                         "FROM customer c "+
-                        "INNER JOIN customer_address a ON a.customer_id = c.id) "+
+                        "INNER JOIN customer_address a ON a.customer_id = c.id "+
+                        "INNER JOIN payment_method p ON p.customer_id = c.id) "+
                         "AS subquery";
 
         return this.tEnv.sqlQuery(joinQuery);
     }
-
-    public Table testQuery() {
-        String joinQuery =
-                "SELECT * FROM "+
-                        "(SELECT DATE_FORMAT(FROM_UNIXTIME(c.birthdate*86400),'dd-MM-yyyy') AS birthdate,"+
-                        "a.street AS street FROM customer c "+
-                        "INNER JOIN customer_address a ON a.customer_id = c.id)"+
-                        "AS subquery";
-        return this.tEnv.sqlQuery(joinQuery);
-    }
-
-    public Table simpleCustomerView()
-    {
-        String joinQuery =  "SELECT id FROM customer";
-        return this.tEnv.sqlQuery(joinQuery);
-    }
-
 
     public DataStream<Row> toDataStream(Table unifiedCustomerTables) {
         DataStream<Row> dsRow = tEnv.toChangelogStream(unifiedCustomerTables);
