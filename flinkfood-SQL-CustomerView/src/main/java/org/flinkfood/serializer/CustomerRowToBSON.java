@@ -17,7 +17,7 @@ import org.bson.BsonNull;
 import org.bson.BsonString;
 
 public class CustomerRowToBSON implements MongoSerializationSchema<Row> {
-    
+
     private void addFieldToDocument(BsonDocument document, String field_name, Object field) {
         if (field instanceof String) {
             document.append(field_name, new BsonString((String) field));
@@ -50,8 +50,7 @@ public class CustomerRowToBSON implements MongoSerializationSchema<Row> {
     @Override
     public WriteModel<BsonDocument> serialize(Row row, MongoSinkContext mongoSinkContext) {
         BsonDocument document = this.createSimpleCustomerDocument(row);
-        //BsonArray reviews = new BsonArray();
-        //document.append("reviews", reviews);
+
         return new InsertOneModel<>(document);
     }
 }

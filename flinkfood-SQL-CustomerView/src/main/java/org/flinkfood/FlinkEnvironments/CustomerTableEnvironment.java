@@ -68,8 +68,8 @@ public class CustomerTableEnvironment {
                 ")");
     }
 
-    public void createOrderTable() {
-        this.tEnv.executeSql("CREATE TABLE order (" +
+    public void createOrderTable() {    //"order" is a reserved word, so it can't be used
+        this.tEnv.executeSql("CREATE TABLE orderName (" +
                 " id INT," +
                 " name STRING," +
                 " customer_id INT," +
@@ -78,10 +78,10 @@ public class CustomerTableEnvironment {
                 " order_date INT," +
                 " payment_date INT," +
                 " delivery_date INT," +
-                " description INT," +
+                " description STRING," +
                 " total_amount INT," +
                 " currency STRING," +
-                " supply_order BOOLEAN," +
+                " supply_order BOOLEAN " +
                 ") WITH (" +
                 " 'connector' = 'kafka'," +
                 " 'topic' = 'postgres.public.order'," +
@@ -105,10 +105,17 @@ public class CustomerTableEnvironment {
                         "a.province AS province, "+
                         "a.street AS street, "+
                         "a.address_number AS addressNumber, "+
-                        "p.name AS paymentName "+
+                        "p.name AS paymentName, "+
+                        "o.restaurant_id AS restaurantID, "+
+                        "FROM_UNIXTIME(o.order_date*86400) AS orderDate, "+
+                        "FROM_UNIXTIME(o.payment_date*86400) AS paymentDate, "+
+                        "FROM_UNIXTIME(o.delivery_date*86400) AS deliveryDate, "+
+                        "o.description AS orderDescription, "+
+                        "o.total_amount AS totalAmount "+
                         "FROM customer c "+
                         "INNER JOIN customer_address a ON a.customer_id = c.id "+
-                        "INNER JOIN payment_method p ON p.customer_id = c.id) "+
+                        "INNER JOIN payment_method p ON p.customer_id = c.id "+
+                        "INNER JOIN orderName o ON o.customer_id = c.id) "+
                         "AS subquery";
 
         return this.tEnv.sqlQuery(joinQuery);

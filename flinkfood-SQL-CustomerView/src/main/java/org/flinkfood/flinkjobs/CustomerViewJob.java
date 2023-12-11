@@ -15,7 +15,7 @@ public class CustomerViewJob {
 
     private static final String MONGODB_URI = "mongodb://localhost:27017";
     private static final String SINK_DB = "flinkfood";
-    private static final String SINK_DB_TABLE = "BRASIL";
+    private static final String SINK_DB_TABLE = "testando";
 
     // Main method where the Flink job is defined
     public static void main(String[] args) throws Exception {
@@ -24,6 +24,7 @@ public class CustomerViewJob {
         rEnv.createCustomerTable();
         rEnv.createCustomer_addressTable();
         rEnv.createPayment_methodTable();
+        rEnv.createOrderTable();
 
        MongoSink<Row> sink = MongoSink.<Row>builder()
                                 .setUri(MONGODB_URI)
@@ -36,11 +37,10 @@ public class CustomerViewJob {
                                 .setSerializationSchema(new CustomerRowToBSON())
                                 .build();
         
-        //Table simpleUnifiedTable = rEnv.createCustomerView();
         Table simpleUnifiedTable = rEnv.createFinalCustomerView();
         DataStream<Row> resultStream = rEnv.toDataStream(simpleUnifiedTable);
         resultStream.sinkTo(sink);
-        resultStream.print();
+        //resultStream.print();
 
         //Execute the Flink job with the given name
         env.execute("CustomerViewJob");
