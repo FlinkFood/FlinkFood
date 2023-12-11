@@ -51,3 +51,9 @@ Thumbs.db
 
 # Postgres DB files
 /db-data
+
+# Pom stuff
+dependency-reduced-pom.xml
+
+# Docs
+*.org

@@ -50,8 +50,13 @@ command. When the daemon's not running, you'll see a
 
 To start the deamon, follow the steps on the [Docker Docs page](https://docs.docker.com/config/daemon/start/).
 
+### Building containers with docker compose
+Sometimes, say after you have altered your code and need to recompile the code you must rebuild some of our containers. This can be done in the following way:
+```bash
+$ docker compose up -d --build
+```
+Most of the times your code is not working, or it seems like you are making changes but this is not reflected in the container. You would have to rebuild the contaienr using the above command
 ### Running containers with docker compose
-
 To run the containers on the compose file. Open a terminal and run the following command:
 ```bash
 $ docker compose up -d
