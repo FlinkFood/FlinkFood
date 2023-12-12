@@ -21,4 +21,11 @@ public class RowAggregator extends AggregateFunction<Row, Row> {
     public Row createAccumulator() {
         return new Row(N_VIEW_ATTRIBUTES);
     }
+
+    public void accumulate(Row accumulator, String s) {
+        final String max = (String) accumulator.getField(0);
+        if (max == null || s.compareTo(max) > 0) {
+            accumulator.setField(0, s);
+        }
+    }
 }

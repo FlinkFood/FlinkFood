@@ -14,28 +14,17 @@ import java.util.jar.Attributes;
 
 public class SVAccumulator {
     /**
-     * Accumulator for the view each.
-     * Each entry is a view.
-     * Map<SVAttributes, Row> could also be a `Row` but this way is more explicit!
-     * //TOO COMPLEX FOR NOW; will just try to use a List<Row> and see if it works
+     * each list is a container for the rows
+     * at the same index in each list, the rows have the same id ?! makes sense?
      */
-    public Map<Integer,
-            List<Row>> view;
-        //  Map<SVAttributes, Row>> view;
+     public Map<SVAttributes, List<Row>> view;
+     public int count;
 
 
 
     public SVAccumulator() {
         view = new HashMap<>();
-
-    }
-
-    public Map<Integer,List<Row>> getView() {
-        return view;
-    }
-
-    public void setView(Map<Integer,List<Row>> view) {
-        this.view = view;
+        count = 0;
     }
 }
 

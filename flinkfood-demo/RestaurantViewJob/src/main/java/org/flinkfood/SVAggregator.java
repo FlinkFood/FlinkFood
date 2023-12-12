@@ -5,14 +5,19 @@ import org.apache.flink.table.functions.TableAggregateFunction;
 import org.apache.flink.types.Row;
 import org.apache.flink.util.Collector;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import static org.flinkfood.serializers.RestaurantRowToBsonDocument.mergeViews;
 
 /**
- * By contruction is not parallelizable,
- * but it can be used to create a parallelizable function
+ * From {@link TableAggregateFunction} documentation:
+ * For each set of rows that needs to be aggregated the runtime will create an empty accumulator by calling createAccumulator(). Subsequently, the accumulate() method of the function is called for each input row to update the accumulator. Once all rows have been processed, the emitValue() or emitUpdateWithRetract() method of the function is called to compute and return the final result.
+ *
+ * The aggregator aggregates
+ *  orders
+ *  TODO: find a modular way to aggregate all the attributes
  */
 public class SVAggregator extends TableAggregateFunction<Row, SVAccumulator> {
 
@@ -27,16 +32,21 @@ public class SVAggregator extends TableAggregateFunction<Row, SVAccumulator> {
     }
 
     /**
-     * Implementation is based on the Restaurant View
-     * @param acc
-     * @param row
+     * Implementation is based on the Restaurant View to make it modular
+     * is it even possible to make it modular?
      */
     public void accumulate(SVAccumulator acc, Row row) {
-        int restaurantId = (int) row.getField("id");
-        if (acc.view.containsKey(restaurantId))
-            acc.view.get(restaurantId).add(row);
-        else
-            acc.view.put(restaurantId, List.of(row));
+        for (String name : row.getFieldNames(true)) {// The idea is that the table attributes have a prefix that identifies the table.
+            int index = acc.count;
+            SVAttributes attr = SVAttributes.fromString(name);
+            Object elem = row.getField(name);
+            if (name.contains("order")) {
+                acc.view.computeIfAbsent(attr, k -> new ArrayList<>()).get(index).setField(name, elem);
+            } else if (name.contains("review")) {
+                //etc
+            } else
+                row.setField(name, List.of(row.getField(name)));
+        }
     }
 
     /**

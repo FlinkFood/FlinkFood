@@ -47,12 +47,13 @@ public class RestaurantView {
                 .setSerializationSchema(new RestaurantRowToBsonDocument())
                 .build();
 */
-        Table simpleUnifiedTable = rEnv.createSimpleUnifiedRestaurantView();
+        rEnv.createUnifiedView();
 
         rEnv.gettEnv()
-                .from("view")
+                .from("unified_view")
                 .groupBy($("id"))
-                .flatAggregate(call(SVAggregator.class, $("*")).as("view"))
+                .flatAggregate(call(SVAggregator.class, $("*"))
+                .as("view"))
                 .select($("view"))
                 .execute()
                 .print();
