@@ -4,6 +4,8 @@ package org.flinkfood.flinkjobs;
 // Importing necessary Flink libraries and external dependencies
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.table.runtime.functions.aggregate.JsonArrayAggFunction;
+import org.apache.flink.types.Row;
 import org.flinkfood.ArrayAggr;
 import org.flinkfood.FlinkEnvironments.RestaurantTableEnvironment;
 
@@ -52,16 +54,24 @@ public class RestaurantView {
 //                  `category` STRING,
 //                  `description` STRING
 //                  )
-        rEnv.gettEnv().executeSql("CREATE TABLE restaurant_view"+
-                                "( restaurant_id INT,"+
-                                " dishes ARRAY<ROW<id BIGINT, restaurant_id INT, name STRING, price SMALLINT, currency STRING, category STRING, description STRING>>)");
+//        rEnv.gettEnv().executeSql("CREATE TABLE restaurant_view"+
+//                                "( restaurant_id INT,"+
+//                                " dishes ARRAY<ROW<id BIGINT, restaurant_id INT, name STRING, price SMALLINT, currency STRING, category STRING, description STRING>>)");
+
+        rEnv.gettEnv()
+                        .from("dish")
+                        .groupBy($("restaurant_id"))
+                .aggregate(call(ArrayAggr.class))
+                        .select($("*"))
+                                .execute()
+                                        .print();
 
 
         System.out.println(
         rEnv.gettEnv()
                 .from("dish")
                 .groupBy($("restaurant_id"))
-                .flatAggregate(call(ArrayAggr.class))
+                .flatAggregate(call(ArrayAggr.class<Row>))
                 .select($("*"))
                 .getResolvedSchema());
 
