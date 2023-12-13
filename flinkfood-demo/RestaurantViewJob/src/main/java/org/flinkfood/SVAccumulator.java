@@ -1,30 +1,36 @@
 package org.flinkfood;
 
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.table.api.dataview.ListView;
 import org.apache.flink.table.functions.AggregateFunction;
 import org.apache.flink.table.functions.FunctionRequirement;
 import org.apache.flink.table.functions.TableAggregateFunction;
 import org.apache.flink.types.Row;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.jar.Attributes;
 
 public class SVAccumulator {
     /**
-     * each list is a container for the rows
-     * at the same index in each list, the rows have the same id ?! makes sense?
+     * The accumulator accumulates all attribute of a view
      */
-     public Map<SVAttributes, List<Row>> view;
-     public int count;
+     public ListView<Row> attributes = new ListView<>();
 
 
 
     public SVAccumulator() {
-        view = new HashMap<>();
-        count = 0;
+    }
+
+    public void add(Row row) throws Exception {
+        attributes.add(row);
+    }
+
+    /**
+     * Merge two accumulators together
+     * Needed for parallelization
+     */
+    public void merge(SVAccumulator other) throws Exception {
+        attributes.addAll(other.attributes.getList());
     }
 }
 

@@ -29,9 +29,9 @@ public class RestaurantView {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         RestaurantTableEnvironment rEnv = new RestaurantTableEnvironment(env);
         rEnv.createRestaurantInfoTable();
-        rEnv.createRestaurantServicesTable();
-        rEnv.createRestaurantAddressTable();
-        rEnv.createRestaurantReviewsTable();
+//        rEnv.createRestaurantServicesTable();
+//        rEnv.createRestaurantAddressTable();
+//        rEnv.createRestaurantReviewsTable();
         rEnv.createDishesTable();
         rEnv.createReviewDishTable();
 
@@ -47,16 +47,27 @@ public class RestaurantView {
                 .setSerializationSchema(new RestaurantRowToBsonDocument())
                 .build();
 */
-        rEnv.createUnifiedView();
 
+//        System.out.println(
+//        rEnv.gettEnv()
+//                .from("dish")
+//                .getResolvedSchema());
+//        -->  (    `id` BIGINT,
+//                  `restaurant_id` INT,
+//                  `name` STRING,
+//                  `price` SMALLINT,
+//                  `currency` STRING,
+//                  `category` STRING,
+//                  `description` STRING
+//                  )
         rEnv.gettEnv()
-                .from("unified_view")
-                .groupBy($("id"))
-                .flatAggregate(call(SVAggregator.class, $("*"))
-                .as("view"))
-                .select($("view"))
-                .execute()
-                .print();
+                .from("dish")
+                .groupBy($("restaurant_id"))
+                .flatAggregate(call(SVAggregator.class))
+                .select($("*"))
+                        .execute()
+                            .print();
+
 
 
         // DataStream<Row> resultStream = rEnv.toDataStream(simpleUnifiedTable);

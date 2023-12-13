@@ -1,9 +1,15 @@
 package org.flinkfood;
 
+import org.apache.flink.api.common.typeinfo.TypeInformation;
+import org.apache.flink.api.common.typeinfo.Types;
+import org.apache.flink.api.java.typeutils.ListTypeInfo;
 import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.table.annotation.DataTypeHint;
+import org.apache.flink.table.annotation.InputGroup;
 import org.apache.flink.table.functions.TableAggregateFunction;
 import org.apache.flink.types.Row;
 import org.apache.flink.util.Collector;
+import org.w3c.dom.TypeInfo;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -13,11 +19,10 @@ import static org.flinkfood.serializers.RestaurantRowToBsonDocument.mergeViews;
 
 /**
  * From {@link TableAggregateFunction} documentation:
- * For each set of rows that needs to be aggregated the runtime will create an empty accumulator by calling createAccumulator(). Subsequently, the accumulate() method of the function is called for each input row to update the accumulator. Once all rows have been processed, the emitValue() or emitUpdateWithRetract() method of the function is called to compute and return the final result.
- *
- * The aggregator aggregates
- *  orders
- *  TODO: find a modular way to aggregate all the attributes
+ * For each set of rows that needs to be aggregated the runtime will create an empty accumulator by calling createAccumulator().
+ * Subsequently, the accumulate() method of the function is called for each input row to update the accumulator.
+ * Once all rows have been processed, the emitValue() or emitUpdateWithRetract() method
+ * of the function is called to compute and return the final result.
  */
 public class SVAggregator extends TableAggregateFunction<Row, SVAccumulator> {
 
@@ -26,27 +31,12 @@ public class SVAggregator extends TableAggregateFunction<Row, SVAccumulator> {
         return new SVAccumulator();
     }
 
-    @Override
-    public boolean isDeterministic() {
-        return false; // depends on the order of the rows
-    }
-
     /**
-     * Implementation is based on the Restaurant View to make it modular
-     * is it even possible to make it modular?
+     * The second parameter must be defined, can't be a {@code Row}. There are problems with the type inference.
+     * I tried also@using {@code DataTypeHint(inputGroup = InputGroup.ANY) Object... fields} but it doesn't work.
      */
-    public void accumulate(SVAccumulator acc, Row row) {
-        for (String name : row.getFieldNames(true)) {// The idea is that the table attributes have a prefix that identifies the table.
-            int index = acc.count;
-            SVAttributes attr = SVAttributes.fromString(name);
-            Object elem = row.getField(name);
-            if (name.contains("order")) {
-                acc.view.computeIfAbsent(attr, k -> new ArrayList<>()).get(index).setField(name, elem);
-            } else if (name.contains("review")) {
-                //etc
-            } else
-                row.setField(name, List.of(row.getField(name)));
-        }
+    public void accumulate(SVAccumulator acc, Row row) throws Exception {
+        acc.add(row);
     }
 
     /**
@@ -55,12 +45,15 @@ public class SVAggregator extends TableAggregateFunction<Row, SVAccumulator> {
      * @param out contains a row for each restaurant -> view
      */
     public void emitValue(SVAccumulator acc, Collector<Row> out) {
-        for (List<Row> rows : acc.view.values()) {
-            Iterator<Row> it = rows.iterator();
-            var RestaurantView = it.next();
-            while (it.hasNext())
-                RestaurantView = mergeViews(RestaurantView, it.next());
-            out.collect(RestaurantView);
-        }
+        var merged_rows = new Row(1);
+        //FIXME: give the right name to the field
+        merged_rows.setField("dishes", acc.attributes);
+        out.collect(merged_rows);
     }
+
+    @Override
+    public TypeInformation<Row> getResultType() {
+        return Types.ROW();
+    }
+
 }
