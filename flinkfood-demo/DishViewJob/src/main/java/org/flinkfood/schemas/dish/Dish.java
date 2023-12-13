@@ -1,9 +1,16 @@
 package org.flinkfood.schemas.dish;
 
+import java.util.List;
+
+import org.flinkfood.schemas.ingredient.Ingredient;
+import org.flinkfood.schemas.restaurant.RestaurantInfo;
+
 public class Dish {
 
     public int id;
     public int restaurant_id;
+    public RestaurantInfo restaurant_info;
+    public List<Ingredient> ingredients;
     public String name;
     public int price;
     public String currency;
@@ -27,6 +34,22 @@ public class Dish {
 
     public void setRestaurant_id(int restaurant_id) {
         this.restaurant_id = restaurant_id;
+    }
+
+    public List<Ingredient> getIngredients() {
+        return this.ingredients;
+    }
+
+    public void setIngredients(List<Ingredient> ingredients) {
+        this.ingredients = ingredients;
+    }
+
+    public RestaurantInfo getRestaurant_info() {
+        return this.restaurant_info;
+    }
+
+    public void setRestaurant_info(RestaurantInfo restaurant_info) {
+        this.restaurant_info = restaurant_info;
     }
 
     public String getName() {
