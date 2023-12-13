@@ -15,6 +15,10 @@ import static org.apache.flink.table.api.Expressions.*;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.flinkfood.schemas.dish.Dish;
 import org.flinkfood.schemas.dish.KafkaDishSchema;
+import org.flinkfood.schemas.dish_ingredient.DishIngredient;
+import org.flinkfood.schemas.dish_ingredient.KafkaDishIngredientSchema;
+import org.flinkfood.schemas.ingredient.Ingredient;
+import org.flinkfood.schemas.ingredient.KafkaIngredientSchema;
 import org.flinkfood.schemas.restaurant.KafkaRestaurantInfoSchema;
 import org.flinkfood.schemas.restaurant.RestaurantInfo;
 import org.flinkfood.serializers.DishRowToBsonDocument;
@@ -26,6 +30,8 @@ public class DishViewJob {
         private static final String KAFKA_URI = System.getenv("KAFKA_URI");
         private static final String SOURCE_DISH_TABLE = "postgres.public.dish";
         private static final String SOURCE_RESTAURANT_INFO_TABLE = "postgres.public.restaurant_info";
+        private static final String SOURCE_INGREDIENT_TABLE = "postgres.public.ingredient";
+        private static final String SOURCE_DISH_INGREDIENT_TABLE = "postgres.public.dish_ingredient";
         private static final String MONGODB_URI = System.getenv("MONGODB_SERVER");
         private static final String SINK_DB = "flinkfood";
         private static final String SINK_DB_TABLE = "dish_view";
@@ -51,6 +57,24 @@ public class DishViewJob {
                                 .setValueOnlyDeserializer(new KafkaRestaurantInfoSchema())
                                 .build();
 
+                // Setting up Kafka source with relevant configurations
+                KafkaSource<Ingredient> ingredientSource = KafkaSource.<Ingredient>builder()
+                                .setBootstrapServers(KAFKA_URI)
+                                .setTopics(SOURCE_INGREDIENT_TABLE)
+                                .setGroupId("my-group")
+                                .setStartingOffsets(OffsetsInitializer.earliest())
+                                .setValueOnlyDeserializer(new KafkaIngredientSchema())
+                                .build();
+
+                // Setting up Kafka source with relevant configurations
+                KafkaSource<DishIngredient> dishIngredientSource = KafkaSource.<DishIngredient>builder()
+                                .setBootstrapServers(KAFKA_URI)
+                                .setTopics(SOURCE_DISH_INGREDIENT_TABLE)
+                                .setGroupId("my-group")
+                                .setStartingOffsets(OffsetsInitializer.earliest())
+                                .setValueOnlyDeserializer(new KafkaDishIngredientSchema())
+                                .build();
+
                 // Setting up Flink execution environment
                 StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
                 StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
@@ -66,6 +90,18 @@ public class DishViewJob {
                                                 "Kafka Restaurant Info Source")
                                 .setParallelism(1);
 
+                // Creates a Flink data stream for the ingredients
+                DataStream<Ingredient> ingredientStream = env
+                                .fromSource(ingredientSource, WatermarkStrategy.noWatermarks(),
+                                                "Kafka Restaurant Info Source")
+                                .setParallelism(1);
+
+                // Creates a Flink data stream for the dish ingredients
+                DataStream<DishIngredient> dishIngredientStream = env
+                                .fromSource(dishIngredientSource, WatermarkStrategy.noWatermarks(),
+                                                "Kafka Restaurant Info Source")
+                                .setParallelism(1);
+
                 // Creates a Flink table for the dishes
                 Table dishTable = tableEnv.fromDataStream(dishStream).select(
                                 $("id").as("dish_id"),
@@ -73,7 +109,7 @@ public class DishViewJob {
                                 $("price").as("dish_price"),
                                 $("currency").as("price_currency"),
                                 $("description").as("dish_description"),
-                                $("restaurant_id"));
+                                $("restaurant_id"), $("ingredients"));
 
                 // Creates a Flink table for the restaurants
                 Table restaurantInfoTable = tableEnv
@@ -84,10 +120,33 @@ public class DishViewJob {
                 Table result = dishTable
                                 .join(restaurantInfoTable)
                                 .where($("restaurant_id").isEqual($("id")))
-                                .select($("*"));
+                                .select($("*"))
+                                .dropColumns($("restaurant_id"));
+
+                // Creates a Flink table for the ingredients
+                Table ingredientTable = tableEnv
+                                .fromDataStream(ingredientStream)
+                                .select($("*"), $("id").as("ingredient_id"), 
+                                $("name").as("ingredient_name"))
+                                .dropColumns($("id"), $("name"));
+
+                // Creates a Flink table for the dish_ingredients
+                Table dishIngredientTable = tableEnv
+                                .fromDataStream(dishIngredientStream)
+                                .select($("ingredient_id").as("dish_ingredient_id"),
+                                                $("dish_id").as("ingredient_dish_id", args));
+
+                Table result2 = ingredientTable.join(dishIngredientTable)
+                                .where($("ingredient_id").isEqual($("dish_ingredient_id")));
+
+                Table finalTable = result.join(result2)
+                                .where($("dish_id").isEqual($("ingredient_dish_id")))
+                                .dropColumns($("dish_ingredient_id"), $("ingredient_dish_id"));
 
                 // Converts the result table in a Flink data stream
-                DataStream<Row> resultStream = tableEnv.toDataStream(result);
+                DataStream<Row> resultStream = tableEnv.toDataStream(finalTable);
+
+                // resultStream.print();
 
                 MongoSink<Row> sink = MongoSink.<Row>builder()
                                 .setUri(MONGODB_URI)
