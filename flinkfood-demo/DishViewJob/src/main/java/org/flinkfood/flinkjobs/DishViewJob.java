@@ -109,7 +109,7 @@ public class DishViewJob {
                                 $("price").as("dish_price"),
                                 $("currency").as("price_currency"),
                                 $("description").as("dish_description"),
-                                $("restaurant_id"), $("ingredients"));
+                                $("restaurant_id"));
 
                 // Creates a Flink table for the restaurants
                 Table restaurantInfoTable = tableEnv
@@ -145,6 +145,7 @@ public class DishViewJob {
 
                 // Converts the result table in a Flink data stream
                 DataStream<Row> resultStream = tableEnv.toDataStream(finalTable);
+                DataStream<Row> resultStream2 = tableEnv.toDataStream(result);
 
                 // resultStream.print();
 
@@ -160,6 +161,7 @@ public class DishViewJob {
                                 .build();
 
                 resultStream.sinkTo(sink);
+                resultStream2.sinkTo(sink);
 
                 // Starts job execution
                 env.execute("DishViewJob");

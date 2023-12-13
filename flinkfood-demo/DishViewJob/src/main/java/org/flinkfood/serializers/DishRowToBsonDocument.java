@@ -3,12 +3,15 @@ package org.flinkfood.serializers;
 import java.util.*;
 
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.client.model.InsertOneModel;
 import com.mongodb.client.model.InsertOneOptions;
 import com.mongodb.client.model.ReplaceOneModel;
 import com.mongodb.client.model.ReplaceOptions;
+import com.mongodb.client.model.ReturnDocument;
 import com.mongodb.client.model.UpdateOneModel;
 import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.client.model.Updates;
 import com.mongodb.client.model.WriteModel;
 import org.apache.flink.connector.mongodb.sink.writer.context.MongoSinkContext;
 import org.apache.flink.connector.mongodb.sink.writer.serializer.MongoSerializationSchema;
@@ -26,12 +29,12 @@ import org.bson.conversions.Bson;
 import org.flinkfood.schemas.restaurant.RestaurantInfo;
 
 public class DishRowToBsonDocument implements MongoSerializationSchema<Row> {
-    
+
     // BsonArray ingredient_documents = new BsonArray();
     final List<String> restaurant_info_fields = List.of("id", "name", "phone", "email", "cuisine_type", "price_range",
             "vat_code");
-    final List<String> ingredients_fields = List.of("ingredient_id", "ingredient_name", "description", "carbs", "proteins", "fats",
-            "fibers", "salt", "calories");
+    final List<String> ingredients_fields = List.of("ingredient_id", "ingredient_name", "description", "carbs",
+            "proteins", "fats", "fibers", "salt", "calories");
 
     private void addFieldToDocument(BsonDocument document, String fieldName, Object field) {
         if (field instanceof String) {
@@ -56,7 +59,6 @@ public class DishRowToBsonDocument implements MongoSerializationSchema<Row> {
         BsonDocument restaurant_info_document = new BsonDocument();
         BsonDocument ingredient_document = new BsonDocument();
 
-
         Set<String> fieldNames = dish.getFieldNames(true);
         if (fieldNames != null) {
             for (String field_name : fieldNames) {
@@ -75,15 +77,15 @@ public class DishRowToBsonDocument implements MongoSerializationSchema<Row> {
         return dish_document;
     }
 
-    
     @Override
     public WriteModel<BsonDocument> serialize(Row row, MongoSinkContext mongoSinkContext) {
         BsonArray ingredientDocuments = new BsonArray();
         BsonDocument document = this.createDishDocument(row, ingredientDocuments);
-        document.append("ingredients", ingredientDocuments);
         int idValue = document.getInt32(new String("dish_id")).getValue();
         Bson filter = Filters.eq("dish_id", idValue);
-        return new InsertOneModel<BsonDocument>(document);
-        // return new ReplaceOneModel<>(filter, document, new ReplaceOptions().upsert(true));
+        Bson insertDocument = Updates.setOnInsert(document);
+        Bson updateDocument = Updates.addToSet("ingredients", ingredientDocuments.getValues().get(0));
+        Bson updates = Updates.combine(insertDocument, updateDocument);
+        return new UpdateOneModel<>(filter, updates, new UpdateOptions().upsert(true));
     }
 }
