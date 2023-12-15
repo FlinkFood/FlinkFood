@@ -78,7 +78,7 @@ public class RestaurantView {
 //                        .select($("*"))
 //                                .execute()
 //                                        .print();
-        decodableco
+        
 //        System.out.println(
 //        rEnv.gettEnv()
 //                .from("dish")
