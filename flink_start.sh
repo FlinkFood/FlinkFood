@@ -102,9 +102,9 @@ done
 echo "All Kafka topics are available. Continuing the program..."
 
 # Run Flink jobs
-/opt/flink/bin/flink run --detached /opt/flink/CustomerViewJob/target/customerview-1.0.jar &&
-/opt/flink/bin/flink run --detached /opt/flink/RestaurantViewJob/target/restaurantview-1.0.jar &&
-/opt/flink/bin/flink run --detached /opt/flink/DishViewJob/target/dishview-1.0.jar &&
+/opt/flink/bin/flink run --detached /opt/flink/CustomerViewJob/target/CustomerViewJob-1.0.jar
+/opt/flink/bin/flink run --detached /opt/flink/RestaurantViewJob/target/restaurantview-1.0.jar
+/opt/flink/bin/flink run --detached /opt/flink/DishViewJob/target/dishview-1.0.jar
 
 echo "Flink jobs started."
 
