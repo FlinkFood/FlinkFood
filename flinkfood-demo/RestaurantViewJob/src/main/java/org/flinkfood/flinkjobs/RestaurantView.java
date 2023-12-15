@@ -61,7 +61,7 @@ public class RestaurantView {
         rEnv.gettEnv()
                         .from("dish")
                         .groupBy($("restaurant_id"))
-                .aggregate(call(ArrayAggr.class))
+                        .aggregate(call(ArrayAggr.class))
                         .select($("*"))
                                 .execute()
                                         .print();
@@ -71,7 +71,7 @@ public class RestaurantView {
         rEnv.gettEnv()
                 .from("dish")
                 .groupBy($("restaurant_id"))
-                .flatAggregate(call(ArrayAggr.class<Row>))
+                .flatAggregate(call(ArrayAggr.class))
                 .select($("*"))
                 .getResolvedSchema());
 
