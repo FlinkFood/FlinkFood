@@ -1,12 +1,11 @@
-package org.flinkfood.schemas.restaurant;
+package org.flinkfood.schemas;
 
 import java.io.IOException;
 
 import org.apache.flink.api.common.serialization.AbstractDeserializationSchema;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
-import org.flinkfood.schemas.restaurant.RestaurantInfo;
 
-public class KafkaRestaurantInfoSchema extends AbstractDeserializationSchema<RestaurantInfo> {
+public class KafkaAddressSchema extends AbstractDeserializationSchema<Address> {
 
     private static final long serialVersionUID = 1L;
     private transient ObjectMapper objectMapper;
@@ -17,8 +16,8 @@ public class KafkaRestaurantInfoSchema extends AbstractDeserializationSchema<Res
     }
 
     @Override
-    public RestaurantInfo deserialize(byte[] message) throws IOException {
-        return objectMapper.readValue(message, RestaurantInfo.class);
+    public Address deserialize(byte[] message) throws IOException {
+        return objectMapper.readValue(message, Address.class);
     }
 
 }

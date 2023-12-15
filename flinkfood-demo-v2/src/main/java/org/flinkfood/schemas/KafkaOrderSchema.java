@@ -1,11 +1,11 @@
-package org.flinkfood.schemas.customer;
+package org.flinkfood.schemas;
 
 import java.io.IOException;
 
 import org.apache.flink.api.common.serialization.AbstractDeserializationSchema;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 
-public class KafkaAddressSchema extends AbstractDeserializationSchema<Customer_address> {
+public class KafkaOrderSchema extends AbstractDeserializationSchema<Order> {
 
     private static final long serialVersionUID = 1L;
     private transient ObjectMapper objectMapper;
@@ -16,8 +16,7 @@ public class KafkaAddressSchema extends AbstractDeserializationSchema<Customer_a
     }
 
     @Override
-    public Customer_address deserialize(byte[] message) throws IOException {
-        return objectMapper.readValue(message, Customer_address.class);
+    public Order deserialize(byte[] message) throws IOException {
+        return objectMapper.readValue(message, Order.class);
     }
-
 }

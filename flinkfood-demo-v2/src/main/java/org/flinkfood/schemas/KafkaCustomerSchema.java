@@ -1,10 +1,11 @@
-package org.flinkfood.schemas.customer;
+package org.flinkfood.schemas;
 
 import org.apache.flink.api.common.serialization.AbstractDeserializationSchema;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
-import org.flinkfood.schemas.customer.Customer;
+import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
+import java.time.Instant;
 
 public class KafkaCustomerSchema extends AbstractDeserializationSchema<Customer> {
 
