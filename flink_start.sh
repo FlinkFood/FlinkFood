@@ -24,6 +24,7 @@ done
 
 echo "Kafka Connect is now available. Sending Kafka Connectors to Kafka Connect..."
 
+sleep 10
 curl -X POST 'http://kconnect:8083/connectors' -H 'Content-Type: application/json' -d '{
    "name": "postgres-connector",
    "config": {
@@ -72,6 +73,26 @@ topics=(
 for topic in "${topics[@]}"; do
   while ! topic_exists $topic; do
     echo "Waiting for Kafka topic $topic to be available..."
+    curl -X POST 'http://kconnect:8083/connectors' -H 'Content-Type: application/json' -d '{
+    "name": "postgres-connector",
+    "config": {
+        "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+        "database.hostname": "postgres",
+        "database.port": "5432",
+        "database.user": "postgres",
+        "database.password": "postgres",
+        "database.dbname": "flinkfood",
+        "database.server.name": "postgres",
+        "schema.whitelist": "public",
+        "transforms": "unwrap",
+        "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
+        "key.converter":"org.apache.kafka.connect.json.JsonConverter",
+        "key.converter.schemas.enable":false,
+        "value.converter":"org.apache.kafka.connect.json.JsonConverter",
+        "value.converter.schemas.enable":false,
+        "schemas.enable":false
+    }
+    }'
     sleep 5
   done
   echo "Kafka topic $topic is now available."
@@ -81,9 +102,9 @@ done
 echo "All Kafka topics are available. Continuing the program..."
 
 # Run Flink jobs
-/opt/flink/bin/flink run --detached /opt/flink/CustomerViewJob/target/customerview-1.0.jar &&
-/opt/flink/bin/flink run --detached /opt/flink/RestaurantViewJob/target/restaurantview-1.0.jar &&
-/opt/flink/bin/flink run --detached /opt/flink/DishViewJob/target/dishview-1.0.jar &&
+/opt/flink/bin/flink run --detached /opt/flink/CustomerViewJob/target/CustomerViewJob-1.0.jar
+/opt/flink/bin/flink run --detached /opt/flink/RestaurantViewJob/target/restaurantview-1.0.jar
+/opt/flink/bin/flink run --detached /opt/flink/DishViewJob/target/dishview-1.0.jar
 
 echo "Flink jobs started."
 
