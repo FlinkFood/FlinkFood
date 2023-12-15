@@ -13,9 +13,9 @@ import org.flinkfood.serializer.CustomerRowToBSON;;
 // Class declaration for the Flink job
 public class CustomerViewJob {
 
-    private static final String MONGODB_URI = "mongodb://localhost:27017";
+    private static final String MONGODB_URI = System.getenv("MONGODB_SERVER");
     private static final String SINK_DB = "flinkfood";
-    private static final String SINK_DB_TABLE = "testando";
+    private static final String SINK_DB_TABLE = "customer_view";
 
     // Main method where the Flink job is defined
     public static void main(String[] args) throws Exception {
