@@ -9,6 +9,11 @@ import org.apache.flink.table.runtime.functions.aggregate.JsonArrayAggFunction;
 import org.apache.flink.types.Row;
 import org.flinkfood.ArrayAggr;
 import org.flinkfood.FlinkEnvironments.RestaurantTableEnvironment;
+import org.flinkfood.serializers.RestaurantRowToBsonDocument;
+import org.apache.flink.connector.mongodb.sink.MongoSink;
+import org.apache.flink.connector.base.DeliveryGuarantee;
+import org.apache.flink.streaming.api.datastream.DataStream;
+
 
 import static org.apache.flink.table.api.Expressions.*;
 
@@ -30,7 +35,6 @@ public class RestaurantView {
         rEnv.createDishesTable();
         rEnv.createReviewDishTable();
 
-/*
         MongoSink<Row> sink = MongoSink.<Row>builder()
                 .setUri(MONGODB_URI)
                 .setDatabase(SINK_DB)
@@ -41,7 +45,6 @@ public class RestaurantView {
                 .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
                 .setSerializationSchema(new RestaurantRowToBsonDocument())
                 .build();
-*/
 
 //        System.out.println(
 //        rEnv.gettEnv()
@@ -90,8 +93,9 @@ public class RestaurantView {
 
 
 
-        // DataStream<Row> resultStream = rEnv.toDataStream(simpleUnifiedTable);
-        // resultStream.sinkTo(sink);
+        DataStream<Row> resultStream = rEnv.toDataStream(resultTable3);
+        resultStream.sinkTo(sink);
+        
 
         //Execute the Flink job with the given name
         env.execute("RestaurantView");
