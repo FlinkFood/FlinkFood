@@ -40,7 +40,6 @@ public class CustomerViewJob {
         Table simpleUnifiedTable = rEnv.createFinalCustomerView();
         DataStream<Row> resultStream = rEnv.toDataStream(simpleUnifiedTable);
         resultStream.sinkTo(sink);
-        //resultStream.print();
 
         //Execute the Flink job with the given name
         env.execute("CustomerViewJob");

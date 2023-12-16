@@ -93,7 +93,7 @@ for topic in "${topics[@]}"; do
         "schemas.enable":false
     }
     }'
-    sleep 5
+    sleep 1
   done
   echo "Kafka topic $topic is now available."
 done
@@ -108,7 +108,8 @@ echo "All Kafka topics are available. Continuing the program..."
 
 echo "Flink jobs started."
 
-# Keep container running
+# Keep container running 
+#Update: without it, the container crashes!
 while true; do
   sleep 60  # Adjust the sleep duration based on your needs
 done
