@@ -120,7 +120,7 @@ if ! is_system_initialized; then
     while ! topic_exists $topic; do
         echo "Waiting for Kafka topic $topic to be available..."
         populate_kconnect
-        sleep 5
+        sleep 1
     done
     echo "Kafka topic $topic is now available."
     done
@@ -137,7 +137,8 @@ run_flink_job "/opt/flink/DishViewJob/target/dishview-1.0.jar" 10 1
 
 echo "Flink jobs started."
 
-# Keep container running
+# Keep container running 
+#Update: without it, the container crashes!
 while true; do
   sleep 60  # Adjust the sleep duration based on your needs
 done
