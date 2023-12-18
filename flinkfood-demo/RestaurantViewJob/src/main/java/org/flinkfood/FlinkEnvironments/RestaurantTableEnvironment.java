@@ -32,7 +32,6 @@ public class RestaurantTableEnvironment {
 
     public void createAllTables() throws FileNotFoundException
     {
-        String SQL = " "; 
         String query;
 
         ArrayList<YAML_table> tables = (new YAML_reader("table_config.yml")).readYamlFile();
@@ -49,10 +48,9 @@ public class RestaurantTableEnvironment {
                     " 'properties.auto.offset.reset' = 'earliest'" +
                     "); ";
         
-            SQL = SQL.concat(query);
+                    this.tEnv.executeSql(query);
         }        
 
-        this.tEnv.executeSql(SQL);
     }
 
     public void createRestaurantInfoTable() {

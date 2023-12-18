@@ -1,7 +1,7 @@
 - name : 'restaurant_info'
   schema:
     |
-    id serial PRIMARY KEY, 
+    id serial , 
     name VARCHAR(255), 
     phone VARCHAR(20), 
     email VARCHAR(255), 
@@ -13,7 +13,7 @@
 - name: 'supplier'
   schema:
     |
-    id serial PRIMARY KEY, 
+    id serial , 
     name VARCHAR(255), 
     vat_code INT, 
     country VARCHAR(255), 
@@ -23,7 +23,7 @@
 - name: 'customer'
   schema:
     |
-    id serial PRIMARY KEY, 
+    id serial , 
     username VARCHAR(255), 
     first_name VARCHAR(255), 
     last_name VARCHAR(255), 
@@ -35,7 +35,7 @@
 - name: 'restaurant_service'
   schema:
     |
-    restaurant_id INT PRIMARY KEY, 
+    restaurant_id INT , 
     take_away BOOLEAN, 
     delivery BOOLEAN, 
     dine_in BOOLEAN, 
@@ -49,7 +49,7 @@
 - name: 'restaurant_address'
   schema:
     |
-    restaurant_id INT PRIMARY KEY, 
+    restaurant_id INT , 
     street VARCHAR(255), 
     address_number VARCHAR(10), 
     zip_code INT, 
@@ -62,18 +62,18 @@
 - name: 'restaurant_review'
   schema:
     |
-    id INT PRIMARY KEY, 
+    id INT , 
     restaurant_id INT, 
     customer_id INT, 
     rating SMALLINT, 
-    comment VARCHAR(255)
+    commentary VARCHAR(255)
   kafka_topic: 'postgres.public.restaurant_review'
 
 
 - name: 'dish'
   schema:
     |
-    id serial PRIMARY KEY, 
+    id serial , 
     restaurant_id INT, 
     name VARCHAR(255), 
     price SMALLINT, 
