@@ -10,14 +10,19 @@ public class RestaurantTableEnvironment {
     private final StreamTableEnvironment tEnv;
     private static final String KAFKA_URI = "localhost:9092";
 
+    /**
+     * Support class for the creation of the table environment
+     * Tables schemas are hardcoded in the class
+     */
+
     public RestaurantTableEnvironment(StreamExecutionEnvironment env) {
         this.tEnv = StreamTableEnvironment.create(env);
     }
 
     public void createRestaurantInfoTable() {
         this.tEnv.executeSql("CREATE TABLE restaurant_info (" +
-                " id INT," +
-                " name STRING," +
+                " id SMALLINT," +
+                " name VARCHAR(255)," +
                 " phone STRING," +
                 " email STRING," +
                 " cuisine_type STRING," +

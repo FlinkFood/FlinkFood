@@ -25,6 +25,8 @@ public class RestaurantView {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         RestaurantTableEnvironment rEnv = new RestaurantTableEnvironment(env);
+
+        //TODO: get the tables from the config file
         rEnv.createRestaurantInfoTable();
         rEnv.createDishesTable();
         rEnv.createReviewDishTable();
