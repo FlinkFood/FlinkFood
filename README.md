@@ -9,16 +9,11 @@ FlinkFood is a project that addresses the challenge of providing users with info
 Every day, users place orders on FlinkFood, each with unique preferences and requirements. Restaurants continually update their menus, creating a need for an efficient data aggregation system. FlinkFood is designed to meet this need by implementing a Data Fabric solution with Apache Flink.
 
 ## Code Style
-
-TBD
+The decided on coding style in this project is the Google Java Style Guide.
 
 ## Features
+The FlinkFood application takes inputs from 18 different database tables. Uses CDC through debezium to capture changes in these tables and then creates a single view for the customer, restaurant and dishes. This single view is then stored in a MongoDB collection. The main point of this project is to test out the Apache Flink engine for the MIA Platform team and to assess risks and advantages with using the Apache Flink engine for data stream processing
 
-TBD
-
-## Tests
-
-Comprehensive tests are yet to be defined for the project. Test examples and guidelines will be added in future updates.
 
 ## How to Use
 
@@ -27,57 +22,6 @@ To use FlinkFood, follow these steps:
 ### How to run
 
 See the [documentation for how to run FlinkFood](docs/howToRun.md) for more details on these steps.
-
-### Basic docker commands
-
-Using the following commands will start docker containers for Kafka and Apache Flink. Flink is running in session mode. This means that we have a long-running Flink Cluster which we can submit jobs to. This is preferably done in the web UI (see below). For more information on this configuration of Apache Flink, see: [Apache Flink Documentation](https://nightlies.apache.org/flink/flink-docs-master/docs/deployment/resource-providers/standalone/docker/#session-mode-1)
-
-1. Launch a cluster in the foreground (use -d for background)
-
-```sh
-docker-compose up
-```
-
-2. Apache Flink Web Dashboard
-   When the cluster is running, you can visit the [Apache Flink Web Dashboard](http://localhost:8081) for manual management.
-
-3. Kill the cluster
-
-```sh
-docker-compose down
-```
-
-### Interacting with the different containers
-
-#### PostgreSQL container
-
-Run the following command to enter the PostgreSQL container:
-
-```sh
-docker exec -it flinkfood-postgres-1 bash
-```
-
-To enter the postgreSQL database by running this command:
-
-```sh
-psql -U postgres -d flinkfood
-```
-
-Now you can run SQL commands :)
-
-### Optional configuration
-
-- Scale the cluster up or down to N TaskManagers
-
-```sh
-docker-compose scale taskmanager=<N>
-```
-
-- Access the JobManager container
-
-```sh
-docker exec -it $(docker ps --filter name=jobmanager --format={{.ID}}) /bin/sh
-```
 
 ## Contribute
 
@@ -93,7 +37,7 @@ Please follow the [Git flow workflow](https://www.gitkraken.com/learn/git/git-fl
 
 ### Pull requests (PRs)
 
-- Before opening the PR make sure you are up to date ith `develop` branch
+- Before opening the PR make sure you are up to date with `develop` branch
 - After the PR is approved squash merge your commits on develop
 
 Do at least one of the following:
