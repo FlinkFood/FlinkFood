@@ -4,17 +4,12 @@ package org.flinkfood.flinkjobs;
 // Importing necessary Flink libraries and external dependencies
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.table.api.StatementSet;
-import org.apache.flink.table.api.Table;
-import org.apache.flink.table.runtime.functions.aggregate.JsonArrayAggFunction;
-import org.apache.flink.types.Row;
-import org.flinkfood.ArrayAggr;
+import org.apache.flink.table.api.Schema;
+import org.apache.flink.table.api.TableDescriptor;
+import org.apache.flink.table.catalog.ResolvedSchema;
 import org.flinkfood.FlinkEnvironments.RestaurantTableEnvironment;
-import org.flinkfood.serializers.RestaurantRowToBsonDocument;
-import org.apache.flink.connector.mongodb.sink.MongoSink;
-import org.apache.flink.connector.base.DeliveryGuarantee;
-import org.apache.flink.streaming.api.datastream.DataStream;
 
+import java.util.List;
 
 import static org.apache.flink.table.api.Expressions.*;
 
@@ -25,6 +20,7 @@ public class RestaurantView {
     private static final String SINK_DB = "flinkfood";
     private static final String SINK_DB_TABLE = "restaurants_view";
 
+    private static final List<String> tables = List.of("restaurant_info", "dishes", "restaurant_services", "restaurant_address", "restaurant_reviews", "review_dish");
     // Main method where the Flink job is defined
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -47,10 +43,28 @@ public class RestaurantView {
 //                .setSerializationSchema(new RestaurantRowToBsonDocument())
 //                .build();
 
-//        System.out.println(
-//        rEnv.gettEnv()
-//                .from("dish")
-//                .getResolvedSchema());
+        Schema.Builder schemaBuilder = Schema.newBuilder();
+
+        //for the single view create a schema with ARRAY<ROW<...>> for each table that contains the restaurant_id column
+        for (String table : tables) {
+            ResolvedSchema resolvedSchema = rEnv.gettEnv().from(table).getResolvedSchema();
+            if (resolvedSchema.getColumnNames().stream()
+                    .anyMatch(s -> s.equals("restaurant_id"))) {
+                String aggr_table_schema = "ARRAY<ROW<" + resolvedSchema.getColumnNames().stream()
+                        .map(s -> s + " " + resolvedSchema.getColumn(s).get().getName()) //.getDataType().getLogicalType().getTypeRoot().name())
+                        .reduce((s1, s2) -> s1 + "," + s2).get() + ">>";
+            }
+            schemaBuilder.column(resolvedSchema.getColumnNames().stream()
+                    .map(s -> s + " " + resolvedSchema.getColumn(s).get().getName()) //.getDataType().getLogicalType().getTypeRoot().name())
+                    .reduce((s1, s2) -> s1 + "," + s2).get()
+            )
+        }
+        TableDescriptor tableDescriptor = new TableDescriptor("restaurant_view", schemaBuilder.build());
+
+
+            rEnv.gettEnv()
+                .from("dish")
+                .getResolvedSchema();
 //        -->  (    `id` BIGINT,
 //                  `restaurant_id` INT,
 //                  `name` STRING,
@@ -60,13 +74,9 @@ public class RestaurantView {
 //                  `description` STRING
 //                  )
 
-//        rEnv.gettEnv().executeSql("CREATE TABLE restaurant_view"+
-//                                "( restaurant_id INT,"+
-//                                " dishes ARRAY<ROW<id BIGINT, restaurant_id INT, name STRING, price SMALLINT, currency STRING, category STRING, description STRING>>)");
-
-
-        //TODO: have a ManagedTableFactory to save tables in flink! -> rn they can go just in a sink
-        rEnv.gettEnv().executeSql(
+        // TODO: have a ManagedTableFactory to save tables in flink! -> rn they can go just in a sink
+        rEnv.gettEnv()
+                .createTable("restaurant_view").executeSql(
                 "CREATE TABLE restaurant_view "+
                         "(restaurant_id INT PRIMARY KEY NOT ENFORCED, "+
                         "dishes " +
@@ -84,7 +94,7 @@ public class RestaurantView {
 
         rEnv.gettEnv().executeSql("CREATE FUNCTION ARRAY_AGGR AS 'org.flinkfood.ArrayAggr'");
 
-        StatementSet stmtSet = rEnv.gettEnv().createStatementSet();
+        var stmtSet = rEnv.gettEnv().createStatementSet();
 
         stmtSet.addInsertSql(
                 "INSERT INTO restaurant_view " +
@@ -94,25 +104,10 @@ public class RestaurantView {
                     "GROUP BY restaurant_id ");
 
         stmtSet.execute();
-        //Exception in thread "main" org.apache.flink.table.api.TableException:
-        // Table sink 'default_catalog.default_database.restaurant_view' doesn't support consuming update changes which
-        // is produced by node GroupAggregate(groupBy=[restaurant_id], select=[restaurant_id, ARRAY_AGGR($f1) AS EXPR$1])
-
-
-//        System.out.println(
-//        rEnv.gettEnv()
-//                .from("dish")
-//                .groupBy($("restaurant_id"))
-//                .flatAggregate(call(ArrayAggr.class))
-//                .select($("*"))
-
-//                .execute());
-
-
-
 
         //Execute the Flink job with the given name
         env.execute("RestaurantView");
+
         /*
         Exception in thread "main" java.lang.IllegalStateException: No operators defined in streaming topology. Cannot execute.
         at org.apache.flink.streaming.api.environment.StreamExecutionEnvironment.getStreamGraphGenerator(StreamExecutionEnvironment.java:2322)
