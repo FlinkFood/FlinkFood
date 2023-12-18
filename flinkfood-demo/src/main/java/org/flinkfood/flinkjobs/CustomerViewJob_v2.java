@@ -3,9 +3,17 @@ package org.flinkfood.flinkjobs;
 
 // Importing necessary Flink libraries and external dependencies
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.ProcessFunction;
+import org.apache.flink.table.api.JsonOnNull;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.TableConfig;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
+import org.apache.flink.types.Row;
+import org.apache.flink.util.Collector;
+
+import static org.apache.flink.table.api.Expressions.$;
+import static org.apache.flink.table.api.Expressions.jsonObject;
+
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.connector.mongodb.sink.MongoSink;
 import org.apache.flink.connector.base.DeliveryGuarantee;
@@ -13,6 +21,7 @@ import org.apache.flink.connector.kafka.source.KafkaSource;
 import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.InsertOneModel;
 import com.mongodb.client.model.ReplaceOneModel;
 import com.mongodb.client.model.ReplaceOptions;
 
@@ -67,16 +76,18 @@ public class CustomerViewJob_v2 {
                                 .setMaxRetries(3)
                                 .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
 
-                                // .setSerializationSchema((input, context) -> new
-                                // InsertOneModel<>(BsonDocument.parse(input)))
+                                .setSerializationSchema(
+                                                (input, context) -> new InsertOneModel<>(BsonDocument.parse(input)))
 
-                                .setSerializationSchema((input, context) -> {
-                                        BsonDocument document = BsonDocument.parse(input);
-                                        int idValue = document.getInt32(new String("customer_id")).getValue();
-                                        Bson filter = Filters.eq("customer.id", idValue);
-                                        return new ReplaceOneModel<>(filter, document,
-                                                        new ReplaceOptions().upsert(true));
-                                })
+                                /*
+                                 * .setSerializationSchema((input, context) -> {
+                                 * BsonDocument document = BsonDocument.parse(input);
+                                 * int idValue = document.getInt32(new String("customer_id")).getValue();
+                                 * Bson filter = Filters.eq("customer.id", idValue);
+                                 * return new ReplaceOneModel<>(filter, document,
+                                 * new ReplaceOptions().upsert(true));
+                                 * })
+                                 */
 
                                 .build();
 
@@ -106,25 +117,31 @@ public class CustomerViewJob_v2 {
 
                 tableEnv.executeSql("CREATE FUNCTION ARRAY_AGGR AS 'org.flinkfood.flinkjobs.ArrayAggr';");
 
+                // Query that returns a Row type
                 Table resultTable4 = tableEnv.sqlQuery(
-                                "SELECT c.id,c.first_name,c.last_name,(SELECT ARRAY_AGGR(ROW(o.id,o.name,o.description))FROM Orders o WHERE o.customer_id = c.id) FROM Customer c;");
-                tableEnv.toChangelogStream(resultTable4).print();
+                                "SELECT DISTINCT c.id,c.first_name,c.last_name,(SELECT ARRAY_AGGR(ROW(o.id,o.name,o.description)) FROM Orders o WHERE o.customer_id = c.id) FROM Customer c;");
 
-                /*
-                 * tableEnv.toChangelogStream(resultTable2).process(new ProcessFunction<Row,
-                 * String>() {
-                 * 
-                 * @Override
-                 * public void processElement(
-                 * Row row,
-                 * ProcessFunction<Row, String>.Context context,
-                 * Collector<String> out) {
-                 * System.out.println("ROW: " + row.getField(0).toString());
-                 * 
-                 * out.collect(row.getField(0).toString());
-                 * }
-                 * }).sinkTo(sink);
-                 */
+                // tableEnv.toChangelogStream(resultTable4).print();
+
+                // Query that returns a JSON
+                Table resultTable3 = tableEnv
+                                .sqlQuery("SELECT DISTINCT JSON_OBJECT('customer_id' VALUE c.id, 'first_name' VALUE c.first_name, 'last_name' VALUE c.last_name, \n"
+                                                +
+                                                " 'orders' VALUE ARRAY_AGGR(JSON_OBJECT('order_id' VALUE o.id, 'name' VALUE o.name, 'description' VALUE o.description)))as customer_view FROM Customer c  INNER JOIN  Orders o ON o.customer_id = c.id GROUP BY c.id, c.first_name, c.last_name;");
+                // tableEnv.toChangelogStream(resultTable3).print();
+
+                tableEnv.toChangelogStream(resultTable3).process(new ProcessFunction<Row, String>() {
+
+                        @Override
+                        public void processElement(
+                                        Row row,
+                                        ProcessFunction<Row, String>.Context context,
+                                        Collector<String> out) {
+                                System.out.println("ROW: " + row.getField(0).toString());
+
+                                out.collect(row.getField(0).toString());
+                        }
+                }).sinkTo(sink);
 
                 env.execute("CustomerViewJob_v2");
         }
