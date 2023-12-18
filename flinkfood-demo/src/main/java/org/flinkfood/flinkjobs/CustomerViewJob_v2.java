@@ -4,6 +4,7 @@ package org.flinkfood.flinkjobs;
 // Importing necessary Flink libraries and external dependencies
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.Table;
+import org.apache.flink.table.api.TableConfig;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.connector.mongodb.sink.MongoSink;
@@ -82,6 +83,10 @@ public class CustomerViewJob_v2 {
                 // Setting up Flink execution environment
                 StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
                 StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
+                TableConfig tableConfig = tableEnv.getConfig();
+                tableConfig.set("table.exec.mini-batch.enabled", "true");
+                tableConfig.set("table.exec.mini-batch.allow-latency", "5 s");
+                tableConfig.set("table.exec.mini-batch.size", "5000");
 
                 DataStream<Customer> streamCustomer = env
                                 .fromSource(sourceCustomer, WatermarkStrategy.noWatermarks(), "Kafka Source")
@@ -100,7 +105,6 @@ public class CustomerViewJob_v2 {
                 tableEnv.createTemporaryView("Orders", tableEnv.toChangelogStream(orderTable));
 
                 tableEnv.executeSql("CREATE FUNCTION ARRAY_AGGR AS 'org.flinkfood.flinkjobs.ArrayAggr';");
-                // tableEnv.executeSql("SET 'table.exec.mini-batch.enabled'='true';");
 
                 Table resultTable4 = tableEnv.sqlQuery(
                                 "SELECT c.id,c.first_name,c.last_name,(SELECT ARRAY_AGGR(ROW(o.id,o.name,o.description))FROM Orders o WHERE o.customer_id = c.id) FROM Customer c;");
