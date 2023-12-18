@@ -1,45 +1,21 @@
 // Package declaration for the Flink job
 package org.flinkfood.flinkjobs;
 
-import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import org.apache.flink.shaded.jackson2.org.yaml.snakeyaml.Yaml;
-
 // Importing necessary Flink libraries and external dependencies
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.table.api.DataTypes;
 import org.apache.flink.table.api.Schema;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.TableDescriptor;
-import org.apache.flink.table.catalog.DataTypeFactory;
 import org.apache.flink.table.catalog.ResolvedSchema;
-import org.apache.flink.table.types.DataType;
-import org.apache.flink.types.Row;
 import org.flinkfood.ArrayAggr;
 import org.flinkfood.FlinkEnvironments.RestaurantTableEnvironment;
-import org.flinkfood.config_reader.FlinkTable;
 
-import com.twitter.chill.Base64.InputStream;
-
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import static org.apache.flink.table.api.Expressions.*;
-
-
-//import org.yaml.snakeyaml.Yaml;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-//import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 
 // Class declaration for the Flink job
 public class RestaurantView {

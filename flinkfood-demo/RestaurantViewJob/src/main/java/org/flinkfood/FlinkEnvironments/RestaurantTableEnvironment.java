@@ -47,7 +47,7 @@ public class RestaurantTableEnvironment {
         for(int i = 0; i < array.size(); i++)
         {   
             //v contains each one of the values
-            LinkedHashMap v = (LinkedHashMap) array.get(0);
+            LinkedHashMap v = (LinkedHashMap) array.get(i);
             query = "CREATE TABLE "+v.get("name")+ "("+v.get("schema")+")"+
                     " WITH (" +
                     " 'connector' = 'kafka'," +
@@ -56,12 +56,12 @@ public class RestaurantTableEnvironment {
                     " 'format' = 'json'," +
                     " 'scan.startup.mode' = 'earliest-offset'," +
                     " 'properties.auto.offset.reset' = 'earliest'" +
-                    ") ";
+                    "); ";
         
-            SQL.concat(query);
+            SQL = SQL.concat(query);
         }        
 
-        System.out.println(SQL);
+        this.tEnv.executeSql(SQL);
     }
 
     public void createRestaurantInfoTable() {
