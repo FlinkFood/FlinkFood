@@ -68,3 +68,14 @@ and the result is I obtain:
 ...
 ]
 ```
+
+## 2.0
+This other way it's more elegant
+```Java
+        rEnv.gettEnv().from("dish")
+                                .groupBy($("restaurant_id"))
+                                .aggregate(call(ArrayAggr.class, Row.of($("*"))))
+                                .select($("*"))
+                .insertInto("restaurant_view")
+                .execute();
+```

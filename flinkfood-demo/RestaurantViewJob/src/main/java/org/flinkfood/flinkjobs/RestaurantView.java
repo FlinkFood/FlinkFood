@@ -4,11 +4,19 @@ package org.flinkfood.flinkjobs;
 // Importing necessary Flink libraries and external dependencies
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.table.api.DataTypes;
 import org.apache.flink.table.api.Schema;
+import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.TableDescriptor;
+import org.apache.flink.table.catalog.DataTypeFactory;
 import org.apache.flink.table.catalog.ResolvedSchema;
+import org.apache.flink.table.types.DataType;
+import org.apache.flink.types.Row;
+import org.flinkfood.ArrayAggr;
 import org.flinkfood.FlinkEnvironments.RestaurantTableEnvironment;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.apache.flink.table.api.Expressions.*;
@@ -34,58 +42,31 @@ public class RestaurantView {
         rEnv.createRestaurantAddressTable();
         rEnv.createRestaurantReviewsTable();
 
-//        MongoSink<Row> sink = MongoSink.<Row>builder()
-//                .setUri(MONGODB_URI)
-//                .setDatabase(SINK_DB)
-//                .setCollection(SINK_DB_TABLE)
-//                .setBatchSize(1000)
-//                .setBatchIntervalMs(1000)
-//                .setMaxRetries(3)
-//                .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
-//                .setSerializationSchema(new RestaurantRowToBsonDocument())
-//                .build();
-
         Schema.Builder schemaBuilder = Schema.newBuilder();
 
         //TODO: for the single view create a schema with ARRAY<ROW<...>> for each table that contains the restaurant_id column
         for (String table : tables) {
-            ResolvedSchema resolvedSchema = rEnv.gettEnv().from(table).getResolvedSchema();
-            if (resolvedSchema.getColumnNames().stream()
-                    .anyMatch(s -> s.equals("restaurant_id"))) {
-                String aggr_table_schema = "ARRAY<ROW<" + resolvedSchema.getColumnNames().stream()
-                        .map(s -> s + " " + resolvedSchema.getColumn(s).get().getName()) //.getDataType().getLogicalType().getTypeRoot().name())
-                        .reduce((s1, s2) -> s1 + "," + s2).get() + ">>";
-            } else {
-                // table is not in the view
+            if (Arrays.asList(rEnv.gettEnv().listTables()).contains(table)) { // check if the table is present
+                ResolvedSchema resolvedSchema = rEnv.gettEnv().from(table).getResolvedSchema();
+                // if the table contains the restaurant_id column, add it to the view
+                if (resolvedSchema.getColumnNames().stream()
+                        .anyMatch(s -> s.equals("restaurant_id"))) {
+                    String aggr_table_schema = "ARRAY<ROW<" + resolvedSchema.getColumnNames().stream()
+                            .map(s -> s + " " + resolvedSchema.getColumn(s).get().getName())
+                            .reduce((s1, s2) -> s1 + "," + s2).get() + ">>";
+
+                    schemaBuilder.column(table, aggr_table_schema);
+                }
             }
-//            schemaBuilder.column(resolvedSchema.getColumnNames().stream()
-//                    .map(s -> s + " " + resolvedSchema.getColumn(s).get().getName()) //.getDataType().getLogicalType().getTypeRoot().name())
-//                    .reduce((s1, s2) -> s1 + "," + s2).get()
-//            )
         }
 
         TableDescriptor tableDescriptor = TableDescriptor.forConnector("mongodb")
                 .schema(schemaBuilder.build()).build(); //:pinched-fingers:
 
+        // Tables cannot be saved locally without a  ManagedTableFactory
+        // -> rn they can go just in a sink (MongoDB for example) or be printed out.
 
-        // The idea is to use the schema to have the types in the view
-//            rEnv.gettEnv()
-//                .from("dish")
-//                .getResolvedSchema();
-//        -->  (    `id` BIGINT,
-//                  `restaurant_id` INT,
-//                  `name` STRING,
-//                  `price` SMALLINT,
-//                  `currency` STRING,
-//                  `category` STRING,
-//                  `description` STRING
-//                  )
-
-
-// Tables cannot be saved locally without a  ManagedTableFactory
-// -> rn they can go just in a sink (MongoDB for example) or be printed out.
-
-        rEnv.gettEnv().createTable("restaurant_view_", tableDescriptor);
+        // rEnv.gettEnv().createTable("restaurant_view_", tableDescriptor);
 
         // declaration of the table view to be sinked. I want to wwitch to use the one above in the future
         rEnv.gettEnv()
@@ -107,21 +88,31 @@ public class RestaurantView {
                         "'collection' = 'restaurants_view')");
 
 
-        // this command submits the function to the SQL engine
+        // this command does the registration in Table API
         rEnv.gettEnv().executeSql("CREATE FUNCTION ARRAY_AGGR AS 'org.flinkfood.ArrayAggr'");
 
+        List<Table> aggregatedTables = new ArrayList<>();
+        for(String table : tables) {
+            var resolvedSchema = rEnv.gettEnv().from(table).getResolvedSchema();
+            if (resolvedSchema.getColumnNames().stream()
+                    .anyMatch(s -> s.equals("restaurant_id"))) {
 
-        // aggregation is created with the insert statement, adding the data into the restaurant_view table.
-        // maybe it's possible to use just an intermediary view.
-        var stmtSet = rEnv.gettEnv().createStatementSet();
-        stmtSet.addInsertSql(
-                "INSERT INTO restaurant_view " +
-                "SELECT restaurant_id, " +
-                    // here would be nice to have a modular way to add the tables to the view
-                    "ARRAY_AGGR(ROW(id, restaurant_id, name, price, currency, category, description)) " +
-                    "FROM dish " +
-                    "GROUP BY restaurant_id ")
-                .execute();
+                aggregatedTables.add(
+                        rEnv.gettEnv()
+                                .from(table)
+                                .groupBy($("restaurant_id"))
+                                .aggregate(call(ArrayAggr.class))
+                                .select($("*")));
+            }
+        }
+
+        Table tempTable = aggregatedTables.get(0);
+        for (int i = 1; i < aggregatedTables.size(); i++) {
+            tempTable = tempTable.join(aggregatedTables.get(i)).where($("restaurant_id").isEqual($("restaurant_id"))).select($("*"));
+        }
+
+        tempTable.execute().print();
+
 
         env.execute("RestaurantView");
     }
