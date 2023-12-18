@@ -35,6 +35,13 @@ public class YAML_table {
     public void setKafka_topic(String kafka_topic) {
         this.kafka_topic = kafka_topic;
     }
-    
 
+    @Override
+    public String toString() {
+        return "YAML_table{" +
+                "name='" + name + '\'' +
+                ", schema='" + schema + '\'' +
+                ", kafka_topic='" + kafka_topic + '\'' +
+                '}';
+    }
 }

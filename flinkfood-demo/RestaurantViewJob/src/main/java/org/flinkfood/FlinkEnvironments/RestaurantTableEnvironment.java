@@ -26,7 +26,7 @@ public class RestaurantTableEnvironment {
         this.tEnv = StreamTableEnvironment.create(env);
     }
 
-    public void createAllTables() throws FileNotFoundException {
+    public ArrayList<YAML_table> createAllTables() throws FileNotFoundException {
         String query;
 
         ArrayList<YAML_table> tables = (new YAML_reader("table_config.yml")).readYamlFile();
@@ -44,7 +44,7 @@ public class RestaurantTableEnvironment {
 
             this.tEnv.executeSql(query);
         }
-
+        return tables;
     }
 
     public TableEnvironment gettEnv() {

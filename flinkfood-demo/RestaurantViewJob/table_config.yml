@@ -1,0 +1,84 @@
+- name : 'restaurant_info'
+  schema:
+    |
+    id AS restaurant_id serial , 
+    name VARCHAR(255), 
+    phone VARCHAR(20), 
+    email VARCHAR(255), 
+    cuisine_type VARCHAR(255), 
+    price_range VARCHAR(10), 
+    vat_code INT
+  kafka_topic: 'postgres.public.restaurant_info'
+
+- name: 'supplier'
+  schema:
+    |
+    id serial , 
+    name VARCHAR(255), 
+    vat_code INT, 
+    country VARCHAR(255), 
+    is_sustainable BOOLEAN
+  kafka_topic: 'postgres.public.supplier'
+
+- name: 'customer'
+  schema:
+    |
+    id serial , 
+    username VARCHAR(255), 
+    first_name VARCHAR(255), 
+    last_name VARCHAR(255), 
+    birthdate DATE NOT NULL, 
+    email VARCHAR(255), 
+    fiscal_code VARCHAR(16)
+  kafka_topic: 'postgres.public.customer'
+
+- name: 'restaurant_service'
+  schema:
+    |
+    restaurant_id INT , 
+    take_away BOOLEAN, 
+    delivery BOOLEAN, 
+    dine_in BOOLEAN, 
+    parking_lots INT, 
+    accessible BOOLEAN, 
+    children_area BOOLEAN, 
+    children_food BOOLEAN
+  kafka_topic: 'postgres.public.restaurant_service'
+
+
+- name: 'restaurant_address'
+  schema:
+    |
+    restaurant_id INT , 
+    street VARCHAR(255), 
+    address_number VARCHAR(10), 
+    zip_code INT, 
+    city VARCHAR(255), 
+    province VARCHAR(2), 
+    country VARCHAR(255)
+  kafka_topic: 'postgres.public.restaurant_address'
+
+
+- name: 'restaurant_review'
+  schema:
+    |
+    id INT , 
+    restaurant_id INT, 
+    customer_id INT, 
+    rating SMALLINT, 
+    commentary VARCHAR(255)
+  kafka_topic: 'postgres.public.restaurant_review'
+
+
+- name: 'dish'
+  schema:
+    |
+    id serial , 
+    restaurant_id INT, 
+    name VARCHAR(255), 
+    price SMALLINT, 
+    currency VARCHAR(3), 
+    category VARCHAR(255), 
+    description VARCHAR(255)
+  kafka_topic: 'postgres.public.dish'
+      

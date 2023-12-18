@@ -11,7 +11,13 @@ import org.apache.flink.shaded.jackson2.org.yaml.snakeyaml.Yaml;
 
 public class YAML_reader {
 
-    private String filepath;
+    private final String filepath;
+    ;
+
+    public YAML_reader(String filepath)
+    {
+        this.filepath = filepath;
+    }
 
     public ArrayList<YAML_table> readYamlFile() throws FileNotFoundException
     {
@@ -20,23 +26,22 @@ public class YAML_reader {
 
         //Reads all yaml as an array of hashmaps
         ArrayList array = yaml.load(inputStream);
-        
-        //For each hashmap, mounts one instance of the class
-        ArrayList<YAML_table> objects = new ArrayList<YAML_table>();
-        for(int i = 0; i < array.size(); i++)
-        {   
-            LinkedHashMap temp = (LinkedHashMap) array.get(i);
-            YAML_table element = new YAML_table((String) temp.get("name"), 
-                                                (String) temp.get("schema"),
-                                                (String) temp.get("kafka_topic"));
-            objects.add(element);
-        }        
 
-        return objects;
+        //For each hashmap, mounts one instance of the class
+        ArrayList<YAML_table> yamlTables = new ArrayList<>();
+        for(int i = 0; i < array.size(); i++)
+        {
+            LinkedHashMap temp = (LinkedHashMap) array.get(i);
+            YAML_table element = new YAML_table((String) temp.get("name"),
+                                                transform((String) temp.get("schema")),
+                                                (String) temp.get("kafka_topic"));
+            yamlTables.add(element);
+        }
+
+        return yamlTables;
     }
 
-    public YAML_reader(String filepath)
-    {
-        this.filepath = filepath;
+    private String transform(String schema) {
+        return schema.replace("serial", "INT");
     }
 }
