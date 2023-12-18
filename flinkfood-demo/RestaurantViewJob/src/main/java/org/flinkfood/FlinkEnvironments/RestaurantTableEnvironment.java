@@ -1,5 +1,13 @@
 package org.flinkfood.FlinkEnvironments;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+
+import org.apache.flink.shaded.jackson2.org.yaml.snakeyaml.Yaml;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.Table;
@@ -17,6 +25,43 @@ public class RestaurantTableEnvironment {
 
     public RestaurantTableEnvironment(StreamExecutionEnvironment env) {
         this.tEnv = StreamTableEnvironment.create(env);
+    }
+
+    private ArrayList readYamlFile() throws FileNotFoundException
+    {
+        Yaml yaml = new Yaml();
+        FileInputStream inputStream = new FileInputStream(new File("table_config.yml"));
+
+        //Reads all yaml as an array of hashmaps
+        ArrayList array = yaml.load(inputStream);
+        return array;
+    }
+
+    public void createAllTables() throws FileNotFoundException
+    {
+        String SQL = " "; 
+        String query;
+
+        ArrayList array = readYamlFile();
+
+        for(int i = 0; i < array.size(); i++)
+        {   
+            //v contains each one of the values
+            LinkedHashMap v = (LinkedHashMap) array.get(0);
+            query = "CREATE TABLE "+v.get("name")+ "("+v.get("schema")+")"+
+                    " WITH (" +
+                    " 'connector' = 'kafka'," +
+                    " 'topic' = '"+v.get("kafka_topic")+"'," +
+                    " 'properties.bootstrap.servers' = '" + KAFKA_URI + "'," +
+                    " 'format' = 'json'," +
+                    " 'scan.startup.mode' = 'earliest-offset'," +
+                    " 'properties.auto.offset.reset' = 'earliest'" +
+                    ") ";
+        
+            SQL.concat(query);
+        }        
+
+        System.out.println(SQL);
     }
 
     public void createRestaurantInfoTable() {
