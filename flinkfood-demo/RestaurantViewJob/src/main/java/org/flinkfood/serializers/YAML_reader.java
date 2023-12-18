@@ -29,7 +29,7 @@ public class YAML_reader {
             YAML_table element = new YAML_table((String) temp.get("name"), 
                                                 (String) temp.get("schema"),
                                                 (String) temp.get("kafka_topic"));
-            objects.set(i, element);
+            objects.add(element);
         }        
 
         return objects;
