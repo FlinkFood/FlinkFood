@@ -68,13 +68,13 @@ public class RestaurantView {
         //TODO: have a ManagedTableFactory to save tables in flink! -> rn they can go just in a sink
         rEnv.gettEnv().executeSql(
                 "CREATE TABLE restaurant_view "+
-                        "(restaurant_id INT,"+
+                        "(restaurant_id INT PRIMARY KEY NOT ENFORCED, "+
                         "dishes " +
                         "ARRAY<ROW<" +
                         "id BIGINT," +
                         "restaurant_id BIGINT," +
                         "dish_name STRING," +
-                        "price SMALLINT," +
+                        "price INT," +
                         "currency STRING," +
                         "category STRING," +
                         "description STRING>>)" +
@@ -85,7 +85,7 @@ public class RestaurantView {
         rEnv.gettEnv().executeSql("CREATE FUNCTION ARRAY_AGGR AS 'org.flinkfood.ArrayAggr'");
 
         StatementSet stmtSet = rEnv.gettEnv().createStatementSet();
-        
+
         stmtSet.addInsertSql(
                 "INSERT INTO restaurant_view " +
                 "SELECT restaurant_id, " +
