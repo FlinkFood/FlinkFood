@@ -66,7 +66,6 @@ public class CustomerViewJob_v2 {
                                 .build();
 
                 // Setting up MongoDB sink with relevant configurations
-                // Setting up MongoDB sink with relevant configurations
                 MongoSink<String> sink = MongoSink.<String>builder()
                                 .setUri(MONGODB_URI)
                                 .setDatabase(SINK_DB)
@@ -75,11 +74,11 @@ public class CustomerViewJob_v2 {
                                 .setBatchIntervalMs(1000)
                                 .setMaxRetries(3)
                                 .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
-
                                 .setSerializationSchema(
                                                 (input, context) -> new InsertOneModel<>(BsonDocument.parse(input)))
 
                                 /*
+                                 * // This is the code for the upsert operation,
                                  * .setSerializationSchema((input, context) -> {
                                  * BsonDocument document = BsonDocument.parse(input);
                                  * int idValue = document.getInt32(new String("customer_id")).getValue();
@@ -125,9 +124,19 @@ public class CustomerViewJob_v2 {
 
                 // Query that returns a JSON
                 Table resultTable3 = tableEnv
-                                .sqlQuery("SELECT DISTINCT JSON_OBJECT('customer_id' VALUE c.id, 'first_name' VALUE c.first_name, 'last_name' VALUE c.last_name, \n"
-                                                +
-                                                " 'orders' VALUE ARRAY_AGGR(JSON_OBJECT('order_id' VALUE o.id, 'name' VALUE o.name, 'description' VALUE o.description)))as customer_view FROM Customer c  INNER JOIN  Orders o ON o.customer_id = c.id GROUP BY c.id, c.first_name, c.last_name;");
+                                .sqlQuery(
+                                        "SELECT DISTINCT " +
+                                        "JSON_OBJECT('customer_id' VALUE c.id, 'first_name' VALUE c.first_name, 'last_name' VALUE c.last_name, " +
+                                        "'orders' VALUE ARRAY_AGGR(JSON_OBJECT(" +
+                                                "'order_id' VALUE o.id, 'name' VALUE o.name, 'description' VALUE o.description)))" +
+                                                "as customer_view " +
+                                                "FROM Customer c " +
+                                                "INNER JOIN Orders o ON o.customer_id = c.id " +
+                                                "GROUP BY c.id, c.first_name, c.last_name;");
+                // OUTPUT:
+                // ROW: {"customer_id":5,"first_name":"Alex","last_name":"Johnson","orders":["{\"description\":\"Vegetarian Delight\",\"name\":\"ord-123456789-VEGB\",\"order_id\":5}","{\"description\":\"Vegan Pizza\",\"name\":\"ord-567890123-VGPI\",\"order_id\":10}"]}
+                // As we can notice from the \ before the ", the JSON is not well-formed for ingestion (BSON) , it is just a string
+
                 // tableEnv.toChangelogStream(resultTable3).print();
 
                 tableEnv.toChangelogStream(resultTable3).process(new ProcessFunction<Row, String>() {
