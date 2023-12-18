@@ -31,21 +31,14 @@ public class RestaurantView {
         RestaurantTableEnvironment rEnv = new RestaurantTableEnvironment(env);
         
         rEnv.createAllTables();
-        //TODO: get the tables from the config file
-        /*rEnv.createRestaurantInfoTable();
-        rEnv.createDishesTable();
-        rEnv.createReviewDishTable();
-        rEnv.createRestaurantServicesTable();
-        rEnv.createRestaurantAddressTable();
-        rEnv.createRestaurantReviewsTable();
-        */
+        var tEnv = rEnv.gettEnv();
 
         Schema.Builder schemaBuilder = Schema.newBuilder();
 
         //TODO: for the single view create a schema with ARRAY<ROW<...>> for each table that contains the restaurant_id column
         for (String table : tables) {
-            if (Arrays.asList(rEnv.gettEnv().listTables()).contains(table)) { // check if the table is present
-                ResolvedSchema resolvedSchema = rEnv.gettEnv().from(table).getResolvedSchema();
+            if (Arrays.asList(tEnv.listTables()).contains(table)) { // check if the table is present
+                ResolvedSchema resolvedSchema = tEnv.from(table).getResolvedSchema();
                 // if the table contains the restaurant_id column, add it to the view
                 if (resolvedSchema.getColumnNames().stream()
                         .anyMatch(s -> s.equals("restaurant_id"))) {
@@ -64,10 +57,10 @@ public class RestaurantView {
         // Tables cannot be saved locally without a  ManagedTableFactory
         // -> rn they can go just in a sink (MongoDB for example) or be printed out.
 
-        // rEnv.gettEnv().createTable("restaurant_view_", tableDescriptor);
+        // tEnv.createTable("restaurant_view_", tableDescriptor);
 
         // declaration of the table view to be sinked. I want to wwitch to use the one above in the future
-        rEnv.gettEnv()
+        tEnv
                 .executeSql(
                 "CREATE TABLE restaurant_view "+
                         "(restaurant_id INT, "+
@@ -87,16 +80,16 @@ public class RestaurantView {
 
 
         // this command does the registration in Table API
-        rEnv.gettEnv().executeSql("CREATE FUNCTION ARRAY_AGGR AS 'org.flinkfood.ArrayAggr'");
+        tEnv.executeSql("CREATE FUNCTION ARRAY_AGGR AS 'org.flinkfood.ArrayAggr'");
 
         List<Table> aggregatedTables = new ArrayList<>();
         for(String table : tables) {
-            var resolvedSchema = rEnv.gettEnv().from(table).getResolvedSchema();
+            var resolvedSchema = tEnv.from(table).getResolvedSchema();
             if (resolvedSchema.getColumnNames().stream()
                     .anyMatch(s -> s.equals("restaurant_id"))) {
 
                 aggregatedTables.add(
-                        rEnv.gettEnv()
+                        tEnv
                                 .from(table)
                                 .groupBy($("restaurant_id"))
                                 .aggregate(call(ArrayAggr.class))
