@@ -13,6 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Code from https://github.com/decodableco/examples/tree/main/flink-learn/3-array-agg
+ * This AggregateFunction is used to aggregate the values of a column into an array.
+ * The object can be of any type.
+ * @param <T>
+ */
 public class ArrayAggr <T> extends AggregateFunction<T[],  ArrayAccumulator<T>> {
     private DataType elementType;
 
