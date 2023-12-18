@@ -8,7 +8,7 @@ import org.apache.flink.types.Row;
 
 public class RestaurantTableEnvironment {
     private final StreamTableEnvironment tEnv;
-    private static final String KAFKA_URI = System.getenv("KAFKA_URI");
+    private static final String KAFKA_URI = "localhost:9092";
 
     public RestaurantTableEnvironment(StreamExecutionEnvironment env) {
         this.tEnv = StreamTableEnvironment.create(env);

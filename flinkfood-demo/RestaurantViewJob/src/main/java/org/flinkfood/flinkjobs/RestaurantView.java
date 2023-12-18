@@ -4,6 +4,7 @@ package org.flinkfood.flinkjobs;
 // Importing necessary Flink libraries and external dependencies
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.table.api.StatementSet;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.table.runtime.functions.aggregate.JsonArrayAggFunction;
 import org.apache.flink.types.Row;
@@ -20,7 +21,7 @@ import static org.apache.flink.table.api.Expressions.*;
 // Class declaration for the Flink job
 public class RestaurantView {
 
-    private static final String MONGODB_URI = System.getenv("MONGODB_SERVER");
+    private static final String MONGODB_URI = "mongodb://localhost:27017";
     private static final String SINK_DB = "flinkfood";
     private static final String SINK_DB_TABLE = "restaurants_view";
 
@@ -29,22 +30,22 @@ public class RestaurantView {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         RestaurantTableEnvironment rEnv = new RestaurantTableEnvironment(env);
         rEnv.createRestaurantInfoTable();
+        rEnv.createDishesTable();
 //        rEnv.createRestaurantServicesTable();
 //        rEnv.createRestaurantAddressTable();
 //        rEnv.createRestaurantReviewsTable();
-        rEnv.createDishesTable();
         rEnv.createReviewDishTable();
 
-        MongoSink<Row> sink = MongoSink.<Row>builder()
-                .setUri(MONGODB_URI)
-                .setDatabase(SINK_DB)
-                .setCollection(SINK_DB_TABLE)
-                .setBatchSize(1000)
-                .setBatchIntervalMs(1000)
-                .setMaxRetries(3)
-                .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
-                .setSerializationSchema(new RestaurantRowToBsonDocument())
-                .build();
+//        MongoSink<Row> sink = MongoSink.<Row>builder()
+//                .setUri(MONGODB_URI)
+//                .setDatabase(SINK_DB)
+//                .setCollection(SINK_DB_TABLE)
+//                .setBatchSize(1000)
+//                .setBatchIntervalMs(1000)
+//                .setMaxRetries(3)
+//                .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
+//                .setSerializationSchema(new RestaurantRowToBsonDocument())
+//                .build();
 
 //        System.out.println(
 //        rEnv.gettEnv()
@@ -58,44 +59,56 @@ public class RestaurantView {
 //                  `category` STRING,
 //                  `description` STRING
 //                  )
+
 //        rEnv.gettEnv().executeSql("CREATE TABLE restaurant_view"+
 //                                "( restaurant_id INT,"+
 //                                " dishes ARRAY<ROW<id BIGINT, restaurant_id INT, name STRING, price SMALLINT, currency STRING, category STRING, description STRING>>)");
 
+
+        //TODO: have a ManagedTableFactory to save tables in flink! -> rn they can go just in a sink
+        rEnv.gettEnv().executeSql(
+                "CREATE TABLE restaurant_view "+
+                        "(restaurant_id INT,"+
+                        "dishes " +
+                        "ARRAY<ROW<" +
+                        "id BIGINT," +
+                        "restaurant_id BIGINT," +
+                        "dish_name STRING," +
+                        "price SMALLINT," +
+                        "currency STRING," +
+                        "category STRING," +
+                        "description STRING>>)" +
+                        "WITH ('connector' = 'mongodb', 'uri' = 'mongodb://localhost:27017'," +
+                        "'database' = 'flinkfood'," +
+                        "'collection' = 'restaurants_view')");
+
         rEnv.gettEnv().executeSql("CREATE FUNCTION ARRAY_AGGR AS 'org.flinkfood.ArrayAggr'");
 
-        rEnv.gettEnv().executeSql("CREATE TABLE restaurant_view"+
-                                            "( restaurant_id INT,"+
-                                            " dishes ARRAY<ROW<id BIGINT, restaurant_id BIGINT, name STRING, price SMALLINT, currency STRING, category STRING, description STRING>>)" +
-                                            " WITH ('connector' = 'mongodb', 'uri' = 'mongodb://localhost:27017', 'database' = 'flinkfood', 'collection' = 'restaurants_view')"
-                                            );
-        //TODO: have a ManagedTableFactory to save tables in flink!
+        StatementSet stmtSet = rEnv.gettEnv().createStatementSet();
+        stmtSet.addInsertSql(
+                "INSERT INTO restaurant_view " +
+                "SELECT restaurant_id, " +
+                    "ARRAY_AGGR(ROW(id, restaurant_id, name, price, currency, category, description)) " +
+                    "FROM dish " +
+                    "GROUP BY restaurant_id ");
 
-        Table resultTable3 = rEnv.gettEnv()
-                .sqlQuery("SELECT restaurant_id," +
-                        "ARRAY_AGGR(ROW(id, restaurant_id, name, price, currency, category, description)) AS restaurant_view FROM dish GROUP BY restaurant_id");
-//        rEnv.gettEnv()
-//                        .from("dish")
-//                        .groupBy($("restaurant_id"))
-//                        .aggregate(call(ArrayAggr.class))
-//                        .select($("*"))
-//                                .execute()
-//                                        .print();
-        
+        //Exception in thread "main" org.apache.flink.table.api.TableException:
+        // Table sink 'default_catalog.default_database.restaurant_view' doesn't support consuming update changes which
+        // is produced by node GroupAggregate(groupBy=[restaurant_id], select=[restaurant_id, ARRAY_AGGR($f1) AS EXPR$1])
+        stmtSet.execute();
+
+
 //        System.out.println(
 //        rEnv.gettEnv()
 //                .from("dish")
 //                .groupBy($("restaurant_id"))
 //                .flatAggregate(call(ArrayAggr.class))
 //                .select($("*"))
-//                .getResolvedSchema());
+
+//                .execute());
 
 
 
-
-        DataStream<Row> resultStream = rEnv.toDataStream(resultTable3);
-        resultStream.sinkTo(sink);
-        
 
         //Execute the Flink job with the given name
         env.execute("RestaurantView");
