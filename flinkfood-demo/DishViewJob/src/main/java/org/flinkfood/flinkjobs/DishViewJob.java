@@ -12,8 +12,6 @@ import org.apache.flink.connector.mongodb.sink.MongoSink;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.table.api.*;
 import org.apache.flink.types.Row;
-import org.apache.flink.util.Collector;
-import static org.apache.flink.table.api.Expressions.*;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.flinkfood.schemas.dish.Dish;
 import org.flinkfood.schemas.dish.KafkaDishSchema;
@@ -24,11 +22,6 @@ import org.flinkfood.schemas.ingredient.KafkaIngredientSchema;
 import org.flinkfood.schemas.restaurant.KafkaRestaurantInfoSchema;
 import org.flinkfood.schemas.restaurant.RestaurantInfo;
 import org.flinkfood.serializers.DishRowToBsonDocument;
-import com.mongodb.client.model.InsertOneModel;
-import com.mongodb.client.model.ReplaceOneModel;
-import com.mongodb.client.model.ReplaceOptions;
-
-import org.bson.BsonDocument;
 
 // Class declaration for the Flink job
 public class DishViewJob {
@@ -82,19 +75,7 @@ public class DishViewJob {
                                 .setValueOnlyDeserializer(new KafkaDishIngredientSchema())
                                 .build();
 
-                // Setting up MongoDB sink with relevant configurations
-                // MongoSink<String> sink = MongoSink.<String>builder()
-                //                 .setUri(MONGODB_URI)
-                //                 .setDatabase(SINK_DB)
-                //                 .setCollection(SINK_DB_TABLE)
-                //                 .setBatchSize(1000)
-                //                 .setBatchIntervalMs(1000)
-                //                 .setMaxRetries(3)
-                //                 .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
-                //                 .setSerializationSchema(
-                //                                 (input, context) -> new InsertOneModel<>(BsonDocument.parse(input)))
-                //                 .build();
-
+                // Setting up Kafka sink with relevant configurations
                 MongoSink<Row> sink = MongoSink.<Row>builder()
                                 .setUri(MONGODB_URI)
                                 .setDatabase(SINK_DB)
@@ -123,57 +104,60 @@ public class DishViewJob {
                 // Creates a temporary view for the dishes
                 tableEnv.createTemporaryView("Dish", tableEnv.toChangelogStream(dishTable));
 
+                // Creates a Flink data stream for the dish ingredients
                 DataStream<DishIngredient> streamDishIngredient = env
                                 .fromSource(dishIngredientSource, WatermarkStrategy.noWatermarks(), "Kafka Source")
                                 .keyBy(DishIngredient::getDish_id);
+                // Creates a table for the dish ingredients
                 Table dishIngredientTable = tableEnv.fromDataStream(streamDishIngredient);
+                // Creates a temporary view for the dish ingredients
                 tableEnv.createTemporaryView("DishIngredients", tableEnv.toChangelogStream(dishIngredientTable));
-                
+
+                // Creates a Flink data stream for the ingredients
                 DataStream<Ingredient> streamIngredient = env
                                 .fromSource(ingredientSource, WatermarkStrategy.noWatermarks(), "Kafka Source")
                                 .keyBy(Ingredient::getId);
+                // Creates a table for the ingredients
                 Table ingredientTable = tableEnv.fromDataStream(streamIngredient);
+                // Creates a temporary view for the ingredients
                 tableEnv.createTemporaryView("Ingredients", tableEnv.toChangelogStream(ingredientTable));
-                
+
+                // Creates a Flink data stream for the restaurants
                 DataStream<RestaurantInfo> streamRestaurants = env
                                 .fromSource(restaurantInfoSource, WatermarkStrategy.noWatermarks(), "Kafka Source")
                                 .keyBy(RestaurantInfo::getId);
+                // Creates a table for the restaurants
                 Table restaurantTable = tableEnv.fromDataStream(streamRestaurants);
+                // Creates a temporary view for the restaurants
                 tableEnv.createTemporaryView("Restaurants", tableEnv.toChangelogStream(restaurantTable));
 
                 tableEnv.executeSql("CREATE FUNCTION ARRAY_AGGR AS 'org.flinkfood.flinkjobs.ArrayAggr';");
 
                 // Query that returns a JSON
                 Table resultTable = tableEnv
-                .sqlQuery(
-                                "SELECT DISTINCT " +
-                                                "JSON_OBJECT('dish_id' VALUE d.id, 'dish_name' VALUE d.name, 'dish_description' VALUE d.description, "
-                                                +
-                                                "'served_in' VALUE JSON_OBJECT(" +
-                                                "'restaurant_id' VALUE r.id, 'name' VALUE r.name, 'email' VALUE r.email, " +
-                                                "'phone' VALUE r.phone, 'vat_code' VALUE r.vat_code, 'price_range' VALUE r.price_range), " 
-                                                +
-                                                "'ingredients' VALUE ARRAY_AGGR(JSON_OBJECT(" +
-                                                "'ingredient_id' VALUE i.id, 'name' VALUE i.name, 'description' VALUE i.description)))"
-                                                +
-                                                "as dish_view " +
-                                                "FROM Dish d " +
-                                                "JOIN Restaurants r ON d.restaurant_id = r.id " +
-                                                "LEFT JOIN DishIngredients di ON d.id = di.dish_id " +
-                                                "LEFT JOIN Ingredients i ON di.ingredient_id = i.id " +
-                                                "GROUP BY d.id, d.name, d.description, r.id, r.name, r.email, r.phone, r.vat_code, r.price_range;");
+                                .sqlQuery(
+                                                "SELECT DISTINCT " +
+                                                                "JSON_OBJECT('dish_id' VALUE d.id, 'dish_name' VALUE d.name, 'dish_description' VALUE d.description, "
+                                                                +
+                                                                "'served_in' VALUE JSON_OBJECT(" +
+                                                                "'restaurant_id' VALUE r.id, 'name' VALUE r.name, 'email' VALUE r.email, "
+                                                                +
+                                                                "'phone' VALUE r.phone, 'vat_code' VALUE r.vat_code, 'price_range' VALUE r.price_range), "
+                                                                +
+                                                                "'ingredients' VALUE ARRAY_AGGR(JSON_OBJECT(" +
+                                                                "'ingredient_id' VALUE i.id, 'name' VALUE i.name, 'description' VALUE i.description)))"
+                                                                +
+                                                                "as dish_view " +
+                                                                "FROM Dish d " +
+                                                                "JOIN Restaurants r ON d.restaurant_id = r.id " +
+                                                                "LEFT JOIN DishIngredients di ON d.id = di.dish_id " +
+                                                                "LEFT JOIN Ingredients i ON di.ingredient_id = i.id " +
+                                                                "GROUP BY d.id, d.name, d.description, r.id, r.name, r.email, r.phone, r.vat_code, r.price_range;");
 
-                tableEnv.toChangelogStream(resultTable).sinkTo(sink);
-                // process(new ProcessFunction<Row, String>() {
-                //         @Override
-                //         public void processElement(
-                //                         Row row,
-                //                         ProcessFunction<Row, String>.Context context,
-                //                         Collector<String> out) {
-                //                 System.out.println("ROW: " + row.getField(0).toString());
-                //                 out.collect(row.getField(0).toString());
-                //         }
-                // }).sinkTo(sink);
+                // Sink to MongoDB
+                tableEnv
+                                .toChangelogStream(resultTable)
+                                .sinkTo(sink);
 
                 // Starts job execution
                 env.execute("DishViewJob");
