@@ -1,4 +1,4 @@
-package org.flinkfood.serializers;
+package org.flinkfood.supportClasses;
 
 import java.io.File;
 import java.io.FileInputStream;

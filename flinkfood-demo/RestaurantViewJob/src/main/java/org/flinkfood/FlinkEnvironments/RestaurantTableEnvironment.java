@@ -1,21 +1,16 @@
 package org.flinkfood.FlinkEnvironments;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 
-import org.apache.flink.shaded.jackson2.org.yaml.snakeyaml.Yaml;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.apache.flink.types.Row;
 
-import org.flinkfood.serializers.YAML_table;
-import org.flinkfood.serializers.YAML_reader;
+import org.flinkfood.supportClasses.YAML_table;
+import org.flinkfood.supportClasses.YAML_reader;
 
 public class RestaurantTableEnvironment {
     private final StreamTableEnvironment tEnv;

@@ -1,4 +1,4 @@
-package org.flinkfood.serializers;
+package org.flinkfood.supportClasses;
 
 public class YAML_table {
     

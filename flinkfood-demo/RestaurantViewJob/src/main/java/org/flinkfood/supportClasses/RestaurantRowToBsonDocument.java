@@ -1,4 +1,4 @@
-package org.flinkfood.serializers;
+package org.flinkfood.supportClasses;
 
 import java.util.*;
 
@@ -17,9 +17,8 @@ import org.bson.BsonInt64;
 import org.bson.BsonNull;
 import org.bson.BsonString;
 
-import javax.annotation.Nonnull;
-
 // Remark: This is the worst code I've ever written. I'm sorry.
+// FIXME: unused: we may delete the class
 public class RestaurantRowToBsonDocument implements MongoSerializationSchema<Row> {
     // TODO: Source those from a config file
     final List<String> address_fields = List.of("street", "number", "city", "state", "country", "zipCode");
