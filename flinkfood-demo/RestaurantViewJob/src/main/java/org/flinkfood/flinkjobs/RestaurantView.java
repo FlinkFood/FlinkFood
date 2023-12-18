@@ -85,6 +85,7 @@ public class RestaurantView {
         rEnv.gettEnv().executeSql("CREATE FUNCTION ARRAY_AGGR AS 'org.flinkfood.ArrayAggr'");
 
         StatementSet stmtSet = rEnv.gettEnv().createStatementSet();
+        
         stmtSet.addInsertSql(
                 "INSERT INTO restaurant_view " +
                 "SELECT restaurant_id, " +
@@ -92,10 +93,10 @@ public class RestaurantView {
                     "FROM dish " +
                     "GROUP BY restaurant_id ");
 
+        stmtSet.execute();
         //Exception in thread "main" org.apache.flink.table.api.TableException:
         // Table sink 'default_catalog.default_database.restaurant_view' doesn't support consuming update changes which
         // is produced by node GroupAggregate(groupBy=[restaurant_id], select=[restaurant_id, ARRAY_AGGR($f1) AS EXPR$1])
-        stmtSet.execute();
 
 
 //        System.out.println(
