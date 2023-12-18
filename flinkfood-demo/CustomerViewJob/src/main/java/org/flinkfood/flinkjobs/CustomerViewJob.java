@@ -144,21 +144,21 @@ public class CustomerViewJob {
 
                 // tableEnv.toChangelogStream(resultTable3).print();
 
-                /*
-                 * tableEnv.toChangelogStream(resultTable3).process(new ProcessFunction<Row,
-                 * String>() {
-                 * 
-                 * @Override
-                 * public void processElement(
-                 * Row row,
-                 * ProcessFunction<Row, String>.Context context,
-                 * Collector<String> out) {
-                 * System.out.println("ROW: " + row.getField(0).toString());
-                 * 
-                 * out.collect(row.getField(0).toString());
-                 * }
-                 * }).sinkTo(sink);
-                 */
+
+               tableEnv.toChangelogStream(resultTable3).process(new ProcessFunction<Row,
+               String>() {
+
+               @Override
+               public void processElement(
+               Row row,
+               ProcessFunction<Row, String>.Context context,
+               Collector<String> out) {
+               System.out.println("ROW: " + row.getField(0).toString());
+
+               out.collect(row.getField(0).toString());
+               }
+               }).sinkTo(sink);
+
 
                 env.execute("CustomerViewJob");
         }
