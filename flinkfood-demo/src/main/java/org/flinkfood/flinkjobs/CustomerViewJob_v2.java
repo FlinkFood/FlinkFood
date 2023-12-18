@@ -128,20 +128,23 @@ public class CustomerViewJob_v2 {
                                 .sqlQuery("SELECT DISTINCT JSON_OBJECT('customer_id' VALUE c.id, 'first_name' VALUE c.first_name, 'last_name' VALUE c.last_name, \n"
                                                 +
                                                 " 'orders' VALUE ARRAY_AGGR(JSON_OBJECT('order_id' VALUE o.id, 'name' VALUE o.name, 'description' VALUE o.description)))as customer_view FROM Customer c  INNER JOIN  Orders o ON o.customer_id = c.id GROUP BY c.id, c.first_name, c.last_name;");
-                // tableEnv.toChangelogStream(resultTable3).print();
+                tableEnv.toChangelogStream(resultTable3).print();
 
-                tableEnv.toChangelogStream(resultTable3).process(new ProcessFunction<Row, String>() {
-
-                        @Override
-                        public void processElement(
-                                        Row row,
-                                        ProcessFunction<Row, String>.Context context,
-                                        Collector<String> out) {
-                                System.out.println("ROW: " + row.getField(0).toString());
-
-                                out.collect(row.getField(0).toString());
-                        }
-                }).sinkTo(sink);
+                /*
+                 * tableEnv.toChangelogStream(resultTable3).process(new ProcessFunction<Row,
+                 * String>() {
+                 * 
+                 * @Override
+                 * public void processElement(
+                 * Row row,
+                 * ProcessFunction<Row, String>.Context context,
+                 * Collector<String> out) {
+                 * System.out.println("ROW: " + row.getField(0).toString());
+                 * 
+                 * out.collect(row.getField(0).toString());
+                 * }
+                 * }).sinkTo(sink);
+                 */
 
                 env.execute("CustomerViewJob_v2");
         }
