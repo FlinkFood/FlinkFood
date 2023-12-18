@@ -1,23 +1,31 @@
 ## BUILD STAGE
 FROM eclipse-temurin:18-jdk AS build
 
+RUN apt-get update && \
+  apt-get install -y maven wget && \
+  apt-get clean
+
 # Set the working directory in the container
 WORKDIR /opt/flink
 
-# Update the package lists and install necessary packages
-RUN apt-get update && \
-   apt-get install -y maven wget && \
-   apt-get clean
-
 # Download kafka binaries, so we can communicate with the kafka cluster
 RUN wget https://archive.apache.org/dist/kafka/3.0.0/kafka_2.13-3.0.0.tgz && \
-    tar xzf kafka_2.13-3.0.0.tgz && \
-    rm kafka_2.13-3.0.0.tgz
+   tar xzf kafka_2.13-3.0.0.tgz && \
+   rm kafka_2.13-3.0.0.tgz
 
 # Add the Kafka command-line tools to the PATH
 ENV PATH="/opt/flink/kafka_2.13-3.0.0/bin:${PATH}"
 
-# Copy the local contents into the container at /app
+# Copy only the POM file to download dependencies
+COPY flinkfood-demo/pom.xml .
+COPY flinkfood-demo/CustomerViewJob/pom.xml .
+COPY flinkfood-demo/RestaurantViewJob/pom.xml .
+COPY flinkfood-demo/DishViewJob/pom.xml .
+
+# Download dependencies
+RUN mvn -B dependency:resolve-plugins dependency:resolve clean package
+
+# Copy the rest of the project
 COPY flinkfood-demo/ .
 
 # Run Maven build and create necessary directories
