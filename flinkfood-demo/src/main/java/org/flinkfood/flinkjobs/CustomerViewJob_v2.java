@@ -99,19 +99,12 @@ public class CustomerViewJob_v2 {
 
                 tableEnv.createTemporaryView("Orders", tableEnv.toChangelogStream(orderTable));
 
-                Table resultTable3 = tableEnv
-                                .sqlQuery("SELECT DISTINCT JSON_OBJECT('customer_id' VALUE c.id, 'first_name' VALUE c.first_name, 'last_name' VALUE c.last_name, \n"
-                                                + " 'orders' VALUE JSON_ARRAYAGG(JSON_OBJECT('order_id' VALUE  o.id,'name' VALUE o.name, 'description' VALUE o.description)))as customer_view FROM Customer c  INNER JOIN  Orders o ON o.customer_id = c.id GROUP BY c.id, c.first_name, c.last_name;");
-                tableEnv.toChangelogStream(resultTable3).print();
+                tableEnv.executeSql("CREATE FUNCTION ARRAY_AGGR AS 'org.flinkfood.flinkjobs.ArrayAggr';");
+                // tableEnv.executeSql("SET 'table.exec.mini-batch.enabled'='true';");
 
-                /*
-                 * tableEnv.executeSql(
-                 * "SELECT DISTINCT JSON_OBJECT('customer_id' VALUE c.id, 'first_name' VALUE c.first_name, 'last_name' VALUE c.last_name, \n"
-                 * +
-                 * " 'orders' VALUE JSON_ARRAYAGG(JSON_OBJECT('order_id' VALUE  o.id, 'description' VALUE o.description)))as customer_view FROM Customer c  INNER JOIN  Orders o ON o.customer_id = c.id GROUP BY c.id, c.first_name, c.last_name;"
-                 * )
-                 * .print();
-                 */
+                Table resultTable4 = tableEnv.sqlQuery(
+                                "SELECT c.id,c.first_name,c.last_name,(SELECT ARRAY_AGGR(ROW(o.id,o.name,o.description))FROM Orders o WHERE o.customer_id = c.id) FROM Customer c;");
+                tableEnv.toChangelogStream(resultTable4).print();
 
                 /*
                  * tableEnv.toChangelogStream(resultTable2).process(new ProcessFunction<Row,
