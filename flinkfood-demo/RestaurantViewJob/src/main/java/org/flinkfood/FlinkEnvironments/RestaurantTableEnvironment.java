@@ -40,6 +40,7 @@ public class RestaurantTableEnvironment {
                     " 'scan.startup.mode' = 'earliest-offset'," +
                     " 'properties.auto.offset.reset' = 'earliest'" +
                     "); ";
+            System.out.println(query);
             this.tEnv.executeSql(query);
         }
     }

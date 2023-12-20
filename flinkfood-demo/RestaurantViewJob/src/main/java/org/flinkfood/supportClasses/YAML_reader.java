@@ -11,11 +11,11 @@ import org.apache.flink.shaded.jackson2.org.yaml.snakeyaml.Yaml;
 
 public interface YAML_reader {
 
-    // FIXME: where is the file??
+    // FIXME: where is the file?? (path, it may be setted)
     public static ArrayList<YAML_table> readYamlFile(String filename) throws FileNotFoundException
     {
         Yaml yaml = new Yaml();
-        FileInputStream inputStream = new FileInputStream(new File(filename));
+        FileInputStream inputStream = new FileInputStream(filename);
 
         //Reads all yaml as an array of hashmaps
         ArrayList<LinkedHashMap<String, String>> array = yaml.load(inputStream);
@@ -25,7 +25,7 @@ public interface YAML_reader {
         for (LinkedHashMap<String, String> map : array)
         {
             var name = map.get("name");
-            var schema = map.get("schema");
+            var schema = transform(map.get("schema"));
             var kafka_topic = map.get("kafka_topic");
             if (kafka_topic == null) yamlTables.add(new YAML_table(name, schema));
             else yamlTables.add(new YAML_table(name, schema, kafka_topic));

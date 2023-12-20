@@ -26,7 +26,7 @@ public class RestaurantView {
     // Main method where the Flink job is defined
     public static void main(String[] args) throws Exception, FileNotFoundException {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        RestaurantTableEnvironment rEnv = new RestaurantTableEnvironment(env, "table_config.yaml");
+        RestaurantTableEnvironment rEnv = new RestaurantTableEnvironment(env, "table_config.yml");
         // this command does the registration in Table API
         rEnv.executeSql("CREATE FUNCTION ARRAY_AGGR AS 'org.flinkfood.supportClasses.ArrayAggr'");
 
