@@ -1,4 +1,4 @@
-package org.flinkfood;
+package org.flinkfood.supportClasses;
 
 import org.apache.flink.table.api.dataview.ListView;
 

@@ -1,4 +1,4 @@
-package org.flinkfood;
+package org.flinkfood.supportClasses;
 
 import org.apache.flink.table.api.DataTypes;
 import org.apache.flink.table.api.dataview.ListView;
@@ -7,6 +7,7 @@ import org.apache.flink.table.functions.AggregateFunction;
 import org.apache.flink.table.types.DataType;
 import org.apache.flink.table.types.inference.InputTypeStrategies;
 import org.apache.flink.table.types.inference.TypeInference;
+import org.flinkfood.supportClasses.ArrayAccumulator;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ import java.util.Optional;
  * The object can be of any type.
  * @param <T>
  */
-public class ArrayAggr <T> extends AggregateFunction<T[],  ArrayAccumulator<T>> {
+public class ArrayAggr <T> extends AggregateFunction<T[], ArrayAccumulator<T>> {
     private DataType elementType;
 
     @Override

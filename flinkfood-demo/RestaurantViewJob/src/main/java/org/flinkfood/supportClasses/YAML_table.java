@@ -12,6 +12,13 @@ public class YAML_table {
         this.kafka_topic = kafka_topic;
     }
 
+    // Constructor with default kafka_topic
+    YAML_table(String name, String schema){
+        this.name = name;
+        this.schema = schema;
+        this.kafka_topic = "postgres.public." + name;
+    }
+
     public String getName() {
         return name;
     }

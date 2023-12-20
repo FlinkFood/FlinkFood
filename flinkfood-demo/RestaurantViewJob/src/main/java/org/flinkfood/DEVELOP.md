@@ -22,7 +22,7 @@ This is the way I firstly implemented the aggregation. It's the FLinkSQL way
 
 
         // this command submits the function to the SQL engine
-        rEnv.gettEnv().executeSql("CREATE FUNCTION ARRAY_AGGR AS 'org.flinkfood.ArrayAggr'");
+        rEnv.gettEnv().executeSql("CREATE FUNCTION ARRAY_AGGR AS 'org.flinkfood.supportClasses.ArrayAggr'");
 
 
         // aggregation is created with the insert statement, adding the data into the restaurant_view table.
