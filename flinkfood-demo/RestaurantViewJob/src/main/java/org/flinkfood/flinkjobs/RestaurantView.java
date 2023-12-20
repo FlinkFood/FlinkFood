@@ -18,7 +18,8 @@ public class RestaurantView {
 
     private static final String MONGODB_URI = "mongodb://localhost:27017";
     private static final String SINK_DB = "flinkfood";
-    private static final String SINK_DB_TABLE = "restaurants_view";
+    public static final String VIEW_KEY = "restaurant_id";
+    public static final String VIEW_NAME = "customer_view";
 
     // Main method where the Flink job is defined
     public static void main(String[] args) throws Exception {
@@ -30,7 +31,7 @@ public class RestaurantView {
 
         // this command does the registration in Table API
         tEnv.executeSql("CREATE FUNCTION ARRAY_AGGR AS 'org.flinkfood.supportClasses.ArrayAggr'");
-        createSV(tables, "restaurant_id", tEnv, "customer_view");
+        createSV(tables, VIEW_KEY, tEnv, VIEW_NAME);
         env.execute("RestaurantView");
     }
 
@@ -61,8 +62,9 @@ public class RestaurantView {
             sb.append(">>,\n");
         }
         sb.delete(sb.length() - 2, sb.length() - 1); //Remove last comma and newline
-        sb.append(") WITH ('connector' = 'mongodb', 'uri' = 'mongodb://localhost:27017'," +
-                "'database' = 'flinkfood'," +
+        sb.append(") WITH ('connector' = 'mongodb'," +
+                "'uri' = '"+MONGODB_URI+"'," +
+                "'database' = '"+SINK_DB+"'," +
                 "'collection' = '" +  view_name + "' )");
         return sb.toString();
     }

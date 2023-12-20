@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS dish_ingredient (
 );
 ALTER TABLE dish_ingredient REPLICA IDENTITY FULL;
 
-CREATE TABLE IF NOT EXISTS reviews_dish (
+CREATE TABLE IF NOT EXISTS dish_reviews (
     id INT PRIMARY KEY,
     dish_id INT,
     customer_id INT,
@@ -113,7 +113,7 @@ CREATE TABLE IF NOT EXISTS reviews_dish (
     FOREIGN KEY (dish_id) REFERENCES dish (id),
     FOREIGN KEY (customer_id) REFERENCES customer (id)
     );
-ALTER TABLE reviews_dish REPLICA IDENTITY FULL;
+ALTER TABLE dish_reviews REPLICA IDENTITY FULL;
 
 CREATE TABLE IF NOT EXISTS customer_address (
     id serial PRIMARY KEY,
