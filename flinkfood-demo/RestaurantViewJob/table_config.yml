@@ -59,7 +59,7 @@
     restaurant_id INT, 
     customer_id INT, 
     rating SMALLINT, 
-    commentary VARCHAR(255)
+    comment VARCHAR(255)
 
 - name: 'dish'
   schema:
@@ -79,7 +79,7 @@
         dish_id INT, 
         customer_id INT, 
         rating SMALLINT, 
-        commentary VARCHAR(255)
+        comment VARCHAR(255)
 
 - name: 'ingredient'
   schema:
