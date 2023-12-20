@@ -81,9 +81,48 @@ This other way it's more elegant
 ```
 but does not appear to work.
 
+## go into detail in the FLINK SQL
+Previously I was using the following query:
+```SQL
+INSERT INTO view SELECT ((SELECT restaurant_id FROM restaurant_service),
+(SELECT ARRAY_AGGR(ROW(restaurant_id,take_away,delivery,dine_in,parking_lots,accessible,children_area,children_food)) FROM restaurant_service GROUP BY restaurant_id),
+(SELECT ARRAY_AGGR(ROW(restaurant_id,street,address_number,zip_code,city,province,country)) FROM restaurant_address GROUP BY restaurant_id),
+(SELECT ARRAY_AGGR(ROW(id,restaurant_id,customer_id,rating,commentary)) FROM restaurant_review GROUP BY restaurant_id),
+(SELECT ARRAY_AGGR(ROW(id,restaurant_id,name,price,currency,category,description)) FROM dish GROUP BY restaurant_id))
+```
+This raises the following error:
+``` Flink
+doesn't work but i got a very cool error message:
+FlinkLogicalSink(table=[default_catalog.default_database.view], fields=[restaurant_id, $f0, $f00, $f01, $f02])
++- FlinkLogicalJoin(condition=[true], joinType=[left])
+:- FlinkLogicalJoin(condition=[true], joinType=[left])
+:  :- FlinkLogicalJoin(condition=[true], joinType=[left])
+:  :  :- FlinkLogicalJoin(condition=[true], joinType=[left])
+:  :  :  :- FlinkLogicalCalc(select=[restaurant_id])
+:  :  :  :  +- FlinkLogicalTableSourceScan(table=[[default_catalog, default_database, restaurant_service]], fields=[restaurant_id, take_away, delivery, dine_in, parking_lots, accessible, children_area, children_food])
+:  :  :  +- FlinkLogicalAggregate(group=[{}], agg#0=[SINGLE_VALUE($0)])
+:  :  :     +- FlinkLogicalCalc(select=[EXPR$0])
+:  :  :        +- FlinkLogicalAggregate(group=[{0}], EXPR$0=[ARRAY_AGGR($1)])
+:  :  :           +- FlinkLogicalCalc(select=[restaurant_id, ROW(restaurant_id, take_away, delivery, dine_in, parking_lots, accessible, children_area, children_food) AS $f1])
+:  :  :              +- FlinkLogicalTableSourceScan(table=[[default_catalog, default_database, restaurant_service]], fields=[restaurant_id, take_away, delivery, dine_in, parking_lots, accessible, children_area, children_food])
+:  :  +- FlinkLogicalAggregate(group=[{}], agg#0=[SINGLE_VALUE($0)])
+:  :     +- FlinkLogicalCalc(select=[EXPR$0])
+:  :        +- FlinkLogicalAggregate(group=[{0}], EXPR$0=[ARRAY_AGGR($1)])
+:  :           +- FlinkLogicalCalc(select=[restaurant_id, ROW(restaurant_id, street, address_number, zip_code, city, province, country) AS $f1])
+:  :              +- FlinkLogicalTableSourceScan(table=[[default_catalog, default_database, restaurant_address]], fields=[restaurant_id, street, address_number, zip_code, city, province, country])
+:  +- FlinkLogicalAggregate(group=[{}], agg#0=[SINGLE_VALUE($0)])
+:     +- FlinkLogicalCalc(select=[EXPR$0])
+:        +- FlinkLogicalAggregate(group=[{0}], EXPR$0=[ARRAY_AGGR($1)])
+:           +- FlinkLogicalCalc(select=[restaurant_id, ROW(id, restaurant_id, customer_id, rating, commentary) AS $f1])
+:              +- FlinkLogicalTableSourceScan(table=[[default_catalog, default_database, restaurant_review]], fields=[id, restaurant_id, customer_id, rating, commentary])
++- FlinkLogicalAggregate(group=[{}], agg#0=[SINGLE_VALUE($0)])
++- FlinkLogicalCalc(select=[EXPR$0])
++- FlinkLogicalAggregate(group=[{0}], EXPR$0=[ARRAY_AGGR($1)])
++- FlinkLogicalCalc(select=[restaurant_id, ROW(id, restaurant_id, name, price, currency, category, description) AS $f1])
++- FlinkLogicalTableSourceScan(table=[[default_catalog, default_database, dish]], fields=[id, restaurant_id, name, price, currency, category, description])
 
-## Error
-`SINGLE_VALUE aggregate function doesn't support type 'ARRAY'.`
+SINGLE_VALUE aggregate function doesn't support type 'ARRAY'.
+```
 Da chatGPT:
 The error message you're encountering, TableException: Sql optimization: Cannot generate a valid execution plan for the given query: FlinkLogicalSink(table=[...]) SINGLE_VALUE aggregate function doesn't support type 'ARRAY', indicates that there is an issue with how you're using an aggregate function, specifically SINGLE_VALUE, with an array type in Apache Flink.
 The SINGLE_VALUE aggregate function in Flink is designed to return a single value from a group of values. However, it seems you're trying to use it on an array type, which is not supported.
@@ -95,3 +134,27 @@ Flatten Arrays: If your use case permits, you could flatten the arrays before ap
 Review Schema and Query: Ensure that your query's logic and the schemas of the tables you're working with align correctly. Specifically, make sure that the types and structures of the fields in your query match those expected by the SINGLE_VALUE function and the target sink.
 Consult Documentation: Review the Apache Flink documentation for any specific requirements or limitations regarding the use of aggregate functions with complex data types like arrays.
 If these steps do not resolve your issue, providing more details about your specific query and how you're using the SINGLE_VALUE function within it would be helpful for further diagnosis and assistance.
+
+20-12-2023
+Today I found another way to join tables that for whatever reason works
+I now switched to:
+```SQL
+INSERT INTO view
+SELECT 
+    rs.restaurant_id,
+    ARRAY_AGGR(ROW(rs.restaurant_id, rs.take_away, rs.delivery, rs.dine_in, rs.parking_lots, rs.accessible, rs.children_area, rs.children_food)),
+    ARRAY_AGGR(ROW(ra.restaurant_id, ra.street, ra.address_number, ra.zip_code, ra.city, ra.province, ra.country)),
+    ARRAY_AGGR(ROW(rr.id, rr.restaurant_id, rr.customer_id, rr.rating, rr.commentary)),
+    ARRAY_AGGR(ROW(d.id, d.restaurant_id, d.name, d.price, d.currency, d.category, d.description))
+FROM 
+    restaurant_service rs
+LEFT JOIN 
+    restaurant_address ra ON rs.restaurant_id = ra.restaurant_id
+LEFT JOIN 
+    restaurant_review rr ON rs.restaurant_id = rr.restaurant_id
+LEFT JOIN 
+    dish d ON rs.restaurant_id = d.restaurant_id
+GROUP BY 
+    rs.restaurant_id;
+```
+This will need a little bit more of work because of the "references" to the tables, but it's a lot more readable and it works.

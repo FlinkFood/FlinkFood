@@ -42,6 +42,8 @@ public class YAML_reader {
     }
 
     private String transform(String schema) {
-        return schema.replace("serial", "INT");
+        return schema
+                .replace("serial", "INT")
+                .replace("SMALLINT", "INT");
     }
 }

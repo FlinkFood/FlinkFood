@@ -19,6 +19,7 @@ import org.bson.BsonString;
 
 // Remark: This is the worst code I've ever written. I'm sorry.
 // FIXME: unused: we may delete the class
+@Deprecated
 public class RestaurantRowToBsonDocument implements MongoSerializationSchema<Row> {
     // TODO: Source those from a config file
     final List<String> address_fields = List.of("street", "number", "city", "state", "country", "zipCode");
