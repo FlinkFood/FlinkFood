@@ -9,39 +9,31 @@ import java.util.LinkedHashMap;
 import org.apache.flink.shaded.jackson2.org.yaml.snakeyaml.Yaml;
 
 
-public class YAML_reader {
+public interface YAML_reader {
 
-    private final String filepath;
-    ;
-
-    public YAML_reader(String filepath)
-    {
-        this.filepath = filepath;
-    }
-
-    public ArrayList<YAML_table> readYamlFile() throws FileNotFoundException
+    // FIXME: where is the file??
+    public static ArrayList<YAML_table> readYamlFile(String filename) throws FileNotFoundException
     {
         Yaml yaml = new Yaml();
-        FileInputStream inputStream = new FileInputStream(new File(this.filepath));
+        FileInputStream inputStream = new FileInputStream(new File(filename));
 
         //Reads all yaml as an array of hashmaps
-        ArrayList array = yaml.load(inputStream);
+        ArrayList<LinkedHashMap<String, String>> array = yaml.load(inputStream);
 
         //For each hashmap, mounts one instance of the class
         ArrayList<YAML_table> yamlTables = new ArrayList<>();
-        for(int i = 0; i < array.size(); i++)
+        for (LinkedHashMap<String, String> map : array)
         {
-            LinkedHashMap temp = (LinkedHashMap) array.get(i);
-            YAML_table element = new YAML_table((String) temp.get("name"),
-                                                transform((String) temp.get("schema")),
-                                                (String) temp.get("kafka_topic"));
-            yamlTables.add(element);
+            var name = map.get("name");
+            var schema = map.get("schema");
+            var kafka_topic = map.get("kafka_topic");
+            if (kafka_topic == null) yamlTables.add(new YAML_table(name, schema));
+            else yamlTables.add(new YAML_table(name, schema, kafka_topic));
         }
-
         return yamlTables;
     }
 
-    private String transform(String schema) {
+    private static String transform(String schema) {
         return schema
                 .replace("serial", "INT")
                 .replace("SMALLINT", "INT");

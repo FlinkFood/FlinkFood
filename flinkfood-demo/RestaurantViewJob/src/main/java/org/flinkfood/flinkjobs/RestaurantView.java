@@ -8,6 +8,8 @@ import org.apache.flink.table.api.TableEnvironment;
 import org.flinkfood.FlinkEnvironments.RestaurantTableEnvironment;
 import org.flinkfood.supportClasses.YAML_table;
 
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,32 +21,41 @@ public class RestaurantView {
     private static final String MONGODB_URI = "mongodb://localhost:27017";
     private static final String SINK_DB = "flinkfood";
     public static final String VIEW_KEY = "restaurant_id";
-    public static final String VIEW_NAME = "customer_view";
+    public static final String VIEW_NAME = "restaurant_view";
 
     // Main method where the Flink job is defined
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception, FileNotFoundException {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        RestaurantTableEnvironment rEnv = new RestaurantTableEnvironment(env);
-        
-        List<YAML_table> tables = rEnv.createAllTables();
-        var tEnv = rEnv.gettEnv();
-
+        RestaurantTableEnvironment rEnv = new RestaurantTableEnvironment(env, "table_config.yaml");
         // this command does the registration in Table API
-        tEnv.executeSql("CREATE FUNCTION ARRAY_AGGR AS 'org.flinkfood.supportClasses.ArrayAggr'");
-        createSV(tables, VIEW_KEY, tEnv, VIEW_NAME);
+        rEnv.executeSql("CREATE FUNCTION ARRAY_AGGR AS 'org.flinkfood.supportClasses.ArrayAggr'");
+
+        createSV(VIEW_KEY, rEnv, VIEW_NAME);
         env.execute("RestaurantView");
     }
 
-    private static void createSV(List<YAML_table> tables_, String viewKey, TableEnvironment tEnv, String view_name) {
-        // remove tables that do not contain the viewKey
-        List<YAML_table> tables = tables_.stream().filter(t -> t.getSchema().contains(viewKey)).collect(Collectors.toList());
-        if (tables.isEmpty()) {
-            System.err.println("No table contains the view key");
-            return;
-        }
-        tEnv.executeSql(createSVTable(viewKey, tables, view_name));
+    private static void createSV(String viewKey, RestaurantTableEnvironment rEnv, String view_name) {
+        List<YAML_table> tables = getViewTables(rEnv.getTables(), viewKey);
+        rEnv.executeSql(createSVTable(viewKey, tables, view_name));
         var insertSVQuery = createInsertSVQuery(viewKey, tables);
-        executeInsertSVQuery(tEnv, insertSVQuery);
+        executeInsertSVQuery(rEnv, insertSVQuery);
+
+    }
+
+    // remove tables that do not contain the viewKey
+    private static List<YAML_table> getViewTables(List<YAML_table> tables_, String viewKey) {
+        List<YAML_table> tables = new ArrayList<>();
+        for (YAML_table t : tables_) {
+            if (t.getSchema().contains(viewKey)) {
+                tables.add(t);
+            }
+        }
+        if (tables.isEmpty()) System.err.println("No table contains the view key");
+        if (tables.size() == 1) {
+            System.err.println("Only one table contains the view key, at least two are required to create a view");
+            throw new IllegalArgumentException("Only one table contains the view key, at least two are required to create a view");
+        }
+        return tables;
     }
 
     private static String createSVTable(String viewKey, List<YAML_table> tables, String view_name) {
@@ -62,10 +73,11 @@ public class RestaurantView {
             sb.append(">>,\n");
         }
         sb.delete(sb.length() - 2, sb.length() - 1); //Remove last comma and newline
-        sb.append(") WITH ('connector' = 'mongodb'," +
-                "'uri' = '"+MONGODB_URI+"'," +
-                "'database' = '"+SINK_DB+"'," +
-                "'collection' = '" +  view_name + "' )");
+        sb.append(") WITH (" +
+                "'connector' =          'mongodb'," +
+                "'uri' = '" +           MONGODB_URI + "'," +
+                "'database' = '" +      SINK_DB     + "'," +
+                "'collection' = '" +    view_name   + "')");
         return sb.toString();
     }
 
@@ -80,8 +92,8 @@ public class RestaurantView {
         sb.append(viewKey);
         sb.append(",\n");
         for (YAML_table table : tables) {
-            sb.append("ARRAY_AGGR(ROW(");
-            sb.append(clearTypesAndAddTableReference(table));
+            sb.append("ARRAY_AGGR( ROW(");
+            sb.append(getFieldNamesWithTableReference(table));
             sb.append("))\n,");
         }
         sb.deleteCharAt(sb.length() - 1); //Remove last comma
@@ -108,14 +120,14 @@ public class RestaurantView {
         return sb.toString();
     }
 
-    private static void executeInsertSVQuery(TableEnvironment tEnv, String insertSVQuery) {
-        tEnv.createStatementSet().addInsertSql(insertSVQuery).execute();
+    private static void executeInsertSVQuery(RestaurantTableEnvironment rEnv, String insertSVQuery) {
+        rEnv.createStatementSet().addInsertSql(insertSVQuery).execute();
     }
 
-    private static String clearTypesAndAddTableReference(YAML_table table) {
+    private static String getFieldNamesWithTableReference(YAML_table table) {
         return Arrays.stream(table.getSchema().trim().split("\\s*,\\s*")) // Split by comma and any whitespace
-                    .map(s -> s.split("\\s+")[0]) // Get the first word of each part
-                    .map(s -> table.getName() + "." + s) // Add table reference
+                    .map(s -> s.split("\\s+")[0])                         // Get the first word of each line (the field name)
+                    .map(s -> table.getName() + "." + s)                         // Add table reference
                     .collect(Collectors.joining(", "));
         }
     }
