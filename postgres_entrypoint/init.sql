@@ -226,7 +226,7 @@ COPY ingredient (id, name, description, carbs, proteins, fats, fibers, salt, cal
 COPY dish_ingredient (id, dish_id, ingredient_id, supplier_id)
     FROM '/docker-entrypoint-initdb.d/imports/dish_ingredient.csv' DELIMITER ',' CSV HEADER;
 
-COPY reviews_dish (id, dish_id, customer_id, rating, comment)
+COPY dish_reviews (id, dish_id, customer_id, rating, comment)
     FROM '/docker-entrypoint-initdb.d/imports/reviews_dish.csv' DELIMITER ',' CSV HEADER;
 
 COPY customer_address (id, customer_id, street, address_number, zip_code, city, province, country)

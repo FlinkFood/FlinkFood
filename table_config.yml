@@ -25,7 +25,7 @@
     username VARCHAR(255), 
     first_name VARCHAR(255), 
     last_name VARCHAR(255), 
-    birthdate DATE NOT NULL, 
+    birthdate TIMESTAMP(3) NOT NULL, 
     email VARCHAR(255), 
     fiscal_code VARCHAR(16)
 
@@ -102,15 +102,6 @@
       ingredient_id INT, 
       supplier_id INT
 
-- name: 'reviews_dish'
-  schema:
-      |
-      id INT, 
-      dish_id INT, 
-      customer_id INT, 
-      rating SMALLINT, 
-      commentary VARCHAR(255)
-
 - name: 'customer_address'
   schema:
       |
@@ -147,9 +138,9 @@
           customer_id INT, 
           restaurant_id INT, 
           supplier_id INT, 
-          order_date DATE, 
-          payment_date DATE, 
-          delivery_date DATE, 
+          order_date TIMESTAMP(3), 
+          payment_date TIMESTAMP(3), 
+          delivery_date TIMESTAMP(3), 
           description VARCHAR(255), 
           total_amount SMALLINT, 
           currency VARCHAR(3), 

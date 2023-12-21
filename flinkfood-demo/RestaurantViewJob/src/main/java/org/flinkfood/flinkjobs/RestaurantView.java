@@ -35,11 +35,10 @@ public class RestaurantView {
     }
 
     private static void createSV(String viewKey, RestaurantTableEnvironment rEnv, String view_name) {
-        List<YAML_table> tables = getViewTables(rEnv.getTables(), viewKey);
-        rEnv.executeSql(createSVTable(viewKey, tables, view_name));
-        var insertSVQuery = createInsertSVQuery(viewKey, tables);
+        List<YAML_table> viewTables = getViewTables(rEnv.getTables(), viewKey);
+        rEnv.executeSql(createSVTable(viewKey, viewTables, view_name));
+        var insertSVQuery = createInsertSVQuery(viewKey, viewTables);
         executeInsertSVQuery(rEnv, insertSVQuery);
-
     }
 
     // remove tables that do not contain the viewKey

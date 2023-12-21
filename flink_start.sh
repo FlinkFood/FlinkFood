@@ -6,11 +6,8 @@ export MONGODB_SERVER=mongodb://mongo:27017
 
 # Array of Kafka topics to check
 topics=(
-  "postgres.public.certification"
   "postgres.public.customer"
   "postgres.public.customer_address"
-  "postgres.public.dish"
-  "postgres.public.dish_ingredient"
   "postgres.public.fidelity_card"
   "postgres.public.ingredient"
   "postgres.public.item"
@@ -20,8 +17,11 @@ topics=(
   "postgres.public.restaurant_info"
   "postgres.public.restaurant_review"
   "postgres.public.restaurant_service"
-  "postgres.public.reviews_dish"
+  "postgres.public.dish"
+  "postgres.public.dish_ingredient"
+  "postgres.public.dish_reviews"
   "postgres.public.supplier"
+  "postgres.public.certification"
 )
 
 
@@ -67,6 +67,7 @@ is_system_initialized() {
 
     for topic in "${topics[@]}"; do
         if ! echo "$existing_topics" | grep -Fxq "$topic"; then
+            echo "Topic $topic does not exist, system is not initialized, exiting..."
             return 1
         fi
     done
