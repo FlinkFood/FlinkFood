@@ -1,38 +1,41 @@
 - name : 'restaurant_info'
   schema:
     |
-    restaurant_id serial, 
+    id serial , 
     name VARCHAR(255), 
     phone VARCHAR(20), 
     email VARCHAR(255), 
     cuisine_type VARCHAR(255), 
     price_range VARCHAR(10), 
     vat_code INT
+  kafka_topic: 'postgres.public.restaurant_info'
 
 - name: 'supplier'
   schema:
     |
-    id serial, 
+    id serial , 
     name VARCHAR(255), 
     vat_code INT, 
     country VARCHAR(255), 
     is_sustainable BOOLEAN
+  kafka_topic: 'postgres.public.supplier'
 
 - name: 'customer'
   schema:
     |
-    restaurant_id serial, 
+    id serial , 
     username VARCHAR(255), 
     first_name VARCHAR(255), 
     last_name VARCHAR(255), 
-    birthdate TIMESTAMP(3) NOT NULL, 
+    birthdate DATE NOT NULL, 
     email VARCHAR(255), 
     fiscal_code VARCHAR(16)
+  kafka_topic: 'postgres.public.customer'
 
 - name: 'restaurant_service'
   schema:
     |
-    restaurant_id INT, 
+    restaurant_id INT , 
     take_away BOOLEAN, 
     delivery BOOLEAN, 
     dine_in BOOLEAN, 
@@ -40,6 +43,8 @@
     accessible BOOLEAN, 
     children_area BOOLEAN, 
     children_food BOOLEAN
+  kafka_topic: 'postgres.public.restaurant_service'
+
 
 - name: 'restaurant_address'
   schema:
@@ -51,124 +56,29 @@
     city VARCHAR(255), 
     province VARCHAR(2), 
     country VARCHAR(255)
+  kafka_topic: 'postgres.public.restaurant_address'
+
 
 - name: 'restaurant_review'
   schema:
     |
-    id INT, 
+    id INT , 
     restaurant_id INT, 
     customer_id INT, 
     rating SMALLINT, 
     commentary VARCHAR(255)
+  kafka_topic: 'postgres.public.restaurant_review'
+
 
 - name: 'dish'
   schema:
     |
-    id serial, 
+    id serial , 
     restaurant_id INT, 
     name VARCHAR(255), 
     price SMALLINT, 
     currency VARCHAR(3), 
     category VARCHAR(255), 
     description VARCHAR(255)
-
-- name: 'dish_review'
-  schema:
-        |
-        id INT, 
-        dish_id INT, 
-        customer_id INT, 
-        rating SMALLINT, 
-        commentary VARCHAR(255)
-
-- name: 'ingredient'
-  schema:
-      |
-      id INT, 
-      name VARCHAR(255), 
-      description VARCHAR(255), 
-      carbs SMALLINT, 
-      proteins SMALLINT, 
-      fats SMALLINT, 
-      fibers SMALLINT, 
-      salt SMALLINT, 
-      calories INT
-
-- name: 'dish_ingredient'
-  schema:
-      |
-      id serial, 
-      dish_id INT, 
-      ingredient_id INT, 
-      supplier_id INT
-
-- name: 'customer_address'
-  schema:
-      |
-      id serial, 
-      customer_id INT, 
-      street VARCHAR(255), 
-      address_number VARCHAR(10), 
-      zip_code INT, 
-      city VARCHAR(255), 
-      province VARCHAR(2), 
-      country VARCHAR(255)
-
-- name: 'payment_method'
-  schema:
-        |
-        id serial, 
-        customer_id INT, 
-        name VARCHAR(255)
-
-
-- name: 'fidelity_card'
-  schema:
-          |
-          id serial, 
-          customer_id INT, 
-          card_number VARCHAR(255), 
-          points INT
-
-- name: 'orderx'
-  schema:
-          |
-          id serial, 
-          name VARCHAR(255), 
-          customer_id INT, 
-          restaurant_id INT, 
-          supplier_id INT, 
-          order_date TIMESTAMP(3), 
-          payment_date TIMESTAMP(3), 
-          delivery_date TIMESTAMP(3), 
-          description VARCHAR(255), 
-          total_amount SMALLINT, 
-          currency VARCHAR(3), 
-          supply_order BOOLEAN
-  kafka_topic: 'postgres.public.order'
-
-- name: 'item'
-  schema:
-          |
-          id serial, 
-          ingredient_id INT, 
-          dish_id INT, 
-          quantity INT, 
-          order_id INT
-  kafka_topic: 'postgres.public.item'
-
-- name: 'certification'
-  schema:
-          |
-          id serial, 
-          name VARCHAR(255), 
-          supplier_id INT
-  kafka_topic: 'postgres.public.certification'
-
-- name: 'partnership'
-  schema:
-          |
-          id serial, 
-          restaurant_id INT, 
-          supplier_id INT
-  kafka_topic: 'postgres.public.partnership'
+  kafka_topic: 'postgres.public.dish'
+      

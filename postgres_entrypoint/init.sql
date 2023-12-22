@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS dish_ingredient (
 );
 ALTER TABLE dish_ingredient REPLICA IDENTITY FULL;
 
-CREATE TABLE IF NOT EXISTS dish_reviews (
+CREATE TABLE IF NOT EXISTS reviews_dish (
     id INT PRIMARY KEY,
     dish_id INT,
     customer_id INT,
@@ -113,7 +113,7 @@ CREATE TABLE IF NOT EXISTS dish_reviews (
     FOREIGN KEY (dish_id) REFERENCES dish (id),
     FOREIGN KEY (customer_id) REFERENCES customer (id)
     );
-ALTER TABLE dish_reviews REPLICA IDENTITY FULL;
+ALTER TABLE reviews_dish REPLICA IDENTITY FULL;
 
 CREATE TABLE IF NOT EXISTS customer_address (
     id serial PRIMARY KEY,
@@ -226,7 +226,7 @@ COPY ingredient (id, name, description, carbs, proteins, fats, fibers, salt, cal
 COPY dish_ingredient (id, dish_id, ingredient_id, supplier_id)
     FROM '/docker-entrypoint-initdb.d/imports/dish_ingredient.csv' DELIMITER ',' CSV HEADER;
 
-COPY dish_reviews (id, dish_id, customer_id, rating, comment)
+COPY reviews_dish (id, dish_id, customer_id, rating, comment)
     FROM '/docker-entrypoint-initdb.d/imports/reviews_dish.csv' DELIMITER ',' CSV HEADER;
 
 COPY customer_address (id, customer_id, street, address_number, zip_code, city, province, country)

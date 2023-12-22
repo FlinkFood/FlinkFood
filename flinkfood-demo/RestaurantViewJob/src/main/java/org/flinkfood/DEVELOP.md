@@ -158,10 +158,3 @@ GROUP BY
     rs.restaurant_id;
 ```
 This will need a little bit more of work because of the "references" to the tables, but it's a lot more readable and it works.
-
-21-12-2023
-# Problems
-*order* is not a good name for a table, because it's a reserved word in SQL. I changed it to *orderx*
-*comment* is not a good name for a field, because it's a reserved word in SQL. I changed it to *commentary*, but this is a problem 
-    in the kafka connector (apartently)
-*DATE* is not a good type in FlinkSQL, I tried to change it to TIMESTAMP(3)
