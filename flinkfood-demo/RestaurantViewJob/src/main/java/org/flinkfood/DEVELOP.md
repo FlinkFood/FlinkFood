@@ -137,7 +137,7 @@ If these steps do not resolve your issue, providing more details about your spec
 
 20-12-2023
 Today I found another way to join tables that for whatever reason works
-I now switched to:
+I now switched to: This is the query model that is created in the [RestaurantView.java](flinkjobs%2FRestaurantView.java) does in the `createInsertSVQuery` method.
 ```SQL
 INSERT INTO view
 SELECT 
@@ -158,3 +158,14 @@ GROUP BY
     rs.restaurant_id;
 ```
 This will need a little bit more of work because of the "references" to the tables, but it's a lot more readable and it works.
+
+
+21-12-2023
+# Problems
+*order* is not a good name for a table, because it's a reserved word in SQL. I changed it to *orderx*
+*comment* is not a good name for a field, because it's a reserved word in SQL. I changed it to *commentary*, but this is a problem
+in the kafka connector (apartently)
+*DATE* is not a good type in FlinkSQL, I tried to change it to TIMESTAMP(3)
+
+22-12-2023
+for some reason there are a lot of replicas in the final table. I need to investigate why

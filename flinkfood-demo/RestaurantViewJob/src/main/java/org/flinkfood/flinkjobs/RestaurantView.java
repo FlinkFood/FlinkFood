@@ -8,6 +8,7 @@ import org.apache.flink.table.api.TableEnvironment;
 import org.flinkfood.FlinkEnvironments.RestaurantTableEnvironment;
 import org.flinkfood.supportClasses.YAML_table;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,29 +24,46 @@ public class RestaurantView {
     // Main method where the Flink job is defined
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        RestaurantTableEnvironment rEnv = new RestaurantTableEnvironment(env);
-        
-        List<YAML_table> tables = rEnv.createAllTables();
-        var tEnv = rEnv.gettEnv();
-
+        RestaurantTableEnvironment rEnv = new RestaurantTableEnvironment(env, "table_config.yml");
         // this command does the registration in Table API
-        tEnv.executeSql("CREATE FUNCTION ARRAY_AGGR AS 'org.flinkfood.supportClasses.ArrayAggr'");
-        createSV(tables, "restaurant_id", tEnv, "customer_view");
+        rEnv.executeSql("CREATE FUNCTION ARRAY_AGGR AS 'org.flinkfood.supportClasses.ArrayAggr'");
+        createSV("restaurant_id", rEnv, SINK_DB_TABLE);
         env.execute("RestaurantView");
     }
 
-    private static void createSV(List<YAML_table> tables_, String viewKey, TableEnvironment tEnv, String view_name) {
+    private static void createSV(String viewKey, RestaurantTableEnvironment rEnv, String view_name) {
         // remove tables that do not contain the viewKey
-        List<YAML_table> tables = tables_.stream().filter(t -> t.getSchema().contains(viewKey)).collect(Collectors.toList());
-        if (tables.isEmpty()) {
-            System.err.println("No table contains the view key");
-            return;
-        }
-        tEnv.executeSql(createSVTable(viewKey, tables, view_name));
-        var insertSVQuery = createInsertSVQuery(viewKey, tables);
-        executeInsertSVQuery(tEnv, insertSVQuery);
+        var viewTables = getViewTables(rEnv, viewKey);
+        rEnv.executeSql(createSVTable(viewKey, viewTables, view_name));
+        var insertSVQuery = createInsertSVQuery(viewKey, viewTables);
+        executeInsertSVQuery(rEnv, insertSVQuery);
     }
 
+    /**
+     * Filter tables that do not contain the viewKey,
+     * @param viewKey the key that is needed for the SV. Must be present in all the tables that are part of the SV
+     * @return the tables that contain the viewKey
+     */
+    private static List<YAML_table> getViewTables(RestaurantTableEnvironment rEnv, String viewKey) {
+        List<YAML_table> tables = rEnv.getTables()
+                .stream()
+                .filter(t -> t.getSchema()
+                        .contains(viewKey))
+                .collect(Collectors.toList());
+        if (tables.isEmpty()) {
+            throw new IllegalArgumentException("No table contains the view key");
+        } else if (tables.size() < 2) {
+            throw new IllegalArgumentException("At least two tables are required to create a view");
+        } else
+            return tables;
+    }
+
+    /**
+     * @param viewKey the key that is needed for the SV. Must be present in all the tables that are part of the SV
+     * @param tables the tables that are part of the SV, i.e. the tables that contain the viewKey
+     * @param view_name the name of the view, will be used as the name of the MongoDB collection
+     * @return
+     */
     private static String createSVTable(String viewKey, List<YAML_table> tables, String view_name) {
         // create view table
         StringBuilder sb = new StringBuilder();
@@ -61,8 +79,9 @@ public class RestaurantView {
             sb.append(">>,\n");
         }
         sb.delete(sb.length() - 2, sb.length() - 1); //Remove last comma and newline
-        sb.append(") WITH ('connector' = 'mongodb', 'uri' = 'mongodb://localhost:27017'," +
-                "'database' = 'flinkfood'," +
+        sb.append(") WITH ('connector' = 'mongodb'," +
+                "'uri' = '" + MONGODB_URI + "'," +
+                "'database' = '" + SINK_DB + "'," +
                 "'collection' = '" +  view_name + "' )");
         return sb.toString();
     }
@@ -106,8 +125,8 @@ public class RestaurantView {
         return sb.toString();
     }
 
-    private static void executeInsertSVQuery(TableEnvironment tEnv, String insertSVQuery) {
-        tEnv.createStatementSet().addInsertSql(insertSVQuery).execute();
+    private static void executeInsertSVQuery(RestaurantTableEnvironment rEnv, String insertSVQuery) {
+        rEnv.gettEnv().createStatementSet().addInsertSql(insertSVQuery).execute();
     }
 
     private static String clearTypesAndAddTableReference(YAML_table table) {

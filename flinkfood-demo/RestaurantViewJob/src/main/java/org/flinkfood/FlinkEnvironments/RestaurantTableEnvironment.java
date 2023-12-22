@@ -3,12 +3,9 @@ package org.flinkfood.FlinkEnvironments;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
-import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.TableEnvironment;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
-import org.apache.flink.types.Row;
 
 import org.flinkfood.supportClasses.YAML_table;
 import org.flinkfood.supportClasses.YAML_reader;
@@ -16,22 +13,22 @@ import org.flinkfood.supportClasses.YAML_reader;
 public class RestaurantTableEnvironment {
     private final StreamTableEnvironment tEnv;
     private static final String KAFKA_URI = "localhost:9092";
+    private ArrayList<YAML_table> tables;
 
     /**
      * Support class for the creation of the table environment
      * Tables schemas are hardcoded in the class
      */
 
-    public RestaurantTableEnvironment(StreamExecutionEnvironment env) {
+    public RestaurantTableEnvironment(StreamExecutionEnvironment env, String config_file) throws FileNotFoundException {
         this.tEnv = StreamTableEnvironment.create(env);
+        createAllTables(config_file);
     }
 
-    public ArrayList<YAML_table> createAllTables() throws FileNotFoundException {
-        String query;
-
-        ArrayList<YAML_table> tables = (new YAML_reader("table_config.yml")).readYamlFile();
-
+    private void createAllTables(String config_file) throws FileNotFoundException {
+        tables = (new YAML_reader(config_file)).readYamlFile();
         for (int i = 0; i < tables.size(); i++) {
+            String query;
             query = "CREATE TABLE " + tables.get(i).getName() + "(" + tables.get(i).getSchema() + ")" +
                     " WITH (" +
                     " 'connector' = 'kafka'," +
@@ -44,10 +41,17 @@ public class RestaurantTableEnvironment {
 
             this.tEnv.executeSql(query);
         }
+    }
+
+    public ArrayList<YAML_table> getTables() {
         return tables;
     }
 
     public TableEnvironment gettEnv() {
         return tEnv;
+    }
+
+    public void executeSql(String s) {
+        this.tEnv.executeSql(s);
     }
 }
