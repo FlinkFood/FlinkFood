@@ -92,6 +92,45 @@ public class CustomerViewJob {
 
                 tableEnv.executeSql("CREATE FUNCTION ARRAY_AGGR AS 'org.flinkfood.flinkjobs.ArrayAggr';");
 
+                tableEnv.executeSql("CREATE TABLE Customer2 (\r\n" + //
+                                "  id INT,\r\n" + //
+                                "  username STRING,\r\n" + //
+                                "  first_name STRING,\r\n" + //
+                                "  last_name STRING,\r\n" + //
+                                "  birthdate STRING,\r\n" + //
+                                "  email STRING,\r\n" + //
+                                "  fiscal_code STRING,\r\n" + //
+                                "  PRIMARY KEY (id) NOT ENFORCED\r\n" + //
+                                ") WITH (\r\n" + //
+                                "  'connector' = 'upsert-kafka',\r\n" + //
+                                "  'topic' = 'postgres.public.customer',\r\n" + //
+                                "  'properties.bootstrap.servers' = 'localhost:9092',\r\n" + //
+                                "  'key.format' = 'json',\r\n" + //
+                                "  'value.format' = 'json'\r\n" + //
+                                ");");
+
+                tableEnv.executeSql("CREATE TABLE Orders2 (\r\n" + //
+                                "  id INT,\r\n" + //
+                                "  name STRING,\r\n" + //
+                                "  customer_id INT,\r\n" + //
+                                "  restaurant_id INT,\r\n" + //
+                                "  supplier_id INT,\r\n" + //
+                                "  order_date STRING,\r\n" + //
+                                "  payment_date STRING,\r\n" + //
+                                "  delivery_date STRING,\r\n" + //
+                                "  description STRING,\r\n" + //
+                                "  total_amount INT,\r\n" + //
+                                "  currency STRING,\r\n" + //
+                                "  supply_order BOOLEAN,\r\n" + //
+                                "  PRIMARY KEY (id) NOT ENFORCED\r\n" + //
+                                ") WITH (\r\n" + //
+                                "  'connector' = 'upsert-kafka',\r\n" + //
+                                "  'topic' = 'postgres.public.order',\r\n" + //
+                                "  'properties.bootstrap.servers' = 'localhost:9092',\r\n" + //
+                                "  'key.format' = 'json',\r\n" + //
+                                "  'value.format' = 'json'\r\n" + //
+                                ");");
+
                 tableEnv.executeSql("CREATE TABLE CustomeView (\r\n" + //
                                 "  id INT,\r\n" + //
                                 "  first_name STRING,\r\n" + //
@@ -104,13 +143,22 @@ public class CustomerViewJob {
                                 "   'database' = 'flinkfood',\r\n" + //
                                 "   'collection' = 'users_sink'\r\n" + //
                                 ");");
+                /*
+                 * tableEnv.executeSql(
+                 * "INSERT INTO CustomeView SELECT DISTINCT  c.id,c.first_name,c.last_name,(SELECT ARRAY_AGGR(ROW(o.id,o.name,o.description)) FROM Orders o WHERE o.customer_id = c.id) FROM Customer c;"
+                 * );
+                 */
+
                 tableEnv.executeSql(
-                                "INSERT INTO CustomeView SELECT DISTINCT  c.id,c.first_name,c.last_name,(SELECT ARRAY_AGGR(ROW(o.id,o.name,o.description)) FROM Orders o WHERE o.customer_id = c.id) FROM Customer c;");
+                                "INSERT INTO CustomeView SELECT DISTINCT  c.id,c.first_name,c.last_name,(SELECT ARRAY_AGGR(ROW(o.id,o.name,o.description)) FROM Orders2 o WHERE o.customer_id = c.id) FROM Customer2 c;");
 
-                Table resultTable4 = tableEnv.sqlQuery(
-                                "SELECT DISTINCT c.id,c.first_name,c.last_name,(SELECT ARRAY_AGGR(ROW(o.id,o.name,o.description)) FROM Orders o WHERE o.customer_id = c.id) FROM Customer c;");
-
-                tableEnv.toChangelogStream(resultTable4).print();
+                /*
+                 * Table resultTable4 = tableEnv.sqlQuery(
+                 * "SELECT DISTINCT c.id,c.first_name,c.last_name,(SELECT ARRAY_AGGR(ROW(o.id,o.name,o.description)) FROM Orders o WHERE o.customer_id = c.id) FROM Customer c;"
+                 * );
+                 * 
+                 * tableEnv.toChangelogStream(resultTable4).print();
+                 */
 
                 env.execute("CustomerViewJob");
         }
