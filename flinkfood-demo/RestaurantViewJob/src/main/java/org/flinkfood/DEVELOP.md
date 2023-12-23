@@ -82,6 +82,41 @@ This other way it's more elegant
 but does not appear to work.
 
 ## go into detail in the FLINK SQL
+The generated SVTable schema is the following: (e.g. as of 23-12-23, it may change)
+```SQL
+CREATE TABLE view (view_key INT primary key not enforced,
+                   restaurant_service ARRAY<ROW<restaurant_id INT ,
+                                               take_away BOOLEAN,
+                                               delivery BOOLEAN,
+                                               dine_in BOOLEAN,
+                                               parking_lots INT,
+                                               accessible BOOLEAN,
+                                               children_area BOOLEAN,
+                                               children_food BOOLEAN >>,
+                   restaurant_address ARRAY<ROW<   restaurant_id INT ,
+                                                   street VARCHAR(255),
+                                                   address_number VARCHAR(10),
+                                                   zip_code INT,
+                                                   city VARCHAR(255),
+                                                   province VARCHAR(2),
+                                                   country VARCHAR(255) >>,
+                   restaurant_review ARRAY<ROW<id INT,
+                                               restaurant_id INT,
+                                               customer_id INT,
+                                               rating INT,
+                                               commentary VARCHAR(255) >>,
+                   dish ARRAY<ROW< id INT,
+                                   restaurant_id INT,
+                                   name VARCHAR(255),
+                                   price INT,
+                                   currency VARCHAR(3),
+                                   category VARCHAR(255),
+                                   description VARCHAR(255) >>
+                ) 
+    WITH ('connector' = 'mongodb','uri' = 'mongodb://localhost:27017','database' = 'flinkfood','collection' = 'restaurants_view' )
+```
+
+
 Previously I was using the following query:
 ```SQL
 INSERT INTO view SELECT ((SELECT restaurant_id FROM restaurant_service),
