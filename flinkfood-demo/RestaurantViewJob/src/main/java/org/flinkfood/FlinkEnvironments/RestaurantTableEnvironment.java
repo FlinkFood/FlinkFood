@@ -27,18 +27,17 @@ public class RestaurantTableEnvironment {
 
     private void createAllTables(String config_file) throws FileNotFoundException {
         tables = (new YAML_reader(config_file)).readYamlFile();
-        for (int i = 0; i < tables.size(); i++) {
+        for (YAML_table table : tables) {
             String query;
-            query = "CREATE TABLE " + tables.get(i).getName() + "(" + tables.get(i).getSchema() + ")" +
+            query = "CREATE TABLE " + table.getName() + "(" + table.getSchema() + ")" +
                     " WITH (" +
                     " 'connector' = 'kafka'," +
-                    " 'topic' = '" + tables.get(i).getKafka_topic() + "'," +
+                    " 'topic' = '" + table.getKafka_topic() + "'," +
                     " 'properties.bootstrap.servers' = '" + KAFKA_URI + "'," +
                     " 'format' = 'json'," +
                     " 'scan.startup.mode' = 'earliest-offset'," +
                     " 'properties.auto.offset.reset' = 'earliest'" +
                     "); ";
-
             this.tEnv.executeSql(query);
         }
     }
@@ -47,11 +46,12 @@ public class RestaurantTableEnvironment {
         return tables;
     }
 
-    public TableEnvironment gettEnv() {
-        return tEnv;
-    }
-
     public void executeSql(String s) {
         this.tEnv.executeSql(s);
     }
+
+    public void executeInsertSVQuery(String insertSVQuery) {
+        tEnv.createStatementSet().addInsertSql(insertSVQuery).execute();
+    }
+
 }

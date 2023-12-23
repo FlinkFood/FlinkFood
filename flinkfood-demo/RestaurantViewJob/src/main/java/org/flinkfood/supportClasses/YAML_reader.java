@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.apache.flink.shaded.jackson2.org.yaml.snakeyaml.Yaml;
 
@@ -25,19 +26,20 @@ public class YAML_reader {
         FileInputStream inputStream = new FileInputStream(new File(this.filepath));
 
         //Reads all yaml as an array of hashmaps
-        ArrayList array = yaml.load(inputStream);
+        ArrayList<Map<String, String>> array = yaml.load(inputStream);
 
         //For each hashmap, mounts one instance of the class
-        ArrayList<YAML_table> yamlTables = new ArrayList<>();
-        for(int i = 0; i < array.size(); i++)
+        var yamlTables = new ArrayList<YAML_table>();
+        for(Map<String, String> map : array)
         {
-            LinkedHashMap temp = (LinkedHashMap) array.get(i);
-            YAML_table element = new YAML_table((String) temp.get("name"),
-                                                transform((String) temp.get("schema")),
-                                                (String) temp.get("kafka_topic"));
-            yamlTables.add(element);
+            var name = map.get("name");
+            var schema = transform(map.get("schema"));
+            var kafka_topic = map.get("kafka_topic");
+            if (kafka_topic == null)
+                yamlTables.add(new YAML_table(name, schema));
+            else
+                yamlTables.add(new YAML_table(name, schema, kafka_topic));
         }
-
         return yamlTables;
     }
 

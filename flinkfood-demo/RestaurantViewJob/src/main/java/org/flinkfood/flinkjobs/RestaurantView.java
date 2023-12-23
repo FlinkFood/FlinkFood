@@ -23,8 +23,8 @@ public class RestaurantView {
 
     // Main method where the Flink job is defined
     public static void main(String[] args) throws Exception {
-        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        RestaurantTableEnvironment rEnv = new RestaurantTableEnvironment(env, "table_config.yml");
+        var env = StreamExecutionEnvironment.getExecutionEnvironment();
+        var rEnv = new RestaurantTableEnvironment(env, "table_config.yml");
         // this command does the registration in Table API
         rEnv.executeSql("CREATE FUNCTION ARRAY_AGGR AS 'org.flinkfood.supportClasses.ArrayAggr'");
         createSV("restaurant_id", rEnv, SINK_DB_TABLE);
@@ -36,7 +36,7 @@ public class RestaurantView {
         var viewTables = getViewTables(rEnv, viewKey);
         rEnv.executeSql(createSVTable(viewKey, viewTables, view_name));
         var insertSVQuery = createInsertSVQuery(viewKey, viewTables);
-        executeInsertSVQuery(rEnv, insertSVQuery);
+        rEnv.executeInsertSVQuery(insertSVQuery);
     }
 
     /**
@@ -68,8 +68,7 @@ public class RestaurantView {
         // create view table
         StringBuilder sb = new StringBuilder();
         sb.append("CREATE TABLE ");
-        sb.append("view (");
-        sb.append(viewKey);
+        sb.append("view ( _id ");
         sb.append(" INT primary key not enforced, ");
         for (YAML_table table : tables) {
             sb.append(table.getName());
@@ -90,6 +89,7 @@ public class RestaurantView {
         if (tables.size() < 2) throw new IllegalArgumentException("At least two tables are required to create a view");
 
         var sb = new StringBuilder();
+        //Overwrites rows into static partition (from the manual) what does it mean?
         sb.append("INSERT INTO view ");
         sb.append("SELECT ");
         sb.append(tables.get(0).getName()); //reference the first table for the index key: if in the first table there is not the restaurant, then it will not be in the view!
@@ -123,10 +123,6 @@ public class RestaurantView {
         sb.append(viewKey);
         sb.append(";");
         return sb.toString();
-    }
-
-    private static void executeInsertSVQuery(RestaurantTableEnvironment rEnv, String insertSVQuery) {
-        rEnv.gettEnv().createStatementSet().addInsertSql(insertSVQuery).execute();
     }
 
     private static String clearTypesAndAddTableReference(YAML_table table) {
