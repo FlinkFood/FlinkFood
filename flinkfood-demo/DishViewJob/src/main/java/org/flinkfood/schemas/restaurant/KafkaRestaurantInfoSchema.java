@@ -1,7 +1,6 @@
 package org.flinkfood.schemas.restaurant;
 
 import java.io.IOException;
-
 import org.apache.flink.api.common.serialization.AbstractDeserializationSchema;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 import org.flinkfood.schemas.restaurant.RestaurantInfo;

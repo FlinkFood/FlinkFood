@@ -7,7 +7,6 @@ public class RestaurantInfo {
     public String phone;
     public String email;
     public String cuisine_type;
-    public String city;
     public String price_range;
     public String vat_code;
     
@@ -50,14 +49,6 @@ public class RestaurantInfo {
     // Setter for cuisineType
     public void setCuisine_type(String cuisine_type) {
         this.cuisine_type = cuisine_type;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
     }
 
     public String getPrice_range() {
