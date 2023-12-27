@@ -18,6 +18,12 @@ services:
     depends_on:
       - kconnect
 
+  simulator:
+    build:
+      context: .
+      dockerfile: Dockerfile.simulator
+    container_name: simulator
+
   taskmanager:
     image: flink:latest
     container_name: taskmanager

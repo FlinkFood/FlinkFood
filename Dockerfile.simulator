@@ -1,0 +1,6 @@
+FROM postgres:latest
+
+COPY simulation_script.sh /
+WORKDIR /
+
+CMD ["bash", "/simulation_script.sh"]
