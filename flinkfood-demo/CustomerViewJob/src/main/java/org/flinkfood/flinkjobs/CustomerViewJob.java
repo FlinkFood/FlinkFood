@@ -48,24 +48,6 @@ public class CustomerViewJob {
         // Main method where the Flink job is defined
         public static void main(String[] args) throws Exception {
 
-                // Setting up Kafka source with relevant configurations
-                KafkaSource<Customer> sourceCustomer = KafkaSource.<Customer>builder()
-                                .setBootstrapServers(KAFKA_URI)
-                                .setTopics(SOURCE_CUSTOMER_TABLE)
-                                .setGroupId("my-group")
-                                .setStartingOffsets(OffsetsInitializer.earliest())
-                                .setValueOnlyDeserializer(new KafkaCustomerSchema())
-                                .build();
-
-                // Setting up Kafka source with relevant configurations
-                KafkaSource<Order> sourceOrder = KafkaSource.<Order>builder()
-                                .setBootstrapServers(KAFKA_URI)
-                                .setTopics(SOURCE_ORDER_TABLE)
-                                .setGroupId("my-group")
-                                .setStartingOffsets(OffsetsInitializer.earliest())
-                                .setValueOnlyDeserializer(new KafkaOrderSchema())
-                                .build();
-
                 // Setting up Flink execution environment
                 StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
                 StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
@@ -73,26 +55,9 @@ public class CustomerViewJob {
                 tableConfig.set("table.exec.mini-batch.enabled", "true");
                 tableConfig.set("table.exec.mini-batch.allow-latency", "500 ms");
                 tableConfig.set("table.exec.mini-batch.size", "1000");
-
-                DataStream<Customer> streamCustomer = env
-                                .fromSource(sourceCustomer, WatermarkStrategy.noWatermarks(), "Kafka Source")
-                                .keyBy(Customer::getId);
-
-                Table customerTable = tableEnv.fromDataStream(streamCustomer);
-
-                tableEnv.createTemporaryView("Customer", tableEnv.toChangelogStream(customerTable));
-
-                DataStream<Order> streamOrder = env
-                                .fromSource(sourceOrder, WatermarkStrategy.noWatermarks(), "Kafka Source")
-                                .keyBy(Order::getCustomer_id);
-
-                Table orderTable = tableEnv.fromDataStream(streamOrder);
-
-                tableEnv.createTemporaryView("Orders", tableEnv.toChangelogStream(orderTable));
-
                 tableEnv.executeSql("CREATE FUNCTION ARRAY_AGGR AS 'org.flinkfood.flinkjobs.ArrayAggr';");
 
-                tableEnv.executeSql("CREATE TABLE Customer2 (\r\n" + //
+                tableEnv.executeSql("CREATE TABLE Customer (\r\n" + //
                                 "  id INT,\r\n" + //
                                 "  username STRING,\r\n" + //
                                 "  first_name STRING,\r\n" + //
@@ -102,14 +67,15 @@ public class CustomerViewJob {
                                 "  fiscal_code STRING,\r\n" + //
                                 "  PRIMARY KEY (id) NOT ENFORCED\r\n" + //
                                 ") WITH (\r\n" + //
-                                "  'connector' = 'upsert-kafka',\r\n" + //
+                                "  'connector' = 'kafka',\r\n" + //
                                 "  'topic' = 'postgres.public.customer',\r\n" + //
                                 "  'properties.bootstrap.servers' = 'localhost:9092',\r\n" + //
-                                "  'key.format' = 'json',\r\n" + //
-                                "  'value.format' = 'json'\r\n" + //
+                                "  'properties.group.id' = 'testGroup', \r\n" + //
+                                "  'scan.startup.mode' = 'earliest-offset',\r\n" + //
+                                "  'format' = 'debezium-json'\r\n" + //
                                 ");");
 
-                tableEnv.executeSql("CREATE TABLE Orders2 (\r\n" + //
+                tableEnv.executeSql("CREATE TABLE Orders (\r\n" + //
                                 "  id INT,\r\n" + //
                                 "  name STRING,\r\n" + //
                                 "  customer_id INT,\r\n" + //
@@ -124,11 +90,12 @@ public class CustomerViewJob {
                                 "  supply_order BOOLEAN,\r\n" + //
                                 "  PRIMARY KEY (id) NOT ENFORCED\r\n" + //
                                 ") WITH (\r\n" + //
-                                "  'connector' = 'upsert-kafka',\r\n" + //
+                                "  'connector' = 'kafka',\r\n" + //
                                 "  'topic' = 'postgres.public.order',\r\n" + //
                                 "  'properties.bootstrap.servers' = 'localhost:9092',\r\n" + //
-                                "  'key.format' = 'json',\r\n" + //
-                                "  'value.format' = 'json'\r\n" + //
+                                "  'properties.group.id' = 'testGroup', \r\n" + //
+                                "  'scan.startup.mode' = 'earliest-offset',\r\n" + //
+                                "  'format' = 'debezium-json'\r\n" + //
                                 ");");
 
                 tableEnv.executeSql("CREATE TABLE CustomeView (\r\n" + //
@@ -143,22 +110,9 @@ public class CustomerViewJob {
                                 "   'database' = 'flinkfood',\r\n" + //
                                 "   'collection' = 'users_sink'\r\n" + //
                                 ");");
-                /*
-                 * tableEnv.executeSql(
-                 * "INSERT INTO CustomeView SELECT DISTINCT  c.id,c.first_name,c.last_name,(SELECT ARRAY_AGGR(ROW(o.id,o.name,o.description)) FROM Orders o WHERE o.customer_id = c.id) FROM Customer c;"
-                 * );
-                 */
 
                 tableEnv.executeSql(
-                                "INSERT INTO CustomeView SELECT DISTINCT  c.id,c.first_name,c.last_name,(SELECT ARRAY_AGGR(ROW(o.id,o.name,o.description)) FROM Orders2 o WHERE o.customer_id = c.id) FROM Customer2 c;");
-
-                /*
-                 * Table resultTable4 = tableEnv.sqlQuery(
-                 * "SELECT DISTINCT c.id,c.first_name,c.last_name,(SELECT ARRAY_AGGR(ROW(o.id,o.name,o.description)) FROM Orders o WHERE o.customer_id = c.id) FROM Customer c;"
-                 * );
-                 * 
-                 * tableEnv.toChangelogStream(resultTable4).print();
-                 */
+                                "INSERT INTO CustomeView SELECT DISTINCT  c.id,c.first_name,c.last_name,(SELECT ARRAY_AGGR(ROW(o.id,o.name,o.description)) FROM Orders o WHERE o.customer_id = c.id) FROM Customer c;");
 
                 env.execute("CustomerViewJob");
         }
