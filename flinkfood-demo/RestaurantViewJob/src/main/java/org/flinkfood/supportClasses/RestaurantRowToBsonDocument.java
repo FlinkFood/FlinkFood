@@ -17,6 +17,29 @@ import org.bson.BsonInt64;
 import org.bson.BsonNull;
 import org.bson.BsonString;
 
+/**
+ * The {@code RestaurantRowToBsonDocument} class provides methods to convert a Flink Row representing restaurant data 
+ * into a BSON document suitable for MongoDB storage. Additionally, it offers a utility method to merge views of 
+ * restaurant data.
+ *
+ * THIS IS A DEPRECATED CLASS AND IS NOT USED IN THE NEWEST SOLUTION.
+ * The code is here present in order to keep track of the evolution of the project and the different solutions taken 
+ * during the development. For more on that, see the DEVELOP.md file in the root of the repository.
+ *
+ * The class contains methods to handle the conversion of individual restaurant fields into BSON format, 
+ * creating a document structure with nested sub-documents for address, status, and services.
+ *
+ * Additionally, it provides a method {@code mergeViews} to combine two restaurant view rows into a single row, 
+ * preserving different values in a list if they differ between the views. We used a different method to deal with this
+ * in the newest solution
+ *
+ * Field configurations such as address fields, status fields, and services fields are hardcoded within the class.
+ *
+ * @author PolimiGiovanniArriciati
+ * @version 1.0
+ */
+
+
 // Remark: This is the worst code I've ever written. I'm sorry.
 // FIXME: unused: we may delete the class
 @Deprecated

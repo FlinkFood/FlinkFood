@@ -13,6 +13,24 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * The {@code RestaurantView} class defines a Flink job that creates a view combining multiple tables into the Restaurant single view.
+ * The class integrates with MongoDB to store the created view.
+ *
+ * The class initializes a table environment for restaurants and creates a view based on specified criteria.
+ * It utilizes various methods to filter tables, create view tables, and formulate SQL queries for the view creation.
+ *
+ * The views created by this job are stored in a MongoDB collection.
+ *
+ * Dependencies and configurations such as MongoDB URI, database name, and view name are hardcoded within the class.
+ *
+ * @author PolimiGiovanniArriciati
+ * @version 3.0
+ * @see StreamExecutionEnvironment
+ * @see RestaurantTableEnvironment
+ * @see YAML_table
+ */
+
 
 // Class declaration for the Flink job
 public class RestaurantView {
