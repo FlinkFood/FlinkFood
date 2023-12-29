@@ -13,6 +13,13 @@ import org.apache.flink.table.types.DataType;
 import org.apache.flink.table.types.inference.InputTypeStrategies;
 import org.apache.flink.table.types.inference.TypeInference;
 
+/**
+ * Code from https://github.com/decodableco/examples/tree/main/flink-learn/3-array-agg
+ * This AggregateFunction is used to aggregate the values of a column into an array.
+ * The object can be of any type.
+ * @param <T>
+ */
+
 public class ArrayAggr<T> extends AggregateFunction<T[], ArrayAccumulator<T>> {
     private static final long serialVersionUID = 6560271654419701770L;
     private DataType elementType;

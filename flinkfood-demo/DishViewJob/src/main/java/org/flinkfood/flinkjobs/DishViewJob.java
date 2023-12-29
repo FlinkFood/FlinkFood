@@ -6,6 +6,28 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.*;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
+/**
+ * The {@code DishViewJob} class defines a Flink job responsible for processing the DishView, one of the 3 main views.
+ *
+ * <p>The job initializes the Flink execution environment, sets necessary configurations, and creates multiple tables 
+ * using Flink's Table API and Flink SQL. These tables are defined with Apache Kafka as the source connector and Debezium JSON format.
+ * The tables represent entities like dishes, ingredients, restaurants, reviews, and a view combining dish details 
+ * with associated ingredients, restaurants, and reviews.</p>
+ *
+ * <p>The job concludes by populating the {@code DishView} table which aggregates data from the previously defined tables.
+ * This aggregated view provides a comprehensive overview of dishes, their ingredients, associated restaurants, and reviews.</p>
+ *
+ *
+ * <p>Note: Ensure that the Apache Kafka and MongoDB services are running on the docker as stated in the HowToRun.md instructions.</p>
+ *
+ * @author lucamozzz
+ * @version 1.0
+ * @see StreamExecutionEnvironment
+ * @see StreamTableEnvironment
+ * @see TableConfig
+ * @see ArrayAggr
+ */
+
 // Class declaration for the Flink job
 public class DishViewJob {
 
