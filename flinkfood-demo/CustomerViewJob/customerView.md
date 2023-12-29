@@ -86,7 +86,7 @@ curl -X POST 'http://localhost:8083/connectors' -H 'Content-Type: application/js
 By removing the `"transforms": "unwrap",` line.
 
 **NOTE:** Wait a couple of minutes for the initialization of all the kafka topics.
-You can check the creation of topics by going to [kafdrop dashboard](http://localhost:9000`)
+You can check the creation of topics by going to [kafdrop dashboard](http://localhost:9000)
 
 4. Start the flink job by running the `CustomerViewJob.java`.
 
