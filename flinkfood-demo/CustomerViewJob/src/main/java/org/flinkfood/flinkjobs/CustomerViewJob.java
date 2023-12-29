@@ -32,6 +32,48 @@ import org.flinkfood.schemas.customer.KafkaCustomerSchema;
 import org.flinkfood.schemas.order.KafkaOrderSchema;
 import org.flinkfood.schemas.order.Order;
 
+/**
+ * This class, {@code CustomerViewJob}, represents a Flink job that creates the Customer View.
+ * The job retrieves data from Kafka topics related to customers and orders and aggregates this data
+ * to create a view of customers with their associated orders. The aggregated view is then stored in a MongoDB collection.
+ * 
+ * <p>
+ * FOR A MORE DETAILED EXPLANATION OF THE CODE, PLEASE REFER TO THE README FILE "customerView.md"
+ * </p>
+ * 
+ * <p>
+ * The following steps outline the functionality of this job:
+ * 1. Define necessary Kafka and MongoDB connection details.
+ * 2. Set up the Flink execution environment and stream table environment.
+ * 3. Register user-defined functions for aggregation.
+ * 4. Define tables for customers and orders sourced from Kafka topics.
+ * 5. Create a view table that represents an aggregated view of customers with their orders.
+ * 6. Execute the Flink job.
+ * </p>
+ * 
+ * <p>
+ * MAKE SURE THE CORRECT KAFKA AND MONGODB CONNECTION DETAILS ARE PROVIDED AND THE DOCKER IS RUNNING AS STATED ON THE MD FILE
+ * </p>
+ *
+ * @author Niccolo-Francioni
+ * @version 1.0
+ * @see org.apache.flink.streaming.api.environment.StreamExecutionEnvironment
+ * @see org.apache.flink.table.api.bridge.java.StreamTableEnvironment
+ * @see org.apache.flink.table.api.TableConfig
+ * @see org.apache.flink.types.Row
+ * @see org.apache.flink.connector.mongodb.sink.MongoSink
+ * @see org.apache.flink.connector.kafka.source.KafkaSource
+ * @see org.apache.flink.streaming.api.datastream.DataStream
+ * @see com.mongodb.client.model.Filters
+ * @see com.mongodb.client.model.InsertOneModel
+ * @see com.mongodb.client.model.ReplaceOneModel
+ * @see com.mongodb.client.model.ReplaceOptions
+ * @see org.flinkfood.schemas.customer.Customer
+ * @see org.flinkfood.schemas.customer.KafkaCustomerSchema
+ * @see org.flinkfood.schemas.order.KafkaOrderSchema
+ * @see org.flinkfood.schemas.order.Order
+ */
+
 // Class declaration for the Flink job
 public class CustomerViewJob {
         // Kafka and MongoDB connection details obtained from environment variables
