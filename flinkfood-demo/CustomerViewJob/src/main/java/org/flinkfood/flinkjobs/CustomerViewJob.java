@@ -1,44 +1,19 @@
 // Package declaration for the Flink job
 package org.flinkfood.flinkjobs;
 
-// Importing necessary Flink libraries and external dependencies
-import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.functions.ProcessFunction;
-import org.apache.flink.table.api.JsonOnNull;
-import org.apache.flink.table.api.Table;
-import org.apache.flink.table.api.TableConfig;
-import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
-import org.apache.flink.types.Row;
-import org.apache.flink.util.Collector;
-
-import static org.apache.flink.table.api.Expressions.$;
-import static org.apache.flink.table.api.Expressions.jsonObject;
-
-import org.apache.flink.api.common.eventtime.WatermarkStrategy;
-import org.apache.flink.connector.mongodb.sink.MongoSink;
-import org.apache.flink.connector.base.DeliveryGuarantee;
-import org.apache.flink.connector.kafka.source.KafkaSource;
-import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
-import org.apache.flink.streaming.api.datastream.DataStream;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.InsertOneModel;
-import com.mongodb.client.model.ReplaceOneModel;
-import com.mongodb.client.model.ReplaceOptions;
-
-import org.bson.BsonDocument;
-import org.bson.conversions.Bson;
-import org.flinkfood.schemas.customer.Customer;
-import org.flinkfood.schemas.customer.KafkaCustomerSchema;
-import org.flinkfood.schemas.order.KafkaOrderSchema;
-import org.flinkfood.schemas.order.Order;
+import org.flinkfood.FlinkEnvironments.CustomerEnvironment;
 
 /**
- * This class, {@code CustomerViewJob}, represents a Flink job that creates the Customer View.
- * The job retrieves data from Kafka topics related to customers and orders and aggregates this data
- * to create a view of customers with their associated orders. The aggregated view is then stored in a MongoDB collection.
+ * This class, {@code CustomerViewJob}, represents a Flink job that creates the
+ * Customer View.
+ * The job retrieves data from Kafka topics related to customers and orders and
+ * aggregates this data
+ * to create a view of customers with their associated orders. The aggregated
+ * view is then stored in a MongoDB collection.
  * 
  * <p>
- * FOR A MORE DETAILED EXPLANATION OF THE CODE, PLEASE REFER TO THE README FILE "customerView.md"
+ * FOR A MORE DETAILED EXPLANATION OF THE CODE, PLEASE REFER TO THE README FILE
+ * "customerView.md"
  * </p>
  * 
  * <p>
@@ -47,12 +22,14 @@ import org.flinkfood.schemas.order.Order;
  * 2. Set up the Flink execution environment and stream table environment.
  * 3. Register user-defined functions for aggregation.
  * 4. Define tables for customers and orders sourced from Kafka topics.
- * 5. Create a view table that represents an aggregated view of customers with their orders.
+ * 5. Create a view table that represents an aggregated view of customers with
+ * their orders.
  * 6. Execute the Flink job.
  * </p>
  * 
  * <p>
- * MAKE SURE THE CORRECT KAFKA AND MONGODB CONNECTION DETAILS ARE PROVIDED AND THE DOCKER IS RUNNING AS STATED ON THE MD FILE
+ * MAKE SURE THE CORRECT KAFKA AND MONGODB CONNECTION DETAILS ARE PROVIDED AND
+ * THE DOCKER IS RUNNING AS STATED ON THE MD FILE
  * </p>
  *
  * @author Niccolo-Francioni
@@ -90,61 +67,22 @@ public class CustomerViewJob {
         // Main method where the Flink job is defined
         public static void main(String[] args) throws Exception {
 
-                // Setting up Flink execution environment
-                StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-                StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
-                TableConfig tableConfig = tableEnv.getConfig();
-                tableConfig.set("table.exec.mini-batch.enabled", "true");
-                tableConfig.set("table.exec.mini-batch.allow-latency", "500 ms");
-                tableConfig.set("table.exec.mini-batch.size", "1000");
-                tableEnv.executeSql("CREATE FUNCTION ARRAY_AGGR AS 'org.flinkfood.flinkjobs.ArrayAggr';");
+                // Initialize environment
+                var customerEnvironment = CustomerEnvironment.getInstance();
 
-                tableEnv.executeSql("CREATE TABLE Customer (\r\n" + //
-                                "  id INT,\r\n" + //
-                                "  username STRING,\r\n" + //
-                                "  first_name STRING,\r\n" + //
-                                "  last_name STRING,\r\n" + //
-                                "  birthdate STRING,\r\n" + //
-                                "  email STRING,\r\n" + //
-                                "  fiscal_code STRING,\r\n" + //
-                                "  PRIMARY KEY (id) NOT ENFORCED\r\n" + //
-                                ") WITH (\r\n" + //
-                                "  'connector' = 'kafka',\r\n" + //
-                                "  'topic' = 'postgres.public.customer',\r\n" + //
-                                "  'properties.bootstrap.servers' = 'localhost:9092',\r\n" + //
-                                "  'properties.group.id' = 'testGroup', \r\n" + //
-                                "  'scan.startup.mode' = 'earliest-offset',\r\n" + //
-                                "  'format' = 'debezium-json'\r\n" + //
-                                ");");
-
-                tableEnv.executeSql("CREATE TABLE Orders (\r\n" + //
-                                "  id INT,\r\n" + //
-                                "  name STRING,\r\n" + //
-                                "  customer_id INT,\r\n" + //
-                                "  restaurant_id INT,\r\n" + //
-                                "  supplier_id INT,\r\n" + //
-                                "  order_date STRING,\r\n" + //
-                                "  payment_date STRING,\r\n" + //
-                                "  delivery_date STRING,\r\n" + //
-                                "  description STRING,\r\n" + //
-                                "  total_amount INT,\r\n" + //
-                                "  currency STRING,\r\n" + //
-                                "  supply_order BOOLEAN,\r\n" + //
-                                "  PRIMARY KEY (id) NOT ENFORCED\r\n" + //
-                                ") WITH (\r\n" + //
-                                "  'connector' = 'kafka',\r\n" + //
-                                "  'topic' = 'postgres.public.order',\r\n" + //
-                                "  'properties.bootstrap.servers' = 'localhost:9092',\r\n" + //
-                                "  'properties.group.id' = 'testGroup', \r\n" + //
-                                "  'scan.startup.mode' = 'earliest-offset',\r\n" + //
-                                "  'format' = 'debezium-json'\r\n" + //
-                                ");");
-
-                tableEnv.executeSql("CREATE TABLE CustomeView (\r\n" + //
+                // Register single view table
+                customerEnvironment.getTableEnv().executeSql("CREATE TABLE CustomeView (\r\n" + //
                                 "  id INT,\r\n" + //
                                 "  first_name STRING,\r\n" + //
                                 "  last_name STRING,\r\n" + //
                                 "  orders ARRAY<row<id INT, name STRING, description STRING>>,\r\n" + //
+                                "  payment_method ARRAY<row<id INT, name STRING>>,\r\n" + //
+                                "  addresses ARRAY<row<id INT, street STRING,address_number STRING,zip_code INT,city STRING,province STRING,country STRING>>,\r\n"
+                                + //
+                                "  dish_review ARRAY<row<id INT, dish_id INT,name STRING,rating INT,review STRING>>,\r\n"
+                                + //
+                                "  restaurant_review ARRAY<row<id INT,restaurant_id INT, name STRING, rating INT, review STRING>>,\r\n"
+                                + //
                                 "  PRIMARY KEY (id) NOT ENFORCED\r\n" + //
                                 ") WITH (\r\n" + //
                                 "   'connector' = 'mongodb',\r\n" + //
@@ -153,9 +91,21 @@ public class CustomerViewJob {
                                 "   'collection' = 'users_sink'\r\n" + //
                                 ");");
 
-                tableEnv.executeSql(
-                                "INSERT INTO CustomeView SELECT DISTINCT  c.id,c.first_name,c.last_name,(SELECT ARRAY_AGGR(ROW(o.id,o.name,o.description)) FROM Orders o WHERE o.customer_id = c.id) FROM Customer c;");
+                // Execute query to aggregate data
+                customerEnvironment.getTableEnv().executeSql(
+                                "INSERT INTO CustomeView SELECT DISTINCT  c.id,c.first_name,c.last_name," +
+                                                "(SELECT ARRAY_AGGR(ROW(o.id,o.name,o.description)) FROM Orders o WHERE o.customer_id = c.id),"
+                                                + //
+                                                "(SELECT ARRAY_AGGR(ROW(pm.id,pm.name)) FROM Payment_method pm WHERE pm.customer_id = c.id),"
+                                                + //
+                                                "(SELECT ARRAY_AGGR(ROW(ca.id,ca.street,ca.address_number,ca.zip_code,ca.city,ca.province,ca.country)) FROM Customer_address ca WHERE ca.customer_id = c.id),"
+                                                + //
+                                                "(SELECT ARRAY_AGGR(ROW(rd.id,rd.dish_id,d.name,rd.rating,rd.review)) FROM Review_dish rd  LEFT JOIN Dish d on rd.dish_id=d.id WHERE rd.customer_id = c.id ),"
+                                                + //
+                                                "(SELECT ARRAY_AGGR(ROW(rr.id,rr.restaurant_id,name,rr.rating,rr.review)) FROM Restaurant_review rr  LEFT JOIN Restaurant_info ri on rr.restaurant_id=ri.id WHERE rr.customer_id = c.id )"
+                                                + //
+                                                "FROM Customer c;");
 
-                env.execute("CustomerViewJob");
+                customerEnvironment.getEnv().execute("CustomerViewJob");
         }
 }
