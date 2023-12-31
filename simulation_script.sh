@@ -9,6 +9,7 @@ DB_PASSWORD="postgres"
 
 export PGPASSWORD="$DB_PASSWORD"
 
+
 update_restaurant_info() {
     # Generate random data variations
     restaurant_id=$(shuf -i 1-9 -n 1)
@@ -27,16 +28,19 @@ update_restaurant_info() {
                 vat_code = $vat_code_suffix
                 WHERE id = $restaurant_id;"
 
+    echo "Updating specific columns in restaurant_info for restaurant_id $restaurant_id."
     # Execute the SQL query
     psql -h $DB_HOST -p $DB_PORT -d $DB_NAME -U $DB_USER -c "$sql_query"
 
-    echo "Updated specific columns in restaurant_info for restaurant_id $restaurant_id."
-    sleep 10
+    sleep_duration=$(shuf -i 1-2 -n 1)
+
+    sleep $sleep_duration
 }
 
 insert_order() {
     # Generate random data
-    name="Order_$(shuf -i 1-10000000 -n 1)"
+    id=$(shuf -i 1-10000000 -n 1)
+    name="Order_$id"
     customer_id=$(shuf -i 1-5 -n 1)
     restaurant_id=$(shuf -i 1-9 -n 1)
     supplier_id=$(shuf -i 1-4 -n 1)
@@ -48,17 +52,18 @@ insert_order() {
     currency="USD"
 
     # Construct the SQL query
-    sql_query="INSERT INTO public.order (name, customer_id, restaurant_id, supplier_id, order_date, payment_date, delivery_date, description, total_amount, currency, supply_order) VALUES ('$name', $customer_id, $restaurant_id, $supplier_id, '$order_date', '$payment_date', '$delivery_date', '$description', $total_amount, '$currency', TRUE);"
+    sql_query="INSERT INTO public.order (id, name, customer_id, restaurant_id, supplier_id, order_date, payment_date, delivery_date, description, total_amount, currency, supply_order) VALUES ($id, '$name', $customer_id, $restaurant_id, $supplier_id, '$order_date', '$payment_date', '$delivery_date', '$description', $total_amount, '$currency', TRUE);"
 
+    echo "Inserting a $name into the database."
     # Execute the SQL query
     psql -h $DB_HOST -p $DB_PORT -d $DB_NAME -U $DB_USER -c "$sql_query"
 
-    echo "Inserted a $name into the database."
-    sleep 5
+    sleep_duration=$(shuf -i 1-2 -n 1)
+
+    sleep $sleep_duration
 }
 
 while true; do
-    # Sleep for 5 seconds before the next iteration
     insert_order
     update_restaurant_info
 done
