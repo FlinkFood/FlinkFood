@@ -27,7 +27,7 @@ services:
     image: flink:latest
     container_name: taskmanager
     ports:
-      - 9250:9250
+      - 9250:9249
     depends_on:
       - jobmanager
     command: taskmanager
@@ -37,7 +37,7 @@ services:
         jobmanager.rpc.address: jobmanager
         taskmanager.numberOfTaskSlots: 3
         metrics.reporter.prom.factory.class: org.apache.flink.metrics.prometheus.PrometheusReporterFactory
-        metrics.reporter.prom.factory.port: 9250
+        metrics.reporter.prom.factory.port: 9249
         metrics.reporters: prom  
 
   mongo:
