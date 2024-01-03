@@ -54,15 +54,8 @@ import org.flinkfood.FlinkEnvironments.CustomerEnvironment;
 // Class declaration for the Flink job
 public class CustomerViewJob {
         // Kafka and MongoDB connection details obtained from environment variables
-        // private static final String KAFKA_URI = System.getenv("KAFKA_URI");
-        private static final String KAFKA_URI = "localhost:9092";
-        private static final String SOURCE_CUSTOMER_TABLE = "postgres.public.customer";
-        private static final String SOURCE_ADDRESS_TABLE = "postgres.public.address";
-        private static final String SOURCE_ORDER_TABLE = "postgres.public.order";
         // private static final String MONGODB_URI = System.getenv("MONGODB_SERVER");
         private static final String MONGODB_URI = "mongodb://localhost:27017";
-        private static final String SINK_DB = "flinkfood";
-        private static final String SINK_DB_TABLE = "users_sink";
 
         // Main method where the Flink job is defined
         public static void main(String[] args) throws Exception {
@@ -86,7 +79,7 @@ public class CustomerViewJob {
                                 "  PRIMARY KEY (id) NOT ENFORCED\r\n" + //
                                 ") WITH (\r\n" + //
                                 "   'connector' = 'mongodb',\r\n" + //
-                                "   'uri' = 'mongodb://localhost:27017',\r\n" + //
+                                "   'uri' = '" + MONGODB_URI + "',\r\n" + //
                                 "   'database' = 'flinkfood',\r\n" + //
                                 "   'collection' = 'users_sink'\r\n" + //
                                 ");");

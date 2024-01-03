@@ -6,6 +6,7 @@ import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
 public final class CustomerEnvironment {
 
+    private static final String KAFKA_URI = System.getenv("KAFKA_URI");
     private static CustomerEnvironment INSTANCE;
     private StreamExecutionEnvironment env;
     private StreamTableEnvironment tableEnv;
@@ -62,7 +63,7 @@ public final class CustomerEnvironment {
                 ") WITH (\r\n" + //
                 "  'connector' = 'kafka',\r\n" + //
                 "  'topic' = 'postgres.public.customer',\r\n" + //
-                "  'properties.bootstrap.servers' = 'localhost:9092',\r\n" + //
+                "  'properties.bootstrap.servers' = '" + KAFKA_URI + "',\r\n" + //
                 "  'properties.group.id' = 'testGroup', \r\n" + //
                 "  'scan.startup.mode' = 'earliest-offset',\r\n" + //
                 "  'format' = 'debezium-json'\r\n" + //
@@ -87,7 +88,7 @@ public final class CustomerEnvironment {
                 ") WITH (\r\n" + //
                 "  'connector' = 'kafka',\r\n" + //
                 "  'topic' = 'postgres.public.order',\r\n" + //
-                "  'properties.bootstrap.servers' = 'localhost:9092',\r\n" + //
+                "  'properties.bootstrap.servers' = '" + KAFKA_URI + "',\r\n" + //
                 "  'properties.group.id' = 'testGroup', \r\n" + //
                 "  'scan.startup.mode' = 'earliest-offset',\r\n" + //
                 "  'format' = 'debezium-json'\r\n" + //
@@ -109,7 +110,7 @@ public final class CustomerEnvironment {
                 ") WITH (\r\n" + //
                 "  'connector' = 'kafka',\r\n" + //
                 "  'topic' = 'postgres.public.customer_address',\r\n" + //
-                "  'properties.bootstrap.servers' = 'localhost:9092',\r\n" + //
+                "  'properties.bootstrap.servers' = '" + KAFKA_URI + "',\r\n" + //
                 "  'properties.group.id' = 'testGroup', \r\n" + //
                 "  'scan.startup.mode' = 'earliest-offset',\r\n" + //
                 "  'format' = 'debezium-json'\r\n" + //
@@ -126,7 +127,7 @@ public final class CustomerEnvironment {
                 ") WITH (\r\n" + //
                 "  'connector' = 'kafka',\r\n" + //
                 "  'topic' = 'postgres.public.payment_method',\r\n" + //
-                "  'properties.bootstrap.servers' = 'localhost:9092',\r\n" + //
+                "  'properties.bootstrap.servers' = '" + KAFKA_URI + "',\r\n" + //
                 "  'properties.group.id' = 'testGroup', \r\n" + //
                 "  'scan.startup.mode' = 'earliest-offset',\r\n" + //
                 "  'format' = 'debezium-json'\r\n" + //
@@ -144,7 +145,7 @@ public final class CustomerEnvironment {
                 ") WITH (\r\n" + //
                 "  'connector' = 'kafka',\r\n" + //
                 "  'topic' = 'postgres.public.reviews_dish',\r\n" + //
-                "  'properties.bootstrap.servers' = 'localhost:9092',\r\n" + //
+                "  'properties.bootstrap.servers' = '" + KAFKA_URI + "',\r\n" + //
                 "  'properties.group.id' = 'testGroup', \r\n" + //
                 "  'scan.startup.mode' = 'earliest-offset',\r\n" + //
                 "  'format' = 'debezium-json'\r\n" + //
@@ -162,7 +163,7 @@ public final class CustomerEnvironment {
                 ") WITH (\r\n" + //
                 "  'connector' = 'kafka',\r\n" + //
                 "  'topic' = 'postgres.public.restaurant_review',\r\n" + //
-                "  'properties.bootstrap.servers' = 'localhost:9092',\r\n" + //
+                "  'properties.bootstrap.servers' = '" + KAFKA_URI + "',\r\n" + //
                 "  'properties.group.id' = 'testGroup', \r\n" + //
                 "  'scan.startup.mode' = 'earliest-offset',\r\n" + //
                 "  'format' = 'debezium-json'\r\n" + //
@@ -182,7 +183,7 @@ public final class CustomerEnvironment {
                 ") WITH (\r\n" + //
                 "  'connector' = 'kafka',\r\n" + //
                 "  'topic' = 'postgres.public.restaurant_info',\r\n" + //
-                "  'properties.bootstrap.servers' = 'localhost:9092',\r\n" + //
+                "  'properties.bootstrap.servers' = '" + KAFKA_URI + "',\r\n" + //
                 "  'properties.group.id' = 'testGroup', \r\n" + //
                 "  'scan.startup.mode' = 'earliest-offset',\r\n" + //
                 "  'format' = 'debezium-json'\r\n" + //
@@ -203,7 +204,7 @@ public final class CustomerEnvironment {
                 ") WITH (\r\n" + //
                 "  'connector' = 'kafka',\r\n" + //
                 "  'topic' = 'postgres.public.dish',\r\n" + //
-                "  'properties.bootstrap.servers' = 'localhost:9092',\r\n" + //
+                "  'properties.bootstrap.servers' = '" + KAFKA_URI + "',\r\n" + //
                 "  'properties.group.id' = 'testGroup', \r\n" + //
                 "  'scan.startup.mode' = 'earliest-offset',\r\n" + //
                 "  'format' = 'debezium-json'\r\n" + //
