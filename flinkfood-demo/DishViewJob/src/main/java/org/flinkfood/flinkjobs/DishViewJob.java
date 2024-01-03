@@ -3,161 +3,176 @@ package org.flinkfood.flinkjobs;
 
 // Importing necessary Flink libraries and external dependencies
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.functions.ProcessFunction;
-import org.apache.flink.api.common.eventtime.WatermarkStrategy;
-import org.apache.flink.connector.base.DeliveryGuarantee;
-import org.apache.flink.connector.kafka.source.KafkaSource;
-import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
-import org.apache.flink.connector.mongodb.sink.MongoSink;
-import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.table.api.*;
-import org.apache.flink.types.Row;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
-import org.flinkfood.schemas.dish.Dish;
-import org.flinkfood.schemas.dish.KafkaDishSchema;
-import org.flinkfood.schemas.dish_ingredient.DishIngredient;
-import org.flinkfood.schemas.dish_ingredient.KafkaDishIngredientSchema;
-import org.flinkfood.schemas.ingredient.Ingredient;
-import org.flinkfood.schemas.ingredient.KafkaIngredientSchema;
-import org.flinkfood.schemas.restaurant.KafkaRestaurantInfoSchema;
-import org.flinkfood.schemas.restaurant.RestaurantInfo;
-import org.flinkfood.serializers.DishRowToBsonDocument;
+
+/**
+ * The {@code DishViewJob} class defines a Flink job responsible for processing the DishView, one of the 3 main views.
+ *
+ * <p>The job initializes the Flink execution environment, sets necessary configurations, and creates multiple tables 
+ * using Flink's Table API and Flink SQL. These tables are defined with Apache Kafka as the source connector and Debezium JSON format.
+ * The tables represent entities like dishes, ingredients, restaurants, reviews, and a view combining dish details 
+ * with associated ingredients, restaurants, and reviews.</p>
+ *
+ * <p>The job concludes by populating the {@code DishView} table which aggregates data from the previously defined tables.
+ * This aggregated view provides a comprehensive overview of dishes, their ingredients, associated restaurants, and reviews.</p>
+ *
+ *
+ * <p>Note: Ensure that the Apache Kafka and MongoDB services are running on the docker as stated in the HowToRun.md instructions.</p>
+ *
+ * @author lucamozzz
+ * @version 1.0
+ * @see StreamExecutionEnvironment
+ * @see StreamTableEnvironment
+ * @see TableConfig
+ * @see ArrayAggr
+ */
 
 // Class declaration for the Flink job
 public class DishViewJob {
 
-        // Kafka and MongoDB connection details obtained from environment variables
         private static final String KAFKA_URI = System.getenv("KAFKA_URI");
-        private static final String SOURCE_DISH_TABLE = "postgres.public.dish";
-        private static final String SOURCE_RESTAURANT_INFO_TABLE = "postgres.public.restaurant_info";
-        private static final String SOURCE_INGREDIENT_TABLE = "postgres.public.ingredient";
-        private static final String SOURCE_DISH_INGREDIENT_TABLE = "postgres.public.dish_ingredient";
         private static final String MONGODB_URI = System.getenv("MONGODB_SERVER");
-        private static final String SINK_DB = "flinkfood";
-        private static final String SINK_DB_TABLE = "dish_view";
-
         // Main method where the Flink job is defined
         public static void main(String[] args) throws Exception {
-
-                // Setting up Kafka source with relevant configurations
-                KafkaSource<Dish> dishSource = KafkaSource.<Dish>builder()
-                                .setBootstrapServers(KAFKA_URI)
-                                .setTopics(SOURCE_DISH_TABLE)
-                                .setGroupId("my-group")
-                                .setStartingOffsets(OffsetsInitializer.earliest())
-                                .setValueOnlyDeserializer(new KafkaDishSchema())
-                                .build();
-
-                // Setting up Kafka source with relevant configurations
-                KafkaSource<RestaurantInfo> restaurantInfoSource = KafkaSource.<RestaurantInfo>builder()
-                                .setBootstrapServers(KAFKA_URI)
-                                .setTopics(SOURCE_RESTAURANT_INFO_TABLE)
-                                .setGroupId("my-group")
-                                .setStartingOffsets(OffsetsInitializer.earliest())
-                                .setValueOnlyDeserializer(new KafkaRestaurantInfoSchema())
-                                .build();
-
-                // Setting up Kafka source with relevant configurations
-                KafkaSource<Ingredient> ingredientSource = KafkaSource.<Ingredient>builder()
-                                .setBootstrapServers(KAFKA_URI)
-                                .setTopics(SOURCE_INGREDIENT_TABLE)
-                                .setGroupId("my-group")
-                                .setStartingOffsets(OffsetsInitializer.earliest())
-                                .setValueOnlyDeserializer(new KafkaIngredientSchema())
-                                .build();
-
-                // Setting up Kafka source with relevant configurations
-                KafkaSource<DishIngredient> dishIngredientSource = KafkaSource.<DishIngredient>builder()
-                                .setBootstrapServers(KAFKA_URI)
-                                .setTopics(SOURCE_DISH_INGREDIENT_TABLE)
-                                .setGroupId("my-group")
-                                .setStartingOffsets(OffsetsInitializer.earliest())
-                                .setValueOnlyDeserializer(new KafkaDishIngredientSchema())
-                                .build();
-
-                // Setting up Kafka sink with relevant configurations
-                MongoSink<Row> sink = MongoSink.<Row>builder()
-                                .setUri(MONGODB_URI)
-                                .setDatabase(SINK_DB)
-                                .setCollection(SINK_DB_TABLE)
-                                .setBatchSize(1000)
-                                .setBatchIntervalMs(1000)
-                                .setMaxRetries(3)
-                                .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
-                                .setSerializationSchema(new DishRowToBsonDocument())
-                                .build();
 
                 // Setting up Flink execution environment
                 StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
                 StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
                 TableConfig tableConfig = tableEnv.getConfig();
                 tableConfig.set("table.exec.mini-batch.enabled", "true");
-                tableConfig.set("table.exec.mini-batch.allow-latency", "5 s");
-                tableConfig.set("table.exec.mini-batch.size", "5000");
-
-                // Creates a Flink data stream for the dishes
-                DataStream<Dish> dishStream = env
-                                .fromSource(dishSource, WatermarkStrategy.noWatermarks(), "Kafka Source")
-                                .keyBy(Dish::getId);
-                // Creates a table for the dishes
-                Table dishTable = tableEnv.fromDataStream(dishStream);
-                // Creates a temporary view for the dishes
-                tableEnv.createTemporaryView("Dish", tableEnv.toChangelogStream(dishTable));
-
-                // Creates a Flink data stream for the dish ingredients
-                DataStream<DishIngredient> streamDishIngredient = env
-                                .fromSource(dishIngredientSource, WatermarkStrategy.noWatermarks(), "Kafka Source")
-                                .keyBy(DishIngredient::getDish_id);
-                // Creates a table for the dish ingredients
-                Table dishIngredientTable = tableEnv.fromDataStream(streamDishIngredient);
-                // Creates a temporary view for the dish ingredients
-                tableEnv.createTemporaryView("DishIngredients", tableEnv.toChangelogStream(dishIngredientTable));
-
-                // Creates a Flink data stream for the ingredients
-                DataStream<Ingredient> streamIngredient = env
-                                .fromSource(ingredientSource, WatermarkStrategy.noWatermarks(), "Kafka Source")
-                                .keyBy(Ingredient::getId);
-                // Creates a table for the ingredients
-                Table ingredientTable = tableEnv.fromDataStream(streamIngredient);
-                // Creates a temporary view for the ingredients
-                tableEnv.createTemporaryView("Ingredients", tableEnv.toChangelogStream(ingredientTable));
-
-                // Creates a Flink data stream for the restaurants
-                DataStream<RestaurantInfo> streamRestaurants = env
-                                .fromSource(restaurantInfoSource, WatermarkStrategy.noWatermarks(), "Kafka Source")
-                                .keyBy(RestaurantInfo::getId);
-                // Creates a table for the restaurants
-                Table restaurantTable = tableEnv.fromDataStream(streamRestaurants);
-                // Creates a temporary view for the restaurants
-                tableEnv.createTemporaryView("Restaurants", tableEnv.toChangelogStream(restaurantTable));
-
+                tableConfig.set("table.exec.mini-batch.allow-latency", "500 ms");
+                tableConfig.set("table.exec.mini-batch.size", "1000");
                 tableEnv.executeSql("CREATE FUNCTION ARRAY_AGGR AS 'org.flinkfood.flinkjobs.ArrayAggr';");
 
-                // Query that returns a JSON
-                Table resultTable = tableEnv
-                                .sqlQuery(
-                                                "SELECT DISTINCT " +
-                                                                "JSON_OBJECT('dish_id' VALUE d.id, 'dish_name' VALUE d.name, 'dish_description' VALUE d.description, "
-                                                                +
-                                                                "'served_in' VALUE JSON_OBJECT(" +
-                                                                "'restaurant_id' VALUE r.id, 'name' VALUE r.name, 'email' VALUE r.email, "
-                                                                +
-                                                                "'phone' VALUE r.phone, 'vat_code' VALUE r.vat_code, 'price_range' VALUE r.price_range), "
-                                                                +
-                                                                "'ingredients' VALUE ARRAY_AGGR(JSON_OBJECT(" +
-                                                                "'ingredient_id' VALUE i.id, 'name' VALUE i.name, 'description' VALUE i.description)))"
-                                                                +
-                                                                "as dish_view " +
-                                                                "FROM Dish d " +
-                                                                "JOIN Restaurants r ON d.restaurant_id = r.id " +
-                                                                "LEFT JOIN DishIngredients di ON d.id = di.dish_id " +
-                                                                "LEFT JOIN Ingredients i ON di.ingredient_id = i.id " +
-                                                                "GROUP BY d.id, d.name, d.description, r.id, r.name, r.email, r.phone, r.vat_code, r.price_range;");
+                tableEnv.executeSql("CREATE TABLE Dish (\r\n" + //
+                                "  id INT,\r\n" + //
+                                "  restaurant_id INT,\r\n" + //
+                                "  name STRING,\r\n" + //
+                                "  price INT,\r\n" + //
+                                "  currency STRING,\r\n" + //
+                                "  category STRING,\r\n" + //
+                                "  description STRING,\r\n" + //
+                                "  PRIMARY KEY (id) NOT ENFORCED\r\n" + //
+                                ") WITH (\r\n" + //
+                                "  'connector' = 'kafka',\r\n" + //
+                                "  'topic' = 'postgres.public.dish',\r\n" + //
+                                "  'properties.bootstrap.servers' = '" + KAFKA_URI + "',\r\n" + //
+                                "  'properties.group.id' = 'testGroup', \r\n" + //
+                                "  'scan.startup.mode' = 'earliest-offset',\r\n" + //
+                                "  'format' = 'debezium-json'\r\n" + //
+                                ");");
 
-                // Sink to MongoDB
-                tableEnv
-                                .toChangelogStream(resultTable)
-                                .sinkTo(sink);
+                tableEnv.executeSql("CREATE TABLE Ingredients (\r\n" + //
+                                "  id INT,\r\n" + //
+                                "  name STRING,\r\n" + //
+                                "  restaurant_id INT,\r\n" + //
+                                "  description STRING,\r\n" + //
+                                "  carbs INT,\r\n" + //
+                                "  proteins INT,\r\n" + //
+                                "  fats INT,\r\n" + //
+                                "  fibers INT,\r\n" + //
+                                "  salt INT,\r\n" + //
+                                "  calories INT,\r\n" + //
+                                "  PRIMARY KEY (id) NOT ENFORCED\r\n" + //
+                                ") WITH (\r\n" + //
+                                "  'connector' = 'kafka',\r\n" + //
+                                "  'topic' = 'postgres.public.ingredient',\r\n" + //
+                                "  'properties.bootstrap.servers' = '" + KAFKA_URI + "',\r\n" + //
+                                "  'properties.group.id' = 'testGroup', \r\n" + //
+                                "  'scan.startup.mode' = 'earliest-offset',\r\n" + //
+                                "  'format' = 'debezium-json'\r\n" + //
+                                ");");
+
+                tableEnv.executeSql("CREATE TABLE DishIngredients (\r\n" + //
+                                "  id INT,\r\n" + //
+                                "  dish_id INT,\r\n" + //
+                                "  ingredient_id INT,\r\n" + //
+                                "  supplier_id INT,\r\n" + //
+                                "  PRIMARY KEY (id) NOT ENFORCED\r\n" + //
+                                ") WITH (\r\n" + //
+                                "  'connector' = 'kafka',\r\n" + //
+                                "  'topic' = 'postgres.public.dish_ingredient',\r\n" + //
+                                "  'properties.bootstrap.servers' = '" + KAFKA_URI + "',\r\n" + //
+                                "  'properties.group.id' = 'testGroup', \r\n" + //
+                                "  'scan.startup.mode' = 'earliest-offset',\r\n" + //
+                                "  'format' = 'debezium-json'\r\n" + //
+                                ");");
+
+                tableEnv.executeSql("CREATE TABLE Restaurants (\r\n" + //
+                                "  id INT,\r\n" + //
+                                "  name STRING,\r\n" + //
+                                "  phone STRING,\r\n" + //
+                                "  email STRING,\r\n" + //
+                                "  cuisine_type STRING,\r\n" + //
+                                "  price_range STRING,\r\n" + //
+                                "  vat_code INT,\r\n" + //
+                                "  PRIMARY KEY (id) NOT ENFORCED\r\n" + //
+                                ") WITH (\r\n" + //
+                                "  'connector' = 'kafka',\r\n" + //
+                                "  'topic' = 'postgres.public.restaurant_info',\r\n" + //
+                                "  'properties.bootstrap.servers' = '" + KAFKA_URI + "',\r\n" + //
+                                "  'properties.group.id' = 'testGroup', \r\n" + //
+                                "  'scan.startup.mode' = 'earliest-offset',\r\n" + //
+                                "  'format' = 'debezium-json'\r\n" + //
+                                ");");
+
+                tableEnv.executeSql("CREATE TABLE Reviews (\r\n" + //
+                                "  id INT,\r\n" + //
+                                "  dish_id INT,\r\n" + //
+                                "  customer_id INT,\r\n" + //
+                                "  description STRING,\r\n" + //
+                                "  rating INT,\r\n" + //
+                                "  PRIMARY KEY (id) NOT ENFORCED\r\n" + //
+                                ") WITH (\r\n" + //
+                                "  'connector' = 'kafka',\r\n" + //
+                                "  'topic' = 'postgres.public.reviews_dish',\r\n" + //
+                                "  'properties.bootstrap.servers' = '" + KAFKA_URI + "',\r\n" + //
+                                "  'properties.group.id' = 'testGroup', \r\n" + //
+                                "  'scan.startup.mode' = 'earliest-offset',\r\n" + //
+                                "  'format' = 'debezium-json'\r\n" + //
+                                ");");
+
+                tableEnv.executeSql("CREATE TABLE DishView (\r\n" + //
+                                "  id INT,\r\n" + //
+                                "  name STRING,\r\n" + //
+                                "  price INT,\r\n" + //
+                                "  currency STRING,\r\n" + //
+                                "  category STRING,\r\n" + //
+                                "  description STRING,\r\n" + //
+                                "  ingredients ARRAY<row<id INT, name STRING, description STRING, carbs INT, fats INT, fibers INT, proteins INT, salt INT, calories INT>>,\r\n" + //
+                                "  served_in ARRAY<row<id INT, name STRING, email STRING, phone STRING, cuisine_type STRING, price_range STRING, vat_code INT>>,\r\n" + //
+                                "  reviews ARRAY<row<id INT, customer_id INT, rating INT, description STRING>>,\r\n" + //
+                                "  PRIMARY KEY (id) NOT ENFORCED\r\n" + //
+                                ") WITH (\r\n" + //
+                                "   'connector' = 'mongodb',\r\n" + //
+                                "   'uri' = '" + MONGODB_URI + "',\r\n" + //
+                                "   'database' = 'flinkfood',\r\n" + //
+                                "   'collection' = 'dish_views'\r\n" + //
+                                ");");
+
+                tableEnv.executeSql("INSERT INTO DishView\n" + //
+                                "SELECT DISTINCT\n" + //
+                                "    d.id,\n" + //
+                                "    d.name,\n" + //
+                                "    d.price,\n" + //
+                                "    d.currency,\n" + //
+                                "    d.category,\n" + //
+                                "    d.description,\n" + //
+                                "    (SELECT ARRAY_AGGR(\n" + //
+                                "        ROW(di.id, i.name, i.description, i.carbs, i.fats, i.fibers, i.proteins, i.salt, i.calories)\n" + //
+                                "    ) FROM DishIngredients di\n" + //
+                                "    LEFT JOIN Ingredients i ON di.ingredient_id = i.id\n" + //
+                                "    WHERE di.dish_id = d.id),\n" + //
+                                "    (SELECT ARRAY_AGGR(\n" + //
+                                "        ROW(r.id, r.name, r.email, r.phone, r.cuisine_type, r.price_range, r.vat_code)\n" + //
+                                "    ) FROM Restaurants r\n" + //
+                                "    WHERE r.id = d.restaurant_id),\n" + //
+                                "    (SELECT ARRAY_AGGR(\n" + //
+                                "        ROW(rw.id, rw.customer_id, rw.rating, rw.description)\n" + //
+                                "    ) FROM Reviews rw\n" + //
+                                "    WHERE rw.dish_id = d.id)\n" + //
+                                "FROM Dish d;");
 
                 // Starts job execution
                 env.execute("DishViewJob");
