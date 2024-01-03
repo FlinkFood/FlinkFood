@@ -54,8 +54,7 @@ import org.flinkfood.FlinkEnvironments.CustomerEnvironment;
 // Class declaration for the Flink job
 public class CustomerViewJob {
         // Kafka and MongoDB connection details obtained from environment variables
-        // private static final String MONGODB_URI = System.getenv("MONGODB_SERVER");
-        private static final String MONGODB_URI = "mongodb://localhost:27017";
+        private static final String MONGODB_URI = System.getenv("MONGODB_SERVER");
 
         // Main method where the Flink job is defined
         public static void main(String[] args) throws Exception {
@@ -64,7 +63,7 @@ public class CustomerViewJob {
                 var customerEnvironment = CustomerEnvironment.getInstance();
 
                 // Register single view table
-                customerEnvironment.getTableEnv().executeSql("CREATE TABLE CustomeView (\r\n" + //
+                customerEnvironment.getTableEnv().executeSql("CREATE TABLE CustomerView (\r\n" + //
                                 "  id INT,\r\n" + //
                                 "  first_name STRING,\r\n" + //
                                 "  last_name STRING,\r\n" + //
@@ -86,7 +85,7 @@ public class CustomerViewJob {
 
                 // Execute query to aggregate data
                 customerEnvironment.getTableEnv().executeSql(
-                                "INSERT INTO CustomeView SELECT DISTINCT  c.id,c.first_name,c.last_name," +
+                                "INSERT INTO CustomerView SELECT DISTINCT  c.id,c.first_name,c.last_name," +
                                                 "(SELECT ARRAY_AGGR(ROW(o.id,o.name,o.description)) FROM Orders o WHERE o.customer_id = c.id),"
                                                 + //
                                                 "(SELECT ARRAY_AGGR(ROW(pm.id,pm.name)) FROM Payment_method pm WHERE pm.customer_id = c.id),"

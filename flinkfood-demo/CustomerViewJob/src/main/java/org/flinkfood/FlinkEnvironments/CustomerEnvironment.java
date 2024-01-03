@@ -140,7 +140,7 @@ public final class CustomerEnvironment {
                 "  dish_id INT,\r\n" + //
                 "  customer_id INT,\r\n" + //
                 "  rating INT,\r\n" + //
-                "  review STRING,\r\n" + //
+                "  description STRING,\r\n" + //
                 "  PRIMARY KEY (id) NOT ENFORCED\r\n" + //
                 ") WITH (\r\n" + //
                 "  'connector' = 'kafka',\r\n" + //
@@ -158,7 +158,7 @@ public final class CustomerEnvironment {
                 "  restaurant_id INT,\r\n" + //
                 "  customer_id INT,\r\n" + //
                 "  rating INT,\r\n" + //
-                "  review STRING,\r\n" + //
+                "  description STRING,\r\n" + //
                 "  PRIMARY KEY (id) NOT ENFORCED\r\n" + //
                 ") WITH (\r\n" + //
                 "  'connector' = 'kafka',\r\n" + //
