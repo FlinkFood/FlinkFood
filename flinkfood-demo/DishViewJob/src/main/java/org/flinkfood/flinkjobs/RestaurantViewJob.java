@@ -96,24 +96,24 @@ public class RestaurantViewJob {
                                 "  'format' = 'debezium-json'\r\n" + //
                                 ");");
 
-                // tableEnv.executeSql("CREATE TABLE RestaurantService (\r\n" + //
-                //                 "  restaurant_id INT,\r\n" + //
-                //                 "  take_away BIT,\r\n" + //
-                //                 "  delivery BIT,\r\n" + //
-                //                 "  dine_in BIT,\r\n" + //
-                //                 "  parking_lots INT,\r\n" + //
-                //                 "  accessible BIT,\r\n" + //
-                //                 "  children_area BIT,\r\n" + //
-                //                 "  children_food BIT,\r\n" + //
-                //                 "  PRIMARY KEY (restaurant_id) NOT ENFORCED\r\n" + //
-                //                 ") WITH (\r\n" + //
-                //                 "  'connector' = 'kafka',\r\n" + //
-                //                 "  'topic' = 'postgres.public.restaurant_service',\r\n" + //
-                //                 "  'properties.bootstrap.servers' = 'localhost:9092',\r\n" + //
-                //                 "  'properties.group.id' = 'testGroup', \r\n" + //
-                //                 "  'scan.startup.mode' = 'earliest-offset',\r\n" + //
-                //                 "  'format' = 'debezium-json'\r\n" + //
-                //                 ");");
+                tableEnv.executeSql("CREATE TABLE RestaurantService (\r\n" + //
+                                "  restaurant_id INT,\r\n" + //
+                                "  take_away BOOLEAN,\r\n" + //
+                                "  delivery BOOLEAN,\r\n" + //
+                                "  dine_in BOOLEAN,\r\n" + //
+                                "  parking_lots INT,\r\n" + //
+                                "  accessible BOOLEAN,\r\n" + //
+                                "  children_area BOOLEAN,\r\n" + //
+                                "  children_food BOOLEAN,\r\n" + //
+                                "  PRIMARY KEY (restaurant_id) NOT ENFORCED\r\n" + //
+                                ") WITH (\r\n" + //
+                                "  'connector' = 'kafka',\r\n" + //
+                                "  'topic' = 'postgres.public.restaurant_service',\r\n" + //
+                                "  'properties.bootstrap.servers' = 'localhost:9092',\r\n" + //
+                                "  'properties.group.id' = 'testGroup', \r\n" + //
+                                "  'scan.startup.mode' = 'earliest-offset',\r\n" + //
+                                "  'format' = 'debezium-json'\r\n" + //
+                                ");");
 
                 tableEnv.executeSql("CREATE TABLE RestaurantReview (\r\n" + //
                                 "  id INT,\r\n" + //
@@ -142,7 +142,7 @@ public class RestaurantViewJob {
                                 "  reviews ARRAY<row<id INT, restaurant_id INT, customer_id INT, rating INT, description STRING>>,\r\n" + //
                                 "  served_dishes ARRAY<row<id INT, name STRING, price INT, currency STRING, category STRING, description STRING>>,\r\n" + //
                                 "  branches ARRAY<row<restaurant_id INT, street STRING, address_number CHAR, zip_code INT, city STRING, province STRING, country STRING>>,\r\n" + //
-                                // "  services ARRAY<row<take away BIT, delivery BIT, dine_in BIT, parking_lots INT, accessible BIT, children_area BIT, children_food BIT>>,\r\n" + //
+                                "  services ARRAY<row<take_away BOOLEAN, delivery BOOLEAN, dine_in BOOLEAN, parking_lots INT, accessible BOOLEAN, children_area BOOLEAN, children_food BOOLEAN>>,\r\n" + //
                                 "  PRIMARY KEY (id) NOT ENFORCED\r\n" + //
                                 ") WITH (\r\n" + //
                                 "   'connector' = 'mongodb',\r\n" + //
@@ -171,11 +171,11 @@ public class RestaurantViewJob {
                                 "    (SELECT ARRAY_AGGR(\n" + //
                                 "        ROW(ra.restaurant_id, ra.street, ra.address_number, ra.zip_code, ra.city, ra.province, ra.country)\n" + //
                                 "    ) FROM RestaurantAddress ra\n" + //
-                                "    WHERE ra.restaurant_id = r.id)\n" + //
-                                // "    (SELECT ARRAY_AGGR(\n" + //
-                                // "        ROW(rs.take_away, rs.delivery, rs.dine_in, rs.parking_lots, rs.accessible, rs.children_area, rs.children_food)\n" + //
-                                // "    ) FROM RestaurantService rs\n" + //
-                                // "    WHERE rs.restaurant_id = r.id)\n" + //
+                                "    WHERE ra.restaurant_id = r.id),\n" + //
+                                "    (SELECT ARRAY_AGGR(\n" + //
+                                "        ROW(rs.take_away, rs.delivery, rs.dine_in, rs.parking_lots, rs.accessible, rs.children_area, rs.children_food)\n" + //
+                                "    ) FROM RestaurantService rs\n" + //
+                                "    WHERE rs.restaurant_id = r.id)\n" + //
                                 "FROM Restaurants r;");
 
                 // Starts job execution
