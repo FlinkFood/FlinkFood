@@ -31,6 +31,8 @@ import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 // Class declaration for the Flink job
 public class DishViewJob {
 
+        private static final String KAFKA_URI = System.getenv("KAFKA_URI");
+        private static final String MONGODB_URI = System.getenv("MONGODB_SERVER");
         // Main method where the Flink job is defined
         public static void main(String[] args) throws Exception {
 
@@ -55,7 +57,7 @@ public class DishViewJob {
                                 ") WITH (\r\n" + //
                                 "  'connector' = 'kafka',\r\n" + //
                                 "  'topic' = 'postgres.public.dish',\r\n" + //
-                                "  'properties.bootstrap.servers' = 'localhost:9092',\r\n" + //
+                                "  'properties.bootstrap.servers' = '" + KAFKA_URI + "',\r\n" + //
                                 "  'properties.group.id' = 'testGroup', \r\n" + //
                                 "  'scan.startup.mode' = 'earliest-offset',\r\n" + //
                                 "  'format' = 'debezium-json'\r\n" + //
@@ -76,7 +78,7 @@ public class DishViewJob {
                                 ") WITH (\r\n" + //
                                 "  'connector' = 'kafka',\r\n" + //
                                 "  'topic' = 'postgres.public.ingredient',\r\n" + //
-                                "  'properties.bootstrap.servers' = 'localhost:9092',\r\n" + //
+                                "  'properties.bootstrap.servers' = '" + KAFKA_URI + "',\r\n" + //
                                 "  'properties.group.id' = 'testGroup', \r\n" + //
                                 "  'scan.startup.mode' = 'earliest-offset',\r\n" + //
                                 "  'format' = 'debezium-json'\r\n" + //
@@ -91,7 +93,7 @@ public class DishViewJob {
                                 ") WITH (\r\n" + //
                                 "  'connector' = 'kafka',\r\n" + //
                                 "  'topic' = 'postgres.public.dish_ingredient',\r\n" + //
-                                "  'properties.bootstrap.servers' = 'localhost:9092',\r\n" + //
+                                "  'properties.bootstrap.servers' = '" + KAFKA_URI + "',\r\n" + //
                                 "  'properties.group.id' = 'testGroup', \r\n" + //
                                 "  'scan.startup.mode' = 'earliest-offset',\r\n" + //
                                 "  'format' = 'debezium-json'\r\n" + //
@@ -109,7 +111,7 @@ public class DishViewJob {
                                 ") WITH (\r\n" + //
                                 "  'connector' = 'kafka',\r\n" + //
                                 "  'topic' = 'postgres.public.restaurant_info',\r\n" + //
-                                "  'properties.bootstrap.servers' = 'localhost:9092',\r\n" + //
+                                "  'properties.bootstrap.servers' = '" + KAFKA_URI + "',\r\n" + //
                                 "  'properties.group.id' = 'testGroup', \r\n" + //
                                 "  'scan.startup.mode' = 'earliest-offset',\r\n" + //
                                 "  'format' = 'debezium-json'\r\n" + //
@@ -125,7 +127,7 @@ public class DishViewJob {
                                 ") WITH (\r\n" + //
                                 "  'connector' = 'kafka',\r\n" + //
                                 "  'topic' = 'postgres.public.reviews_dish',\r\n" + //
-                                "  'properties.bootstrap.servers' = 'localhost:9092',\r\n" + //
+                                "  'properties.bootstrap.servers' = '" + KAFKA_URI + "',\r\n" + //
                                 "  'properties.group.id' = 'testGroup', \r\n" + //
                                 "  'scan.startup.mode' = 'earliest-offset',\r\n" + //
                                 "  'format' = 'debezium-json'\r\n" + //
@@ -144,7 +146,7 @@ public class DishViewJob {
                                 "  PRIMARY KEY (id) NOT ENFORCED\r\n" + //
                                 ") WITH (\r\n" + //
                                 "   'connector' = 'mongodb',\r\n" + //
-                                "   'uri' = 'mongodb://localhost:27017',\r\n" + //
+                                "   'uri' = '" + MONGODB_URI + "',\r\n" + //
                                 "   'database' = 'flinkfood',\r\n" + //
                                 "   'collection' = 'dish_views'\r\n" + //
                                 ");");
