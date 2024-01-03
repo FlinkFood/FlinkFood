@@ -217,11 +217,7 @@ COPY restaurant_service (restaurant_id, take_away, delivery, dine_in, parking_lo
 COPY restaurant_address (restaurant_id, street, address_number, zip_code, city, province, country)
     FROM '/docker-entrypoint-initdb.d/imports/restaurant_address.csv' DELIMITER ',' CSV HEADER;
 
-<<<<<<< HEAD
-COPY restaurant_review (id, restaurant_id, customer_id, rating, review)
-=======
 COPY restaurant_review (id, restaurant_id, customer_id, rating, description)
->>>>>>> refactor/views-to-use-debezium-json
     FROM '/docker-entrypoint-initdb.d/imports/restaurant_review.csv' DELIMITER ',' CSV HEADER;
 
 COPY ingredient (id, name, description, carbs, proteins, fats, fibers, salt, calories)
@@ -230,11 +226,7 @@ COPY ingredient (id, name, description, carbs, proteins, fats, fibers, salt, cal
 COPY dish_ingredient (id, dish_id, ingredient_id, supplier_id)
     FROM '/docker-entrypoint-initdb.d/imports/dish_ingredient.csv' DELIMITER ',' CSV HEADER;
 
-<<<<<<< HEAD
-COPY reviews_dish (id, dish_id, customer_id, rating, review)
-=======
 COPY reviews_dish (id, dish_id, customer_id, rating, description)
->>>>>>> refactor/views-to-use-debezium-json
     FROM '/docker-entrypoint-initdb.d/imports/reviews_dish.csv' DELIMITER ',' CSV HEADER;
 
 COPY customer_address (id, customer_id, street, address_number, zip_code, city, province, country)
