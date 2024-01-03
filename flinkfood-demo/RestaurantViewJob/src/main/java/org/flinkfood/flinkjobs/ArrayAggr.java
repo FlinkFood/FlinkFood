@@ -1,10 +1,5 @@
 package org.flinkfood.flinkjobs;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import org.apache.flink.table.api.DataTypes;
 import org.apache.flink.table.api.dataview.ListView;
 import org.apache.flink.table.catalog.DataTypeFactory;
@@ -12,6 +7,11 @@ import org.apache.flink.table.functions.AggregateFunction;
 import org.apache.flink.table.types.DataType;
 import org.apache.flink.table.types.inference.InputTypeStrategies;
 import org.apache.flink.table.types.inference.TypeInference;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Code from https://github.com/decodableco/examples/tree/main/flink-learn/3-array-agg

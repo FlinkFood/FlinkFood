@@ -1,7 +1,8 @@
 package org.flinkfood.flinkjobs;
 
-import java.util.Objects;
 import org.apache.flink.table.api.dataview.ListView;
+
+import java.util.Objects;
 
 /**
  * This class is used to accumulate the values of the array of a table

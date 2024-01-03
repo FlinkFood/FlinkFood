@@ -39,7 +39,6 @@ populate_kconnect() {
         "database.dbname": "flinkfood",
         "database.server.name": "postgres",
         "schema.whitelist": "public",
-        "transforms": "unwrap",
         "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
         "key.converter":"org.apache.kafka.connect.json.JsonConverter",
         "key.converter.schemas.enable":false,
@@ -130,9 +129,9 @@ echo "System is initialized. Starting Flink jobs..."
 
 
 # Example usage
-run_flink_job "/opt/flink/CustomerViewJob/target/CustomerViewJob-1.0.jar" 10 1
-run_flink_job "/opt/flink/RestaurantViewJob/target/restaurantview-1.0.jar" 10 1
-run_flink_job "/opt/flink/DishViewJob/target/dishview-1.0.jar" 10 1
+run_flink_job "/opt/flink/CustomerViewJob/target/CustomerViewJob-1.0.jar" 1 1
+run_flink_job "/opt/flink/RestaurantViewJob/target/restaurantview-1.0.jar" 1 1
+run_flink_job "/opt/flink/DishViewJob/target/dishview-1.0.jar" 1 1
 
 
 echo "Flink jobs started."

@@ -79,9 +79,9 @@ public class CustomerViewJob {
                                 "  payment_method ARRAY<row<id INT, name STRING>>,\r\n" + //
                                 "  addresses ARRAY<row<id INT, street STRING,address_number STRING,zip_code INT,city STRING,province STRING,country STRING>>,\r\n"
                                 + //
-                                "  dish_review ARRAY<row<id INT, dish_id INT,name STRING,rating INT,review STRING>>,\r\n"
+                                "  dish_review ARRAY<row<id INT, dish_id INT,name STRING,rating INT,description STRING>>,\r\n"
                                 + //
-                                "  restaurant_review ARRAY<row<id INT,restaurant_id INT, name STRING, rating INT, review STRING>>,\r\n"
+                                "  restaurant_review ARRAY<row<id INT,restaurant_id INT, name STRING, rating INT, description STRING>>,\r\n"
                                 + //
                                 "  PRIMARY KEY (id) NOT ENFORCED\r\n" + //
                                 ") WITH (\r\n" + //
@@ -100,9 +100,9 @@ public class CustomerViewJob {
                                                 + //
                                                 "(SELECT ARRAY_AGGR(ROW(ca.id,ca.street,ca.address_number,ca.zip_code,ca.city,ca.province,ca.country)) FROM Customer_address ca WHERE ca.customer_id = c.id),"
                                                 + //
-                                                "(SELECT ARRAY_AGGR(ROW(rd.id,rd.dish_id,d.name,rd.rating,rd.review)) FROM Review_dish rd  LEFT JOIN Dish d on rd.dish_id=d.id WHERE rd.customer_id = c.id ),"
+                                                "(SELECT ARRAY_AGGR(ROW(rd.id,rd.dish_id,d.name,rd.rating,rd.description)) FROM Review_dish rd  LEFT JOIN Dish d on rd.dish_id=d.id WHERE rd.customer_id = c.id ),"
                                                 + //
-                                                "(SELECT ARRAY_AGGR(ROW(rr.id,rr.restaurant_id,name,rr.rating,rr.review)) FROM Restaurant_review rr  LEFT JOIN Restaurant_info ri on rr.restaurant_id=ri.id WHERE rr.customer_id = c.id )"
+                                                "(SELECT ARRAY_AGGR(ROW(rr.id,rr.restaurant_id,name,rr.rating,rr.description)) FROM Restaurant_review rr  LEFT JOIN Restaurant_info ri on rr.restaurant_id=ri.id WHERE rr.customer_id = c.id )"
                                                 + //
                                                 "FROM Customer c;");
 
