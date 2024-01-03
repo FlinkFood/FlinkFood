@@ -7,6 +7,7 @@ services:
     container_name: jobmanager
     ports:
       - "8081:8081"
+      - 9249:9249 
     environment:
       - KAFKA_URI=kafka:29092
       - MONGODB_SERVER=mongodb://mongo:27017
@@ -15,12 +16,18 @@ services:
         jobmanager.rpc.address: jobmanager
         # Kafka bootstrap servers configuration
         kafka.bootstrap.servers: "kafka:29092"
+        # Promethues 
+        metrics.reporter.prom.factory.class: org.apache.flink.metrics.prometheus.PrometheusReporterFactory
+        metrics.reporter.prom.factory.port: 9249
+        metrics.reporters: prom  
     depends_on:
       - kconnect
 
   taskmanager:
     image: flink:latest
     container_name: taskmanager
+    ports:
+      - 9250:9249
     depends_on:
       - jobmanager
     command: taskmanager
@@ -29,6 +36,9 @@ services:
         FLINK_PROPERTIES=
         jobmanager.rpc.address: jobmanager
         taskmanager.numberOfTaskSlots: 3
+        metrics.reporter.prom.factory.class: org.apache.flink.metrics.prometheus.PrometheusReporterFactory
+        metrics.reporter.prom.factory.port: 9249
+        metrics.reporters: prom  
 
   mongo:
     image: mongo:latest
@@ -114,3 +124,21 @@ services:
       - kafka
       - zookeeper
       - postgres
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+    - 9090:9090
+    volumes:
+    - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+    - 3000:3000
+    environment:
+    - GF_SECURITY_ADMIN_PASSWORD=flink
+    volumes:
+    - ./grafana/provisioning/:/etc/grafana/provisioning/
