@@ -145,5 +145,16 @@ docker compose up -d --build
 Measure the time from this command is run till the first single view appears in MongoDB. If this is less than 5 hours, the test has successfully passed.
 
 ### Test 11: Robustness
-To be decided
-WE
+Run the file:
+
+```sh
+./execute.sh
+```
+
+This file should ensure the system will be restarted after any failure. The introduce the failure:
+```sql
+DROP TABLE restaurant_info
+```
+
+Verify if the system will be restarted within 5 minutes
+
