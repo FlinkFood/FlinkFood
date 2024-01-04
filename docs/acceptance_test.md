@@ -115,7 +115,15 @@ There is no API interface implemented as the team deemed it sufficient along wit
 The test passes if the uptimes are more than 1 hour for each job.
 
 ### Test 9: Data recovery
-To be decided.
+
+With the system up and running, we will purposely introduce an error.
+
+Deleting onf of the tables:
+```sql
+DROP TABLE restaurant_info
+```
+
+The system should fail. Verify, then, if the mongoDB still contains at least 95% of the original data
 
 ### Test 10: Ease of use
 First reset the entire system:
@@ -137,4 +145,5 @@ docker compose up -d --build
 Measure the time from this command is run till the first single view appears in MongoDB. If this is less than 5 hours, the test has successfully passed.
 
 ### Test 11: Robustness
-To be decided.
+To be decided
+WE
