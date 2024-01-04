@@ -148,13 +148,10 @@ Measure the time from this command is run till the first single view appears in 
 Run the file:
 
 ```sh
-./execute.sh
+./execute_test11.sh
 ```
 
-This file should ensure the system will be restarted after any failure. The introduce the failure:
-```sql
-DROP TABLE restaurant_info
-```
+This file should ensure the system will be restarted after any failure. Then introduce a failure, by, for example, stopping a container
 
-Verify if the system will be restarted within 5 minutes
+Verify if the system will be restarted within 5 minutes.
 
