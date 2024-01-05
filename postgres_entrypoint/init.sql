@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS restaurant_review (
     restaurant_id INT,
     customer_id INT,
     rating SMALLINT CHECK ( rating >= 0 and rating <= 10 ),
-    review VARCHAR(255),
+    description VARCHAR(255),
     FOREIGN KEY (restaurant_id) REFERENCES restaurant_info (id),
     FOREIGN KEY (customer_id) REFERENCES customer (id)
     );
@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS reviews_dish (
     dish_id INT,
     customer_id INT,
     rating SMALLINT CHECK ( rating >= 0 ),
-    review VARCHAR(255),
+    description VARCHAR(255),
     FOREIGN KEY (dish_id) REFERENCES dish (id),
     FOREIGN KEY (customer_id) REFERENCES customer (id)
     );
@@ -224,7 +224,7 @@ COPY restaurant_service (restaurant_id, take_away, delivery, dine_in, parking_lo
 COPY restaurant_address (restaurant_id, street, address_number, zip_code, city, province, country)
     FROM '/docker-entrypoint-initdb.d/imports/restaurant_address.csv' DELIMITER ',' CSV HEADER;
 
-COPY restaurant_review (id, restaurant_id, customer_id, rating, review)
+COPY restaurant_review (id, restaurant_id, customer_id, rating, description)
     FROM '/docker-entrypoint-initdb.d/imports/restaurant_review.csv' DELIMITER ',' CSV HEADER;
 
 COPY ingredient (id, name, description, carbs, proteins, fats, fibers, salt, calories)
@@ -233,7 +233,7 @@ COPY ingredient (id, name, description, carbs, proteins, fats, fibers, salt, cal
 COPY dish_ingredient (id, dish_id, ingredient_id, supplier_id)
     FROM '/docker-entrypoint-initdb.d/imports/dish_ingredient.csv' DELIMITER ',' CSV HEADER;
 
-COPY reviews_dish (id, dish_id, customer_id, rating, review)
+COPY reviews_dish (id, dish_id, customer_id, rating, description)
     FROM '/docker-entrypoint-initdb.d/imports/reviews_dish.csv' DELIMITER ',' CSV HEADER;
 
 COPY customer_address (id, customer_id, street, address_number, zip_code, city, province, country)

@@ -54,15 +54,7 @@ import org.flinkfood.FlinkEnvironments.CustomerEnvironment;
 // Class declaration for the Flink job
 public class CustomerViewJob {
         // Kafka and MongoDB connection details obtained from environment variables
-        // private static final String KAFKA_URI = System.getenv("KAFKA_URI");
-        private static final String KAFKA_URI = "localhost:9092";
-        private static final String SOURCE_CUSTOMER_TABLE = "postgres.public.customer";
-        private static final String SOURCE_ADDRESS_TABLE = "postgres.public.address";
-        private static final String SOURCE_ORDER_TABLE = "postgres.public.order";
-        // private static final String MONGODB_URI = System.getenv("MONGODB_SERVER");
-        private static final String MONGODB_URI = "mongodb://localhost:27017";
-        private static final String SINK_DB = "flinkfood";
-        private static final String SINK_DB_TABLE = "users_sink";
+        private static final String MONGODB_URI = System.getenv("MONGODB_SERVER");
 
         // Main method where the Flink job is defined
         public static void main(String[] args) throws Exception {
@@ -71,7 +63,7 @@ public class CustomerViewJob {
                 var customerEnvironment = CustomerEnvironment.getInstance();
 
                 // Register single view table
-                customerEnvironment.getTableEnv().executeSql("CREATE TABLE CustomeView (\r\n" + //
+                customerEnvironment.getTableEnv().executeSql("CREATE TABLE CustomerView (\r\n" + //
                                 "  id INT,\r\n" + //
                                 "  first_name STRING,\r\n" + //
                                 "  last_name STRING,\r\n" + //
@@ -79,30 +71,30 @@ public class CustomerViewJob {
                                 "  payment_method ARRAY<row<id INT, name STRING>>,\r\n" + //
                                 "  addresses ARRAY<row<id INT, street STRING,address_number STRING,zip_code INT,city STRING,province STRING,country STRING>>,\r\n"
                                 + //
-                                "  dish_review ARRAY<row<id INT, dish_id INT,name STRING,rating INT,review STRING>>,\r\n"
+                                "  dish_review ARRAY<row<id INT, dish_id INT,name STRING,rating INT,description STRING>>,\r\n"
                                 + //
-                                "  restaurant_review ARRAY<row<id INT,restaurant_id INT, name STRING, rating INT, review STRING>>,\r\n"
+                                "  restaurant_review ARRAY<row<id INT,restaurant_id INT, name STRING, rating INT, description STRING>>,\r\n"
                                 + //
                                 "  PRIMARY KEY (id) NOT ENFORCED\r\n" + //
                                 ") WITH (\r\n" + //
                                 "   'connector' = 'mongodb',\r\n" + //
-                                "   'uri' = 'mongodb://localhost:27017',\r\n" + //
+                                "   'uri' = '" + MONGODB_URI + "',\r\n" + //
                                 "   'database' = 'flinkfood',\r\n" + //
                                 "   'collection' = 'users_sink'\r\n" + //
                                 ");");
 
                 // Execute query to aggregate data
                 customerEnvironment.getTableEnv().executeSql(
-                                "INSERT INTO CustomeView SELECT DISTINCT  c.id,c.first_name,c.last_name," +
+                                "INSERT INTO CustomerView SELECT DISTINCT  c.id,c.first_name,c.last_name," +
                                                 "(SELECT ARRAY_AGGR(ROW(o.id,o.name,o.description)) FROM Orders o WHERE o.customer_id = c.id),"
                                                 + //
                                                 "(SELECT ARRAY_AGGR(ROW(pm.id,pm.name)) FROM Payment_method pm WHERE pm.customer_id = c.id),"
                                                 + //
                                                 "(SELECT ARRAY_AGGR(ROW(ca.id,ca.street,ca.address_number,ca.zip_code,ca.city,ca.province,ca.country)) FROM Customer_address ca WHERE ca.customer_id = c.id),"
                                                 + //
-                                                "(SELECT ARRAY_AGGR(ROW(rd.id,rd.dish_id,d.name,rd.rating,rd.review)) FROM Review_dish rd  LEFT JOIN Dish d on rd.dish_id=d.id WHERE rd.customer_id = c.id ),"
+                                                "(SELECT ARRAY_AGGR(ROW(rd.id,rd.dish_id,d.name,rd.rating,rd.description)) FROM Review_dish rd  LEFT JOIN Dish d on rd.dish_id=d.id WHERE rd.customer_id = c.id ),"
                                                 + //
-                                                "(SELECT ARRAY_AGGR(ROW(rr.id,rr.restaurant_id,name,rr.rating,rr.review)) FROM Restaurant_review rr  LEFT JOIN Restaurant_info ri on rr.restaurant_id=ri.id WHERE rr.customer_id = c.id )"
+                                                "(SELECT ARRAY_AGGR(ROW(rr.id,rr.restaurant_id,name,rr.rating,rr.description)) FROM Restaurant_review rr  LEFT JOIN Restaurant_info ri on rr.restaurant_id=ri.id WHERE rr.customer_id = c.id )"
                                                 + //
                                                 "FROM Customer c;");
 
