@@ -7,19 +7,19 @@ services:
     container_name: jobmanager
     ports:
       - "8081:8081"
-      - 9249:9249 
+      - 9249:9249
     environment:
-      - KAFKA_URI=kafka:29092
+      - KAFKA_URI=kafka1:29092,kafka2:29093
       - MONGODB_SERVER=mongodb://mongo:27017
       - |
         FLINK_PROPERTIES=
         jobmanager.rpc.address: jobmanager
         # Kafka bootstrap servers configuration
-        kafka.bootstrap.servers: "kafka:29092"
+        kafka.bootstrap.servers: "kafka1:29092,kafka2:29093"
         # Promethues 
         metrics.reporter.prom.factory.class: org.apache.flink.metrics.prometheus.PrometheusReporterFactory
         metrics.reporter.prom.factory.port: 9249
-        metrics.reporters: prom  
+        metrics.reporters: prom
     depends_on:
       - kconnect
 
@@ -38,7 +38,7 @@ services:
         taskmanager.numberOfTaskSlots: 3
         metrics.reporter.prom.factory.class: org.apache.flink.metrics.prometheus.PrometheusReporterFactory
         metrics.reporter.prom.factory.port: 9249
-        metrics.reporters: prom  
+        metrics.reporters: prom
 
   mongo:
     image: mongo:latest
@@ -60,9 +60,9 @@ services:
       - 3888:3888
 
   # kafka single node
-  kafka:
+  kafka1:
     image: wurstmeister/kafka:latest
-    container_name: kafka
+    container_name: kafka1
     restart: "no"
     links:
       - zookeeper
@@ -72,7 +72,25 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENERS: INTERNAL://:29092,EXTERNAL://:9092
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka1:29092,EXTERNAL://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      #https://github.com/wurstmeister/kafka-docker/issues/553
+
+    # kafka single node
+  kafka2:
+    image: wurstmeister/kafka:latest
+    container_name: kafka2
+    restart: "no"
+    links:
+      - zookeeper
+    ports:
+      - 9093:9093
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: INTERNAL://:29093,EXTERNAL://:9093
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka2:29093,EXTERNAL://localhost:9093
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       #https://github.com/wurstmeister/kafka-docker/issues/553
@@ -83,12 +101,13 @@ services:
     container_name: kafdrop
     restart: "no"
     environment:
-      KAFKA_BROKERCONNECT: "kafka:29092"
+      KAFKA_BROKERCONNECT: "kafka1:29092,kafka2:29093"
       # JVM_OPTS: "-Xms16M -Xmx512M -Xss180K -XX:-TieredCompilation -XX:+UseStringDeduplication -noverify"
     ports:
       - 9000:9000
     depends_on:
-      - kafka
+      - kafka1
+      - kafka2
 
   #postgres debezium-example image
   postgres:
@@ -116,12 +135,13 @@ services:
       CONFIG_STORAGE_TOPIC: my_connect_configs
       OFFSET_STORAGE_TOPIC: my_connect_offsets
       STATUS_STORAGE_TOPIC: my_connect_statuses
-      BOOTSTRAP_SERVERS: kafka:29092
+      BOOTSTRAP_SERVERS: kafka1:29092,kafka2:29093
     links:
       - zookeeper
       - postgres
     depends_on:
-      - kafka
+      - kafka1
+      - kafka2
       - zookeeper
       - postgres
 
@@ -129,16 +149,16 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     ports:
-    - 9090:9090
+      - 9090:9090
     volumes:
-    - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
 
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
     ports:
-    - 3000:3000
+      - 3000:3000
     environment:
-    - GF_SECURITY_ADMIN_PASSWORD=flink
+      - GF_SECURITY_ADMIN_PASSWORD=flink
     volumes:
-    - ./grafana/provisioning/:/etc/grafana/provisioning/
+      - ./grafana/provisioning/:/etc/grafana/provisioning/

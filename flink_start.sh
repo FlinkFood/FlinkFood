@@ -39,6 +39,8 @@ populate_kconnect() {
         "database.dbname": "flinkfood",
         "database.server.name": "postgres",
         "schema.whitelist": "public",
+        "topic.creation.default.replication.factor":2,
+        "topic.creation.default.partitions":2,
         "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
         "key.converter":"org.apache.kafka.connect.json.JsonConverter",
         "key.converter.schemas.enable":false,
