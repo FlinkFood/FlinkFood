@@ -19,6 +19,8 @@ CREATE TABLE IF NOT EXISTS supplier (
     is_sustainable BOOLEAN
 );
 
+ALTER TABLE supplier REPLICA IDENTITY FULL;
+
 CREATE TABLE IF NOT EXISTS customer (
     id serial PRIMARY KEY,
     username VARCHAR(255),
@@ -28,6 +30,8 @@ CREATE TABLE IF NOT EXISTS customer (
     email VARCHAR(255),
     fiscal_code VARCHAR(16)
 );
+
+ALTER TABLE customer REPLICA IDENTITY FULL;
 
 
 CREATE TABLE IF NOT EXISTS restaurant_service (
@@ -41,6 +45,7 @@ CREATE TABLE IF NOT EXISTS restaurant_service (
     children_food BOOLEAN,
     FOREIGN KEY (restaurant_id) REFERENCES restaurant_info (id)
     );
+    
 ALTER TABLE restaurant_service REPLICA IDENTITY FULL;
 
 CREATE TABLE IF NOT EXISTS restaurant_address (
@@ -126,6 +131,8 @@ CREATE TABLE IF NOT EXISTS customer_address (
     country VARCHAR(255),
     FOREIGN KEY (customer_id) REFERENCES customer (id)
 );
+
+ALTER TABLE customer_address REPLICA IDENTITY FULL;
 
 
 CREATE TABLE IF NOT EXISTS payment_method (
