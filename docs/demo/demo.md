@@ -128,3 +128,23 @@ INSERT INTO reviews_dish (id, dish_id, customer_id, rating, description) VALUES 
 3. Go to the dish view. Find dish with id 100 ("Pizza Margarita")
 4. Show that the review is placed under "review".
 
+### Story 3 - The system maintainer
+Now you are in the shoes of the ones actually developing this service. You really would like to check the status of the system.
+
+#### The flink dashboard
+1. Go to [The Apache Flink Dashboard](http:/localhost:8081/)
+2. Remark that all the jobs are running.
+
+#### The Grafana dashboard
+You are a bit worried that the implementation might be using to much of the CPU. You also have heard from stakeholders that the system should be very stable. You decide to check this.
+1. Go to the [Grafana Dashboard](http:/localhost:3000)
+2. Login using the credentials:
+```
+username: admin
+password: flink
+```
+3. Go to the dashboard you have configured beforehand
+4. Go to JVM - CPU. Show them that all is well, Fjooo! That was a close call
+5. Go to Slots & Jobs and see that all the jobs are running and the system has been stable
+
+You are so happy now cause the flinkfood team has made life easier for you!
