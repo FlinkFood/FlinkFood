@@ -1,4 +1,6 @@
-### Table of Contents
+# Demo
+This file is intended to give an overview of how to demo the FlinkFood application
+# Table of Contents
 
 - [Before starting the demo](#before-starting-the-demo)
   * [NOTE: Where to run SQL commands](#note--where-to-run-sql-commands)
@@ -11,9 +13,6 @@
   * [The restaurant owner](#the-restaurant-owner)
   * [The customer](#the-customer)
 
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
-
-This file is intended to give an overview of how to demo the FlinkFood application
 
 # Before starting the demo
 
@@ -28,10 +27,11 @@ Go to your preferred mongoDB discovery view. I personally use:[MongoDB Compass |
 
 Currently there should be 3 views in the Flinkfood database:
 
--   restaurants<sub>view</sub>
--   users<sub>sink</sub>
+-   restaurant<sub>views</sub>
+-   user<sub>sink</sub>
+-   dish<sub>views</sub>
 
-Currently a restaurant<sub>view</sub> should look like this:
+Currently a restaurant<sub>views</sub> should look like this:
 ```json
 {
   "ID": 1,
