@@ -40,6 +40,10 @@ The documentation for the project can be found under [The docs/ folder](docs/).
 
 ## Contribute
 
+### Before contribution
+Please read up on the documentation for the architecture and the choices made for the FlinkFood application [HERE](docs/architecture.md)
+
+### Contribution practices
 Contributions to FlinkFood are welcome! Follow these steps to contribute:
 
 1. Create a new branch for your feature from the develop branch (`git checkout -b "(feature | hotfix | release | docs) - FLIN - #of_task - really_brief_description"`) no spaces.
