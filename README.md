@@ -35,6 +35,9 @@ The FlinkFood application supports showing metrics through Grafana and Prometheu
 
 See [documentation for how to setup metrics](docs/metrics.md)  for more details on how to setup the dashboard.
 
+## Other documentation
+The documentation for the project can be found under [The docs/ folder](docs/). 
+
 ## Contribute
 
 Contributions to FlinkFood are welcome! Follow these steps to contribute:
