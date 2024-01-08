@@ -9,7 +9,6 @@ curl -X POST 'http://localhost:8083/connectors' -H 'Content-Type: application/js
         "database.dbname": "flinkfood",
         "database.server.name": "postgres",
         "schema.whitelist": "public",
-        "transforms": "unwrap",
         "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
         "key.converter":"org.apache.kafka.connect.json.JsonConverter",
         "key.converter.schemas.enable":false,

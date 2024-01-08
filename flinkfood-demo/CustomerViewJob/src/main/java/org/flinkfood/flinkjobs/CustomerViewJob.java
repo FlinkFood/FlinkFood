@@ -1,165 +1,103 @@
 // Package declaration for the Flink job
 package org.flinkfood.flinkjobs;
 
-// Importing necessary Flink libraries and external dependencies
-import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.functions.ProcessFunction;
-import org.apache.flink.table.api.JsonOnNull;
-import org.apache.flink.table.api.Table;
-import org.apache.flink.table.api.TableConfig;
-import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
-import org.apache.flink.types.Row;
-import org.apache.flink.util.Collector;
+import org.flinkfood.FlinkEnvironments.CustomerEnvironment;
 
-import static org.apache.flink.table.api.Expressions.$;
-import static org.apache.flink.table.api.Expressions.jsonObject;
-
-import org.apache.flink.api.common.eventtime.WatermarkStrategy;
-import org.apache.flink.connector.mongodb.sink.MongoSink;
-import org.apache.flink.connector.base.DeliveryGuarantee;
-import org.apache.flink.connector.kafka.source.KafkaSource;
-import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
-import org.apache.flink.streaming.api.datastream.DataStream;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.InsertOneModel;
-import com.mongodb.client.model.ReplaceOneModel;
-import com.mongodb.client.model.ReplaceOptions;
-
-import org.bson.BsonDocument;
-import org.bson.conversions.Bson;
-import org.flinkfood.schemas.customer.Customer;
-import org.flinkfood.schemas.customer.KafkaCustomerSchema;
-import org.flinkfood.schemas.order.KafkaOrderSchema;
-import org.flinkfood.schemas.order.Order;
+/**
+ * This class, {@code CustomerViewJob}, represents a Flink job that creates the
+ * Customer View.
+ * The job retrieves data from Kafka topics related to customers and orders and
+ * aggregates this data
+ * to create a view of customers with their associated orders. The aggregated
+ * view is then stored in a MongoDB collection.
+ * 
+ * <p>
+ * FOR A MORE DETAILED EXPLANATION OF THE CODE, PLEASE REFER TO THE README FILE
+ * "customerView.md"
+ * </p>
+ * 
+ * <p>
+ * The following steps outline the functionality of this job:
+ * 1. Define necessary Kafka and MongoDB connection details.
+ * 2. Set up the Flink execution environment and stream table environment.
+ * 3. Register user-defined functions for aggregation.
+ * 4. Define tables for customers and orders sourced from Kafka topics.
+ * 5. Create a view table that represents an aggregated view of customers with
+ * their orders.
+ * 6. Execute the Flink job.
+ * </p>
+ * 
+ * <p>
+ * MAKE SURE THE CORRECT KAFKA AND MONGODB CONNECTION DETAILS ARE PROVIDED AND
+ * THE DOCKER IS RUNNING AS STATED ON THE MD FILE
+ * </p>
+ *
+ * @author Niccolo-Francioni
+ * @version 1.0
+ * @see org.apache.flink.streaming.api.environment.StreamExecutionEnvironment
+ * @see org.apache.flink.table.api.bridge.java.StreamTableEnvironment
+ * @see org.apache.flink.table.api.TableConfig
+ * @see org.apache.flink.types.Row
+ * @see org.apache.flink.connector.mongodb.sink.MongoSink
+ * @see org.apache.flink.connector.kafka.source.KafkaSource
+ * @see org.apache.flink.streaming.api.datastream.DataStream
+ * @see com.mongodb.client.model.Filters
+ * @see com.mongodb.client.model.InsertOneModel
+ * @see com.mongodb.client.model.ReplaceOneModel
+ * @see com.mongodb.client.model.ReplaceOptions
+ * @see org.flinkfood.schemas.customer.Customer
+ * @see org.flinkfood.schemas.customer.KafkaCustomerSchema
+ * @see org.flinkfood.schemas.order.KafkaOrderSchema
+ * @see org.flinkfood.schemas.order.Order
+ */
 
 // Class declaration for the Flink job
 public class CustomerViewJob {
         // Kafka and MongoDB connection details obtained from environment variables
-        private static final String KAFKA_URI = System.getenv("KAFKA_URI");
-        private static final String SOURCE_CUSTOMER_TABLE = "postgres.public.customer";
-        private static final String SOURCE_ADDRESS_TABLE = "postgres.public.address";
-        private static final String SOURCE_ORDER_TABLE = "postgres.public.order";
         private static final String MONGODB_URI = System.getenv("MONGODB_SERVER");
-        private static final String SINK_DB = "flinkfood";
-        private static final String SINK_DB_TABLE = "users_sink";
 
         // Main method where the Flink job is defined
         public static void main(String[] args) throws Exception {
 
-                // Setting up Kafka source with relevant configurations
-                KafkaSource<Customer> sourceCustomer = KafkaSource.<Customer>builder()
-                                .setBootstrapServers(KAFKA_URI)
-                                .setTopics(SOURCE_CUSTOMER_TABLE)
-                                .setGroupId("my-group")
-                                .setStartingOffsets(OffsetsInitializer.earliest())
-                                .setValueOnlyDeserializer(new KafkaCustomerSchema())
-                                .build();
+                // Initialize environment
+                var customerEnvironment = CustomerEnvironment.getInstance();
 
-                // Setting up Kafka source with relevant configurations
-                KafkaSource<Order> sourceOrder = KafkaSource.<Order>builder()
-                                .setBootstrapServers(KAFKA_URI)
-                                .setTopics(SOURCE_ORDER_TABLE)
-                                .setGroupId("my-group")
-                                .setStartingOffsets(OffsetsInitializer.earliest())
-                                .setValueOnlyDeserializer(new KafkaOrderSchema())
-                                .build();
+                // Register single view table
+                customerEnvironment.getTableEnv().executeSql("CREATE TABLE CustomerView (\r\n" + //
+                                "  id INT,\r\n" + //
+                                "  first_name STRING,\r\n" + //
+                                "  last_name STRING,\r\n" + //
+                                "  orders ARRAY<row<id INT, name STRING, description STRING>>,\r\n" + //
+                                "  payment_method ARRAY<row<id INT, name STRING>>,\r\n" + //
+                                "  addresses ARRAY<row<id INT, street STRING,address_number STRING,zip_code INT,city STRING,province STRING,country STRING>>,\r\n"
+                                + //
+                                "  dish_review ARRAY<row<id INT, dish_id INT,name STRING,rating INT,description STRING>>,\r\n"
+                                + //
+                                "  restaurant_review ARRAY<row<id INT,restaurant_id INT, name STRING, rating INT, description STRING>>,\r\n"
+                                + //
+                                "  PRIMARY KEY (id) NOT ENFORCED\r\n" + //
+                                ") WITH (\r\n" + //
+                                "   'connector' = 'mongodb',\r\n" + //
+                                "   'uri' = '" + MONGODB_URI + "',\r\n" + //
+                                "   'database' = 'flinkfood',\r\n" + //
+                                "   'collection' = 'users_sink'\r\n" + //
+                                ");");
 
-                // Setting up MongoDB sink with relevant configurations
-                MongoSink<String> sink = MongoSink.<String>builder()
-                                .setUri(MONGODB_URI)
-                                .setDatabase(SINK_DB)
-                                .setCollection(SINK_DB_TABLE)
-                                .setBatchSize(1000)
-                                .setBatchIntervalMs(1000)
-                                .setMaxRetries(3)
-                                .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
-                                .setSerializationSchema(
-                                                (input, context) -> new InsertOneModel<>(BsonDocument.parse(input)))
+                // Execute query to aggregate data
+                customerEnvironment.getTableEnv().executeSql(
+                                "INSERT INTO CustomerView SELECT DISTINCT  c.id,c.first_name,c.last_name," +
+                                                "(SELECT ARRAY_AGGR(ROW(o.id,o.name,o.description)) FROM Orders o WHERE o.customer_id = c.id),"
+                                                + //
+                                                "(SELECT ARRAY_AGGR(ROW(pm.id,pm.name)) FROM Payment_method pm WHERE pm.customer_id = c.id),"
+                                                + //
+                                                "(SELECT ARRAY_AGGR(ROW(ca.id,ca.street,ca.address_number,ca.zip_code,ca.city,ca.province,ca.country)) FROM Customer_address ca WHERE ca.customer_id = c.id),"
+                                                + //
+                                                "(SELECT ARRAY_AGGR(ROW(rd.id,rd.dish_id,d.name,rd.rating,rd.description)) FROM Review_dish rd  LEFT JOIN Dish d on rd.dish_id=d.id WHERE rd.customer_id = c.id ),"
+                                                + //
+                                                "(SELECT ARRAY_AGGR(ROW(rr.id,rr.restaurant_id,name,rr.rating,rr.description)) FROM Restaurant_review rr  LEFT JOIN Restaurant_info ri on rr.restaurant_id=ri.id WHERE rr.customer_id = c.id )"
+                                                + //
+                                                "FROM Customer c;");
 
-                                /*
-                                 * // This is the code for the upsert operation,
-                                 * .setSerializationSchema((input, context) -> {
-                                 * BsonDocument document = BsonDocument.parse(input);
-                                 * int idValue = document.getInt32(new String("customer_id")).getValue();
-                                 * Bson filter = Filters.eq("customer.id", idValue);
-                                 * return new ReplaceOneModel<>(filter, document,
-                                 * new ReplaceOptions().upsert(true));
-                                 * })
-                                 */
-
-                                .build();
-
-                // Setting up Flink execution environment
-                StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-                StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
-                TableConfig tableConfig = tableEnv.getConfig();
-                tableConfig.set("table.exec.mini-batch.enabled", "true");
-                tableConfig.set("table.exec.mini-batch.allow-latency", "5 s");
-                tableConfig.set("table.exec.mini-batch.size", "5000");
-
-                DataStream<Customer> streamCustomer = env
-                                .fromSource(sourceCustomer, WatermarkStrategy.noWatermarks(), "Kafka Source")
-                                .keyBy(Customer::getId);
-
-                Table customerTable = tableEnv.fromDataStream(streamCustomer);
-
-                tableEnv.createTemporaryView("Customer", tableEnv.toChangelogStream(customerTable));
-
-                DataStream<Order> streamOrder = env
-                                .fromSource(sourceOrder, WatermarkStrategy.noWatermarks(), "Kafka Source")
-                                .keyBy(Order::getCustomer_id);
-
-                Table orderTable = tableEnv.fromDataStream(streamOrder);
-
-                tableEnv.createTemporaryView("Orders", tableEnv.toChangelogStream(orderTable));
-
-                tableEnv.executeSql("CREATE FUNCTION ARRAY_AGGR AS 'org.flinkfood.flinkjobs.ArrayAggr';");
-
-                // Query that returns a Row type
-                Table resultTable4 = tableEnv.sqlQuery(
-                                "SELECT DISTINCT c.id,c.first_name,c.last_name,(SELECT ARRAY_AGGR(ROW(o.id,o.name,o.description)) FROM Orders o WHERE o.customer_id = c.id) FROM Customer c;");
-
-                tableEnv.toChangelogStream(resultTable4).print();
-
-                // Query that returns a JSON
-                Table resultTable3 = tableEnv
-                                .sqlQuery(
-                                                "SELECT DISTINCT " +
-                                                                "JSON_OBJECT('customer_id' VALUE c.id, 'first_name' VALUE c.first_name, 'last_name' VALUE c.last_name, "
-                                                                +
-                                                                "'orders' VALUE ARRAY_AGGR(JSON_OBJECT(" +
-                                                                "'order_id' VALUE o.id, 'name' VALUE o.name, 'description' VALUE o.description)))"
-                                                                +
-                                                                "as customer_view " +
-                                                                "FROM Customer c " +
-                                                                "INNER JOIN Orders o ON o.customer_id = c.id " +
-                                                                "GROUP BY c.id, c.first_name, c.last_name;");
-                // OUTPUT:
-                // ROW:
-                // {"customer_id":5,"first_name":"Alex","last_name":"Johnson","orders":["{\"description\":\"Vegetarian
-                // Delight\",\"name\":\"ord-123456789-VEGB\",\"order_id\":5}","{\"description\":\"Vegan
-                // Pizza\",\"name\":\"ord-567890123-VGPI\",\"order_id\":10}"]}
-                // As we can notice from the \ before the ", the JSON is not well-formed for
-                // ingestion (BSON) , it is just a string
-
-                // tableEnv.toChangelogStream(resultTable3).print();
-
-
-               tableEnv.toChangelogStream(resultTable3).process(new ProcessFunction<Row,
-               String>() {
-
-               @Override
-               public void processElement(
-               Row row,
-               ProcessFunction<Row, String>.Context context,
-               Collector<String> out) {
-               System.out.println("ROW: " + row.getField(0).toString());
-
-               out.collect(row.getField(0).toString());
-               }
-               }).sinkTo(sink);
-
-
-                env.execute("CustomerViewJob");
+                customerEnvironment.getEnv().execute("CustomerViewJob");
         }
 }

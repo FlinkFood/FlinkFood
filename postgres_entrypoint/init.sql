@@ -19,6 +19,8 @@ CREATE TABLE IF NOT EXISTS supplier (
     is_sustainable BOOLEAN
 );
 
+ALTER TABLE supplier REPLICA IDENTITY FULL;
+
 CREATE TABLE IF NOT EXISTS customer (
     id serial PRIMARY KEY,
     username VARCHAR(255),
@@ -28,6 +30,8 @@ CREATE TABLE IF NOT EXISTS customer (
     email VARCHAR(255),
     fiscal_code VARCHAR(16)
 );
+
+ALTER TABLE customer REPLICA IDENTITY FULL;
 
 
 CREATE TABLE IF NOT EXISTS restaurant_service (
@@ -41,6 +45,7 @@ CREATE TABLE IF NOT EXISTS restaurant_service (
     children_food BOOLEAN,
     FOREIGN KEY (restaurant_id) REFERENCES restaurant_info (id)
     );
+    
 ALTER TABLE restaurant_service REPLICA IDENTITY FULL;
 
 CREATE TABLE IF NOT EXISTS restaurant_address (
@@ -60,7 +65,7 @@ CREATE TABLE IF NOT EXISTS restaurant_review (
     restaurant_id INT,
     customer_id INT,
     rating SMALLINT CHECK ( rating >= 0 and rating <= 10 ),
-    comment VARCHAR(255),
+    description VARCHAR(255),
     FOREIGN KEY (restaurant_id) REFERENCES restaurant_info (id),
     FOREIGN KEY (customer_id) REFERENCES customer (id)
     );
@@ -109,7 +114,7 @@ CREATE TABLE IF NOT EXISTS reviews_dish (
     dish_id INT,
     customer_id INT,
     rating SMALLINT CHECK ( rating >= 0 ),
-    comment VARCHAR(255),
+    description VARCHAR(255),
     FOREIGN KEY (dish_id) REFERENCES dish (id),
     FOREIGN KEY (customer_id) REFERENCES customer (id)
     );
@@ -126,6 +131,8 @@ CREATE TABLE IF NOT EXISTS customer_address (
     country VARCHAR(255),
     FOREIGN KEY (customer_id) REFERENCES customer (id)
 );
+
+ALTER TABLE customer_address REPLICA IDENTITY FULL;
 
 
 CREATE TABLE IF NOT EXISTS payment_method (
@@ -217,7 +224,7 @@ COPY restaurant_service (restaurant_id, take_away, delivery, dine_in, parking_lo
 COPY restaurant_address (restaurant_id, street, address_number, zip_code, city, province, country)
     FROM '/docker-entrypoint-initdb.d/imports/restaurant_address.csv' DELIMITER ',' CSV HEADER;
 
-COPY restaurant_review (id, restaurant_id, customer_id, rating, comment)
+COPY restaurant_review (id, restaurant_id, customer_id, rating, description)
     FROM '/docker-entrypoint-initdb.d/imports/restaurant_review.csv' DELIMITER ',' CSV HEADER;
 
 COPY ingredient (id, name, description, carbs, proteins, fats, fibers, salt, calories)
@@ -226,7 +233,7 @@ COPY ingredient (id, name, description, carbs, proteins, fats, fibers, salt, cal
 COPY dish_ingredient (id, dish_id, ingredient_id, supplier_id)
     FROM '/docker-entrypoint-initdb.d/imports/dish_ingredient.csv' DELIMITER ',' CSV HEADER;
 
-COPY reviews_dish (id, dish_id, customer_id, rating, comment)
+COPY reviews_dish (id, dish_id, customer_id, rating, description)
     FROM '/docker-entrypoint-initdb.d/imports/reviews_dish.csv' DELIMITER ',' CSV HEADER;
 
 COPY customer_address (id, customer_id, street, address_number, zip_code, city, province, country)
