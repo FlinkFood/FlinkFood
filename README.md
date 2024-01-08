@@ -9,16 +9,18 @@ FlinkFood is a project that addresses the challenge of providing users with info
 Every day, users place orders on FlinkFood, each with unique preferences and requirements. Restaurants continually update their menus, creating a need for an efficient data aggregation system. FlinkFood is designed to meet this need by implementing a Data Fabric solution with Apache Flink.
 
 ## Code Style
+The decided code style is the Google Java Style Guide. This is enforced by the Intellij IDEA.
 
-TBD
+## Main features
+These are the main features of the FlinkFood application:
+- System of records implemented using PostgreSQL populated with mock data.
+- Change data capture (CDC) in Debezium. Capturing changes in system of records and sending them through Kafka.
+- Aggregation of several tables into 3 distinct single views in MongoDB
+    - Aggregation of lists. I.e. a restaurant is connected to several reviews. This is reflected in the single view of restaurant
+- Fully containerized using docker compose.
+- Support for the [Apache Flink Dashboard](https://docs.aws.amazon.com/managed-flink/latest/java/how-dashboard.html)
+- Support for Grafana dashboards showing [Apache Flink Metrics](https://nightlies.apache.org/flink/flink-docs-master/docs/ops/metrics/)
 
-## Features
-
-TBD
-
-## Tests
-
-Comprehensive tests are yet to be defined for the project. Test examples and guidelines will be added in future updates.
 
 ## How to Use
 
@@ -28,56 +30,10 @@ To use FlinkFood, follow these steps:
 
 See the [documentation for how to run FlinkFood](docs/howToRun.md) for more details on these steps.
 
-### Basic docker commands
+### Setting up metrics
+The FlinkFood application supports showing metrics through Grafana and Prometheus. This is highly customizable.
 
-Using the following commands will start docker containers for Kafka and Apache Flink. Flink is running in session mode. This means that we have a long-running Flink Cluster which we can submit jobs to. This is preferably done in the web UI (see below). For more information on this configuration of Apache Flink, see: [Apache Flink Documentation](https://nightlies.apache.org/flink/flink-docs-master/docs/deployment/resource-providers/standalone/docker/#session-mode-1)
-
-1. Launch a cluster in the foreground (use -d for background)
-
-```sh
-docker-compose up
-```
-
-2. Apache Flink Web Dashboard
-   When the cluster is running, you can visit the [Apache Flink Web Dashboard](http://localhost:8081) for manual management.
-
-3. Kill the cluster
-
-```sh
-docker-compose down
-```
-
-### Interacting with the different containers
-
-#### PostgreSQL container
-
-Run the following command to enter the PostgreSQL container:
-
-```sh
-docker exec -it flinkfood-postgres-1 bash
-```
-
-To enter the postgreSQL database by running this command:
-
-```sh
-psql -U postgres -d flinkfood
-```
-
-Now you can run SQL commands :)
-
-### Optional configuration
-
-- Scale the cluster up or down to N TaskManagers
-
-```sh
-docker-compose scale taskmanager=<N>
-```
-
-- Access the JobManager container
-
-```sh
-docker exec -it $(docker ps --filter name=jobmanager --format={{.ID}}) /bin/sh
-```
+See [documentation for how to setup metrics](docs/metrics.md)  for more details on how to setup the dashboard.
 
 ## Contribute
 
@@ -112,6 +68,9 @@ Name your review "JRA-123 <review summary>" and start the review. Follow the Git
 ## Credits
 
 We would like to give credit to the following:
+- The MIA platform team for showing great support and guidance in which direction the FlinkFood application should go.
+- The DSD teaching staff for giving clear tips on how to work as a team and how to deliver value to the customer.
+- The other DSD groups for asking interesting questions that made us alter how we handled this project.
 
 ## License
 
